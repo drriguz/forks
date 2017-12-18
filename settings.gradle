@@ -1,0 +1,4 @@
+
+include 'commons'
+include 'framework'
+rootProject.name = 'forks'
