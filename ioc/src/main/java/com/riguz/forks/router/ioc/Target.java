@@ -1,4 +1,4 @@
-package com.riguz.forks.ioc;
+package com.riguz.forks.router.ioc;
 
 
 import com.riguz.gags.base.Classes;

@@ -1,5 +1,7 @@
 
 include 'commons'
 include 'ioc'
+include 'http'
+include 'router'
 include 'framework'
 rootProject.name = 'forks'
