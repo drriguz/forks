@@ -2,8 +2,12 @@
 
 build
 out
+bin
 classes
+
 .idea
+.settings
+.classpath
 .gradle
 
 *.DS_Store
