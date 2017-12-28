@@ -1,4 +1,4 @@
-package com.riguz.forks.router.http;
+package com.riguz.forks.http;
 
 import java.io.InputStream;
 

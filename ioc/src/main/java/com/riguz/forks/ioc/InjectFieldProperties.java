@@ -1,4 +1,4 @@
-package com.riguz.forks.router.ioc;
+package com.riguz.forks.ioc;
 
 import java.lang.reflect.Field;
 

@@ -1,7 +1,7 @@
 package com.riguz.forks.router;
 
-import com.riguz.forks.router.http.HttpMethod;
-import com.riguz.forks.router.http.RouteFeature;
+import com.riguz.forks.http.HttpMethod;
+import com.riguz.forks.http.RouteFeature;
 import com.riguz.gags.base.Strings;
 import com.riguz.gags.struct.Trie;
 

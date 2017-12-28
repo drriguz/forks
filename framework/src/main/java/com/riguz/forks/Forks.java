@@ -1,8 +1,9 @@
 package com.riguz.forks;
 
 import com.riguz.forks.config.DefaultConfig;
+import com.riguz.forks.http.NetworkServer;
 import com.riguz.forks.router.Router;
-import com.riguz.forks.router.ioc.IocContext;
+import com.riguz.forks.ioc.IocContext;
 import javax.inject.Inject;
 
 public final class Forks {
@@ -13,13 +14,25 @@ public final class Forks {
     @Inject
     private Router router;
 
+    @Inject
+    private NetworkServer networkServer;
+
     static {
         iocContext = new IocContext(new DefaultConfig());
         iocContext.injectFields(Forks.instance);
     }
 
+    private void internalServe() {
+        this.networkServer.start();
+        this.networkServer.afterStart();
+    }
+
     public static void serve() {
-        System.out.println(instance.router);
+        instance.internalServe();
+    }
+
+    public static void stop() {
+
     }
 
     public static void main(String[] args) {

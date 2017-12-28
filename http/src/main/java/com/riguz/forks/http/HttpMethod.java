@@ -1,4 +1,4 @@
-package com.riguz.forks.router.http;
+package com.riguz.forks.http;
 
 public enum HttpMethod {
     GET(0), POST(1), PUT(2), DELETE(3);
