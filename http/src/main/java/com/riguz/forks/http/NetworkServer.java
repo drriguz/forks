@@ -1,10 +1,17 @@
 package com.riguz.forks.http;
 
-public interface NetworkServer {
+public abstract class NetworkServer {
+	protected final int port;
+	protected final RequestDelegator handler;
 
-    void start();
+	public NetworkServer(int port, RequestDelegator handler) {
+		this.port = port;
+		this.handler = handler;
+	}
 
-    void afterStart();
+	public abstract void start();
 
-    void stop();
+	public abstract void afterStart();
+
+	public abstract void stop();
 }
