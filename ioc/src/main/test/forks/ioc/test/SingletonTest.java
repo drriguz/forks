@@ -1,13 +1,11 @@
 package forks.ioc.test;
 
 import com.riguz.forks.ioc.Injector;
-import com.riguz.forks.ioc.Provides;
+import com.riguz.forks.ioc.Bind;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import org.junit.Test;
-
-import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -38,7 +36,7 @@ public class SingletonTest {
 
         int calledCount = 0;
 
-        @Provides
+        @Bind
         public Service service() {
             calledCount += 1;
             return new Service();
@@ -49,7 +47,7 @@ public class SingletonTest {
 
         int calledCount = 0;
 
-        @Provides
+        @Bind
         @Singleton
         public Service service() {
             calledCount += 1;
@@ -113,7 +111,7 @@ public class SingletonTest {
     @Test
     public void nestedService() {
         Injector injector = new Injector();
-        
+
         NestedService s1 = injector.getInstance(NestedService.class);
         NestedService s2 = injector.getInstance(NestedService.class);
 

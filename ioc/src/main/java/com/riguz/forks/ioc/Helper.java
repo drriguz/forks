@@ -1,15 +1,10 @@
 package com.riguz.forks.ioc;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.*;
+import java.util.*;
 
+import com.riguz.gags.base.Arrays;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Qualifier;
@@ -32,7 +27,7 @@ public final class Helper {
     public static Set<Method> getProviders(final Class<?> type) {
         Set<Method> providers = new HashSet<>();
         for (Method method : type.getMethods()) {
-            if (method.isAnnotationPresent(Provides.class)) {
+            if (method.isAnnotationPresent(Bind.class)) {
                 providers.add(method);
             }
         }
@@ -46,13 +41,23 @@ public final class Helper {
         Annotation qualifier = null;
         for (Annotation a : annotations) {
             if (a.annotationType().isAnnotationPresent(Qualifier.class)) {
-                if (qualifier != null) {
-                    throw new IllegalArgumentException("Multi-qualifier found");
+                if (qualifier != null && !qualifier.equals(a)) {
+                    throw new InjectException("Multi-qualifier found:" + qualifier + " ," + a);
                 }
                 qualifier = a;
             }
         }
         return qualifier;
+    }
+
+    public static Annotation getQualifier(AnnotatedElement target) {
+        return getQualifier(target.getDeclaredAnnotations());
+    }
+
+    public static Annotation getQualifier(Method providerMethod) {
+        return getQualifier(Arrays.concat(
+            providerMethod.getReturnType().getDeclaredAnnotations(),
+            providerMethod.getDeclaredAnnotations()));
     }
 
     /**
@@ -89,9 +94,9 @@ public final class Helper {
     /**
      * Get singleton annotation from method and class
      */
-    public static boolean isSingletonProvider(Method method) {
-        return method.getAnnotation(Singleton.class) != null
-            || method.getReturnType().getAnnotation(Singleton.class) != null;
+    public static boolean isSingletonProvider(Method provider) {
+        return provider.getAnnotation(Singleton.class) != null
+            || provider.getReturnType().getAnnotation(Singleton.class) != null;
     }
 
     /**
@@ -102,7 +107,7 @@ public final class Helper {
         for (Constructor<?> c : type.getDeclaredConstructors()) {
             if (c.isAnnotationPresent(Inject.class)) {
                 if (injectConstructor != null) {
-                    throw new IllegalArgumentException("Multiple inject constructors found in " + type.getName());
+                    throw new InjectException("Multiple inject constructors found in " + type.getName());
                 }
                 injectConstructor = c;
             }
@@ -112,7 +117,7 @@ public final class Helper {
         }
         Constructor<?> targetConstructor = injectConstructor != null ? injectConstructor : noArgConstructor;
         if (targetConstructor == null) {
-            throw new IllegalArgumentException(
+            throw new InjectException(
                 "No inject constructor or no-arg constructor found in " + type.getName());
         }
         targetConstructor.setAccessible(true);
@@ -165,7 +170,7 @@ public final class Helper {
             return constructor.newInstance(Helper.getProviderValues(paramProviders));
         } catch (Exception e) {
             logger.error("Unable to instance object:{}", e);
-            throw new RuntimeException("Unable to instance object:" + injectQualifier);
+            throw new InjectException("Unable to instance object:" + injectQualifier);
         }
     }
 
@@ -181,7 +186,7 @@ public final class Helper {
             return (T) method.invoke(module, Helper.getProviderValues(paramProviders));
         } catch (Exception e) {
             logger.error("Unable to instance object:{}", e);
-            throw new RuntimeException("Unable to instance object:" + injectQualifier);
+            throw new InjectException("Unable to instance object:" + injectQualifier);
         }
     }
 }

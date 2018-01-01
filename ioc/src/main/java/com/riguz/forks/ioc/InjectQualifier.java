@@ -3,9 +3,11 @@ package com.riguz.forks.ioc;
 import com.riguz.gags.base.Classes;
 import com.riguz.gags.base.Strings;
 import javax.inject.Named;
+import javax.inject.Qualifier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 public class InjectQualifier<T> {
@@ -49,6 +51,13 @@ public class InjectQualifier<T> {
 
     public static InjectQualifier<?> of(Field field) {
         return of(field.getType(), Helper.getQualifier(field.getAnnotations()));
+    }
+
+    public static InjectQualifier<?> of(Method provider) {
+        Class<?> returnType = provider.getReturnType();
+        Annotation classQualifier = Helper.getQualifier(returnType);
+        Annotation providerQualifier = Helper.getQualifier(provider);
+        return of(provider.getReturnType(), Helper.getQualifier(provider.getAnnotations()));
     }
 
     @Override

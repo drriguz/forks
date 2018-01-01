@@ -19,6 +19,7 @@ public class Injector {
 
     private final ConcurrentMap<InjectQualifier<?>, Object> singletons = new ConcurrentHashMap<>();
     private final ConcurrentMap<InjectQualifier<?>, Provider<?>> providers = new ConcurrentHashMap<>();
+
     private final ConcurrentMap<Class<?>, List<InjectField>> injectFieldsCache = new ConcurrentHashMap<>();
 
     private final Logger logger = LoggerFactory.getLogger(Injector.class);
@@ -30,7 +31,7 @@ public class Injector {
     public Injector(final Iterable<?> modules) {
         for (final Object module : modules) {
             if (module instanceof Class) {
-                throw new IllegalArgumentException(
+                throw new InjectException(
                     "Please use an instance instead of Class:" + ((Class<?>) module).getName());
             }
             Set<Method> providesMethods = Helper.getProviders(module.getClass());
@@ -49,31 +50,48 @@ public class Injector {
     }
 
     public <T> Provider<T> getProvider(Class<T> type) {
-        return this.getOrCreateProvider(new InjectQualifier<>(type), null);
+        return this.getOrCreateProvider(InjectQualifier.of(type), null);
     }
 
     /**
      * Get instance by class and qualifier
      */
     public <T> T getInstance(final InjectQualifier<T> injectQualifier) {
-        return this.getOrCreateProvider(injectQualifier, null).get();
+        return this.getProvider(injectQualifier).get();
     }
 
     /**
      * Get instance by type
      */
     public <T> T getInstance(Class<T> type) {
-        return this.getOrCreateProvider(new InjectQualifier<T>(type), null).get();
+        return this.getProvider(type).get();
+    }
+
+    protected <T> void bind(InjectQualifier<T> qualifier, Provider<T> provider) {
+        if (qualifier == null || provider == null) {
+            throw new IllegalArgumentException("Qualifier or provider should not be null");
+        }
+        if (this.providers.containsKey(qualifier)) {
+            throw new InjectException("Multiple providers found for:" + qualifier);
+        }
+        this.providers.put(qualifier, provider);
     }
 
     /**
      * Add providers from config module
+     *
+     * @Bind
+     * @Qualifier public Foo foo() { return new Foo(); }
+     * @Bind
+     * @Singleton public Foo bar() { return new Bar(); }
+     * @Bind
+     * @Named("foobar") public Foo foobar(Bar bar){ return bar; }
+     * @Singleton class Bar{}
      */
     protected void addProvidesFromModule(final Object module, final Method method) {
-        final InjectQualifier<?> injectQualifier = InjectQualifier
-            .of(method.getReturnType(), Helper.getQualifier(method.getAnnotations()));
+        final InjectQualifier<?> injectQualifier = InjectQualifier.of(method);
         if (this.providers.containsKey(injectQualifier)) {
-            throw new RuntimeException("Multiple providers found for:" + injectQualifier.toString());
+            throw new InjectException("Multiple providers found for:" + injectQualifier);
         }
         boolean isSingleton = Helper.isSingletonProvider(method);
         final Provider<?>[] paramProviders = this.createParamProviders(
@@ -170,27 +188,21 @@ public class Injector {
         return createProvider(injectQualifier, constructor, paramProviders, isSingleton);
     }
 
-    /**
-     * Create providers for inject constructor
-     *
-     * @param injectQualifier inject class, eg. A(B b, C c)
-     * @param paramClasses constructor parameter classes, eg.[B.class, C.class]
-     * @param paramTypes constructor parameter generic types, eg.[A, B]
-     * @param annotations constructor parameter annotations, eg[@Singleton, ...]
-     * @param chain targets to be injected, eg. [A, B, C]
-     */
     protected Provider<?>[] createParamProviders(final InjectQualifier<?> injectQualifier,
-        final Class<?>[] paramClasses,
-        final Type[] paramTypes,
-        final Annotation[][] annotations,
-        final Set<InjectQualifier<?>> chain) {
+        final Executable providerMethod,
+        Set<InjectQualifier<?>> chain) {
+        final Class<?>[] paramClasses = providerMethod.getParameterTypes();
+        final Type[] paramTypes = providerMethod.getGenericParameterTypes();
+        final Annotation[][] annotations = providerMethod.getParameterAnnotations();
+
         Provider<?>[] providers = new Provider<?>[paramTypes.length];
         for (int i = 0; i < paramTypes.length; i++) {
             Class<?> paramClass = paramClasses[i];
             Annotation qualifier = Helper.getQualifier(annotations[i]);
 
-            if (Provider.class.equals(paramClass)) {
+            if (Provider.class == paramClass) {
                 // if the argument is a provider
+                // Foo(@Named("bar") Bar)
                 Class<?> providerType = (Class<?>) ((ParameterizedType) paramTypes[i]).getActualTypeArguments()[0];
                 final InjectQualifier<?> newInjectQualifier = InjectQualifier.of(providerType, qualifier);
                 providers[i] = this.getOrCreateProvider(newInjectQualifier, null);
@@ -199,31 +211,13 @@ public class Injector {
                 final InjectQualifier<?> paramInjectQualifier = InjectQualifier.of(paramClass, qualifier);
                 final Set<InjectQualifier<?>> dependencyChain = Helper.appendChain(chain, injectQualifier);
                 if (dependencyChain.contains(paramInjectQualifier)) {
-                    throw new RuntimeException("Circular dependency found:" + Helper.printChain(dependencyChain,
+                    throw new InjectException("Circular dependency found:" + Helper.printChain(dependencyChain,
                         paramInjectQualifier));
                 }
                 providers[i] = this.getOrCreateProvider(paramInjectQualifier, dependencyChain);
             }
         }
         return providers;
-    }
-
-    protected Provider<?>[] createParamProviders(final InjectQualifier<?> injectQualifier, final Method providerMethod,
-        Set<InjectQualifier<?>> chain) {
-        return createParamProviders(injectQualifier,
-            providerMethod.getParameterTypes(),
-            providerMethod.getGenericParameterTypes(),
-            providerMethod.getParameterAnnotations(),
-            chain);
-    }
-
-    protected Provider<?>[] createParamProviders(final InjectQualifier<?> injectQualifier,
-        final Constructor<?> providerMethod, Set<InjectQualifier<?>> chain) {
-        return createParamProviders(injectQualifier,
-            providerMethod.getParameterTypes(),
-            providerMethod.getGenericParameterTypes(),
-            providerMethod.getParameterAnnotations(),
-            chain);
     }
 
     /**
