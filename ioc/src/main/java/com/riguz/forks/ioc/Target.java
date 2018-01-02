@@ -38,11 +38,11 @@ public class Target<T> {
     }
 
     public static <T> Target<T> of(Class<T> targetClass, Annotation qualifier) {
-        if (qualifier != null && qualifier.getClass() == Named.class) {
+        if (qualifier != null && qualifier.annotationType() == Named.class) {
             String name = ((Named) qualifier).value();
             return new Target<>(targetClass, name);
         }
-        return new Target<>(targetClass, qualifier == null ? null : qualifier.getClass());
+        return new Target<>(targetClass, qualifier == null ? null : qualifier.annotationType());
     }
 
     public static <T> Target<T> of(Class<T> targetClass) {
@@ -69,7 +69,7 @@ public class Target<T> {
         if (this.qualifier != null) {
             remark += " @<" + this.qualifier.getSimpleName() + ">";
         }
-        return this.targetClass.getName() + remark;
+        return this.targetClass.getSimpleName() + remark;
     }
 
     @Override

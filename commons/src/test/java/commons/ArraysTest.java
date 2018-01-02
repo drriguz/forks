@@ -1,4 +1,4 @@
-package forks.commons;
+package commons;
 
 import com.riguz.gags.base.Arrays;
 import org.junit.Test;

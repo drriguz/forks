@@ -1,4 +1,4 @@
-package forks.commons;
+package commons;
 
 import com.riguz.gags.struct.Trie;
 import org.junit.Test;

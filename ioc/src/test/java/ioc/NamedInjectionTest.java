@@ -1,7 +1,8 @@
-package forks.ioc.test;
+package ioc;
 
 import com.riguz.forks.ioc.Injector;
 import com.riguz.forks.ioc.Bind;
+import javax.inject.Inject;
 import javax.inject.Named;
 import org.junit.Test;
 
@@ -38,9 +39,11 @@ public class NamedInjectionTest {
 
     public static class Controller {
 
+        @Inject
         @Named("foo")
         private Service fooService;
 
+        @Inject
         @Named("bar")
         private Service barService;
 

@@ -206,7 +206,7 @@ public class Injector {
      * Inject fields with @Inject annotation
      */
     public void injectFields(Object target) {
-        List<InjectField> fields = null;
+        List<InjectField> fields;
         if (this.injectFieldsCache.containsKey(target.getClass())) {
             fields = this.injectFieldsCache.get(target.getClass());
         } else {

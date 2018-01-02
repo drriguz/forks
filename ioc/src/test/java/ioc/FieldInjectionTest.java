@@ -1,4 +1,4 @@
-package forks.ioc.test;
+package ioc;
 
 import com.riguz.forks.ioc.Injector;
 import javax.inject.Inject;
