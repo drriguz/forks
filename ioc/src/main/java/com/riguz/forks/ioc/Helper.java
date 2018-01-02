@@ -127,22 +127,22 @@ public final class Helper {
     /**
      * Append dependency to the chain
      */
-    static Set<InjectQualifier<?>> appendChain(final Set<InjectQualifier<?>> chain,
-        final InjectQualifier<?> newInjectQualifier) {
-        Set<InjectQualifier<?>> newChain = new LinkedHashSet<>();
+    static Set<Target<?>> appendChain(final Set<Target<?>> chain,
+        final Target<?> newTarget) {
+        Set<Target<?>> newChain = new LinkedHashSet<>();
         if (chain != null) {
             newChain.addAll(chain);
         }
-        newChain.add(newInjectQualifier);
+        newChain.add(newTarget);
         return newChain;
     }
 
-    static String printChain(final Set<InjectQualifier<?>> chain, final InjectQualifier<?> injectQualifier) {
+    static String printChain(final Set<Target<?>> chain, final Target<?> target) {
         StringBuilder chainString = new StringBuilder();
-        for (InjectQualifier<?> key : chain) {
+        for (Target<?> key : chain) {
             chainString.append(key.toString()).append(" -> ");
         }
-        return chainString.append(injectQualifier.toString()).toString();
+        return chainString.append(target.toString()).toString();
     }
 
     /**
@@ -159,25 +159,25 @@ public final class Helper {
     /**
      * Create new instance of target
      *
-     * @param injectQualifier inject target
+     * @param target inject target
      * @param constructor inject constructor
      * @param paramProviders constructor parameter providers
      */
-    public static <T> T createNewInstance(final InjectQualifier<T> injectQualifier,
+    public static <T> T createNewInstance(final Target<T> target,
         final Constructor<T> constructor,
         final Provider<?>[] paramProviders) {
         try {
             return constructor.newInstance(Helper.getProviderValues(paramProviders));
         } catch (Exception e) {
             logger.error("Unable to instance object:{}", e);
-            throw new InjectException("Unable to instance object:" + injectQualifier);
+            throw new InjectException("Unable to instance object:" + target);
         }
     }
 
     /**
      * Create new instance from provide method
      */
-    public static <T> T createNewInstance(final InjectQualifier<T> injectQualifier,
+    public static <T> T createNewInstance(final Target<T> target,
         Object module,
         Method method,
         final Provider<?>[] paramProviders) {
@@ -186,7 +186,7 @@ public final class Helper {
             return (T) method.invoke(module, Helper.getProviderValues(paramProviders));
         } catch (Exception e) {
             logger.error("Unable to instance object:{}", e);
-            throw new InjectException("Unable to instance object:" + injectQualifier);
+            throw new InjectException("Unable to instance object:" + target);
         }
     }
 }

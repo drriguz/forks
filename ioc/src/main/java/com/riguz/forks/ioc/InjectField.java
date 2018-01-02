@@ -9,16 +9,16 @@ public class InjectField {
 
     final Field field;
     final boolean isProvider;
-    final InjectQualifier<?> injectQualifier;
+    final Target<?> target;
 
-    private InjectField(Field field, InjectQualifier<?> injectQualifier) {
-        this(field, false, injectQualifier);
+    private InjectField(Field field, Target<?> target) {
+        this(field, false, target);
     }
 
-    private InjectField(Field field, boolean isProvider, InjectQualifier<?> injectQualifier) {
+    private InjectField(Field field, boolean isProvider, Target<?> target) {
         this.field = field;
         this.isProvider = isProvider;
-        this.injectQualifier = injectQualifier;
+        this.target = target;
     }
 
     public static InjectField of(Field field) {
@@ -27,11 +27,11 @@ public class InjectField {
             // private Provider<Foo> foo;
             // field = foo; provider = Foo.class
             Class<?> provider = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-            return new InjectField(field, true, InjectQualifier.of(provider));
+            return new InjectField(field, true, Target.of(provider));
         } else {
             // @Inject
             // private Bar bar;
-            return new InjectField(field, InjectQualifier.of(field));
+            return new InjectField(field, Target.of(field));
         }
     }
 
@@ -43,8 +43,8 @@ public class InjectField {
         return this.isProvider;
     }
 
-    public InjectQualifier<?> getInjectQualifier() {
-        return this.injectQualifier;
+    public Target<?> getTarget() {
+        return this.target;
     }
 
 }
