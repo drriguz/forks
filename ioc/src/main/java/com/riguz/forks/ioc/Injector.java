@@ -94,70 +94,27 @@ public class Injector {
         boolean isSingleton = Helper.isSingletonProvider(method);
         final Provider<?>[] paramProviders = this.createParamProviders(
             target, method, Collections.singleton(target));
-        Provider<?> provider = this.createProvider(target, module, method, paramProviders, isSingleton);
+        Provider<?> provider;
+        if (isSingleton) {
+            provider = () -> {
+                if (!singletons.containsKey(target)) {
+                    Object instance = Helper.createNewInstance(target, module, method, paramProviders);
+                    Object i = singletons.putIfAbsent(target, instance);
+                    if (i != null) {
+                        instance = i;
+                    }
+                    return instance;
+                } else {
+                    return singletons.get(target);
+                }
+            };
+        } else {
+            provider = () -> Helper.createNewInstance(target, module, method, paramProviders);
+        }
         this.bind(target, provider);
     }
 
-    /**
-     * Create singleton instance from method
-     */
-    protected <T> void createSingletonIfNotExists(final Target<T> target, Object module,
-        Method method, final Provider<?>[] paramProviders) {
-        if (!Injector.this.singletons.containsKey(target)) {
-            synchronized (Injector.this.singletons) {
-                if (!Injector.this.singletons.containsKey(target)) {
-                    T instance = Helper.createNewInstance(target, module, method, paramProviders);
-                    Injector.this.singletons.put(target, instance);
-                }
-            }
-        }
-    }
 
-    /**
-     * Create a provider for instance
-     *
-     * @param target inject target
-     * @param constructor inject constructor
-     * @param paramProviders constructor parameter providers
-     * @param isSingleton the inject target is singleton
-     */
-    protected <T> Provider<T> createProvider(final Target<T> target, Constructor<T> constructor,
-        final Provider<?>[] paramProviders, boolean isSingleton) {
-        return () -> {
-            if (!isSingleton) {
-                return Helper.createNewInstance(target, constructor, paramProviders);
-            }
-            if (!this.singletons.containsKey(target)) {
-                T instance = Helper.createNewInstance(target, constructor, paramProviders);
-                Object i = this.singletons.putIfAbsent(target, instance);
-                if (i != null) {
-                    instance = (T) i;
-                }
-                return instance;
-            }
-            return (T) Injector.this.singletons.get(target);
-        };
-    }
-
-    /**
-     * Create provider from provide method
-     */
-    protected <T> Provider<T> createProvider(final Target<T> target, Object module, Method method,
-        final Provider<?>[] paramProviders, boolean isSingleton) {
-        return () -> {
-            if (isSingleton) {
-                createSingletonIfNotExists(target, module, method, paramProviders);
-                return (T) Injector.this.singletons.get(target);
-            }
-            // or create new instance each time
-            return Helper.createNewInstance(target, module, method, paramProviders);
-        };
-    }
-
-    /**
-     * Get or create provider with dependencies
-     */
-    @SuppressWarnings("unchecked")
     protected <T> Provider<T> get(final Target<T> target,
         final Set<Target<?>> chain) {
         if (this.providers.containsKey(target)) {
@@ -167,7 +124,22 @@ public class Injector {
         final Provider<?>[] paramProviders = createParamProviders(target, constructor, chain);
 
         boolean isSingleton = target.targetClass.isAnnotationPresent(Singleton.class);
-        return createProvider(target, constructor, paramProviders, isSingleton);
+        if (!isSingleton) {
+            return () -> Helper.createNewInstance(target, constructor, paramProviders);
+        } else {
+            return () -> {
+                if (!this.singletons.containsKey(target)) {
+                    T instance = Helper.createNewInstance(target, constructor, paramProviders);
+                    Object i = this.singletons.putIfAbsent(target, instance);
+                    if (i != null) {
+                        instance = (T) i;
+                    }
+                    return instance;
+                } else {
+                    return (T) Injector.this.singletons.get(target);
+                }
+            };
+        }
     }
 
     protected Provider<?>[] createParamProviders(final Target<?> target,
@@ -187,6 +159,7 @@ public class Injector {
                 // Foo(@Named("bar") Provider<Bar> bar)
                 Class<?> providedType = (Class<?>) ((ParameterizedType) paramTypes[i]).getActualTypeArguments()[0];
                 final Target<?> providedTarget = Target.of(providedType, qualifier);
+                // FIXME:
                 providers[i] = this.get(providedTarget, null);
             } else {
                 // a commom type
