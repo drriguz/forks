@@ -1,4 +1,4 @@
-package com.riguz.forks.ioc;
+package com.riguz.forks.ioc.old;
 
 import javax.inject.Provider;
 

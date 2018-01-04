@@ -5,7 +5,7 @@ import javax.inject.Singleton;
 import com.riguz.forks.http.NetworkServer;
 import com.riguz.forks.http.RequestDelegator;
 import com.riguz.forks.http.undertow.UndertowServer;
-import com.riguz.forks.ioc.Bind;
+import com.riguz.forks.ioc.old.Bind;
 import com.riguz.forks.mvc.Dispatcher;
 import com.riguz.forks.router.Router;
 import com.riguz.forks.router.TrieRouter;

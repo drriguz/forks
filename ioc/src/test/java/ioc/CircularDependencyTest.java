@@ -1,7 +1,7 @@
 package ioc;
 
-import com.riguz.forks.ioc.InjectException;
-import com.riguz.forks.ioc.Injector;
+import com.riguz.forks.ioc.old.InjectException;
+import com.riguz.forks.ioc.old.Injector;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.riguz.forks.ioc;
+package com.riguz.forks.ioc.old;
 
 import com.riguz.gags.base.Classes;
 import com.riguz.gags.base.Strings;
