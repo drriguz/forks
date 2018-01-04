@@ -42,7 +42,22 @@ public class InjectType<T> {
         /**
          * @Named("foo") Foo foo() { return new Foo(); }
          */
-        return new InjectType<>(provider.getReturnType(), Helper.getQualifier(provider));
+        return of(provider.getReturnType(), Helper.getQualifier(provider));
+    }
+
+    public static <T> InjectType<T> of(Class<T> type, Annotation qualifier) {
+        /**
+         * @Bind
+         * public Foo foo(@Qualifier Bar bar)
+         * @Qualifier
+         * class Bar
+         */
+        InjectType<T> injectType = of(type);
+        if (injectType.qualifier != null && !Helper.isSameQualifier(injectType.qualifier, qualifier)) {
+            throw new InjectException("Multiple qualifier found for field:" + type.getSimpleName());
+        }
+        injectType.qualifier = qualifier;
+        return injectType;
     }
 
     @Override
@@ -109,6 +124,6 @@ public class InjectType<T> {
                 remark += " name=" + ((Named) this.qualifier).value();
             }
         }
-        return this.type.getSimpleName() + remark;
+        return "[" + this.type.getSimpleName() + "]" +remark;
     }
 }

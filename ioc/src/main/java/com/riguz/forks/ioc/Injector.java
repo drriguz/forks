@@ -1,50 +1,78 @@
 package com.riguz.forks.ioc;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
 public class Injector {
 
+    private static final Logger logger = LoggerFactory.getLogger(Injector.class);
+
     private final ConcurrentMap<InjectType<?>, Producer<?>> producers = new ConcurrentHashMap<>(96);
 
-    public Injector(final Iterable<? extends InjectConfig> modules) {
-        for (final InjectConfig module : modules) {
+    public Injector(Object... modules) {
+        for (Object module : modules) {
             if (module == null) {
                 throw new IllegalArgumentException("Invalid null config found");
             }
-            for (Method method : module.getClass().getMethods()) {
+            for (Method method : module.getClass().getDeclaredMethods()) {
                 if (method.isAnnotationPresent(Bind.class)) {
-
+                    InjectType<?> injectType = InjectType.of(method);
+                    InjectScope injectScope = InjectScope.of(method);
+                    method.setAccessible(true);
+                    Producer<?> producer = this.createProducer(injectType, injectScope, module, method);
+                    this.bindProducer(injectType, producer);
                 }
             }
         }
     }
 
+    private <T> Producer<T> createProducer(InjectType<T> injectType,
+        InjectScope injectScope,
+        Object config,
+        Method provider) {
+        @SuppressWarnings("unchecked")
+        Supplier<T> supplier = () -> {
+            try {
+                return (T) provider.invoke(config, this.createParams(provider));
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new InjectException("Failed to invoke method", e);
+            }
+        };
+        return InjectScope.SINGLETON == injectScope ?
+            new SingletonProducer<>(injectType.getType(), supplier) :
+            new Producer<>(injectType.getType(), supplier);
+    }
+
     @SuppressWarnings("unchecked")
-    private <T> Producer<T> getCachedProducer(InjectType<T> type) {
+    private <T> Producer<T> getProducer(InjectType<T> type) {
         return (Producer<T>) this.producers.get(type);
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> Producer<T> cacheProducer(InjectType<T> type, Producer<T> producer) {
+    private Producer<?> bindProducer(InjectType<?> type, Producer<?> producer) {
         Producer<?> existing = this.producers.putIfAbsent(type, producer);
         if (existing != null) {
-            return (Producer<T>) existing;
+            logger.warn("Concurrent problem detected when binding producer:{}", type);
+            return existing;
         }
+        logger.debug("Binded {} to producer: {}", type, producer);
         return producer;
     }
 
-    private <T> void bind(InjectType<T> type, Producer<? extends T> producer) {
-        this.producers.putIfAbsent(type, producer);
+    public <T> T getInstance(Class<T> type) {
+        return getInstance(InjectType.of(type));
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getInstance(InjectType<T> type) {
-        Producer<T> impl = this.getCachedProducer(type);
+        Producer<T> impl = this.getProducer(type);
         if (impl != null) {
+            logger.debug("Getting instance from existing producer:{}", type);
             return impl.get();
         }
 
@@ -53,15 +81,29 @@ public class Injector {
         Producer<T> producer = (InjectScope.SINGLETON == typeScope) ?
             new SingletonProducer<>(type.getType(), supplier) :
             new Producer<>(type.getType(), supplier);
-        return cacheProducer(type, producer).get();
+        return (T) bindProducer(type, producer).get();
     }
 
     private <T> T constructObject(Class<T> type) {
         final Constructor<T> constructor = (Constructor<T>) Helper.getInjectConstructor(type);
+        final Object[] paramValues = this.createParams(constructor);
         try {
-            return constructor.newInstance();
+            return constructor.newInstance(paramValues);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new InjectException("Failed to new instance of :" + type.getSimpleName(), e);
         }
+    }
+
+    private Object[] createParams(Executable method) {
+        final Class<?>[] paramTypes = method.getParameterTypes();
+        final Type[] paramGenericTypes = method.getGenericParameterTypes();
+        final Annotation[][] annotations = method.getParameterAnnotations();
+
+        final Object[] paramValues = new Object[paramTypes.length];
+        for (int i = 0; i < paramTypes.length; i++) {
+            InjectType<?> paramInjectType = InjectType.of(paramTypes[i], Helper.getQualifier(annotations[i]));
+            paramValues[i] = this.getInstance(paramInjectType);
+        }
+        return paramValues;
     }
 }

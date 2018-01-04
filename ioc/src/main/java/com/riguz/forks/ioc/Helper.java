@@ -1,6 +1,7 @@
 package com.riguz.forks.ioc;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Singleton;
 
@@ -8,6 +9,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 public final class Helper {
 
@@ -52,6 +54,19 @@ public final class Helper {
 
     public static Annotation getQualifier(AnnotatedElement target) {
         return getQualifier(target.getDeclaredAnnotations());
+    }
+
+    public static boolean isSameQualifier(Annotation a, Annotation b) {
+        if (a == null) {
+            return b == null;
+        }
+        if (a.annotationType() != b.annotationType()) {
+            return false;
+        } else if (a.annotationType() == Named.class) {
+            return Objects.equals(((Named) a).value(), ((Named) b).value());
+        } else {
+            return true;
+        }
     }
 
     public static InjectScope getTypeScope(Class<?> type) {

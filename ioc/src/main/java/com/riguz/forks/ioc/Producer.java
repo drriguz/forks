@@ -32,4 +32,9 @@ public class Producer<T> implements Provider<T> {
     public T get() {
         return this.provider.get();
     }
+
+    @Override
+    public String toString() {
+        return "[" + type.getSimpleName() + "]" + scope + " scope";
+    }
 }
