@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
@@ -40,7 +42,7 @@ public class Injector {
         @SuppressWarnings("unchecked")
         Supplier<T> supplier = () -> {
             try {
-                return (T) provider.invoke(config, this.createParams(provider));
+                return (T) provider.invoke(config, this.createParams(injectType, provider, null));
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new InjectException("Failed to invoke method", e);
             }
@@ -61,49 +63,52 @@ public class Injector {
             logger.warn("Concurrent problem detected when binding producer:{}", type);
             return existing;
         }
-        logger.debug("Binded {} to producer: {}", type, producer);
+        logger.debug("Bind {} to producer: {}", type, producer);
         return producer;
     }
 
     public <T> Provider<T> getProvider(InjectType<T> type) {
-        return () -> this.getInstance(type);
+        return () -> this.getInstance(type, null);
     }
 
     public <T> Provider<T> getProvider(Class<T> type) {
-        return getProvider(InjectType.of(type));
+        return this.getProvider(InjectType.of(type));
     }
 
     public <T> T getInstance(Class<T> type) {
-        return getInstance(InjectType.of(type));
+        return this.getInstance(InjectType.of(type), null);
+    }
+
+    public <T> T getInstance(InjectType<T> type) {
+        return this.getInstance(type, null);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getInstance(InjectType<T> type) {
+    private <T> T getInstance(InjectType<T> type, final List<InjectType<?>> dependencies) {
         Producer<T> impl = this.getProducer(type);
         if (impl != null) {
             logger.debug("Getting instance {} from existing producer:{}", type, impl);
             return impl.get();
         }
-
         InjectScope typeScope = Helper.getTypeScope(type.getType());
-        Supplier<T> supplier = () -> constructObject(type.getType());
+        Supplier<T> supplier = () -> constructObject(type, dependencies);
         Producer<T> producer = (InjectScope.SINGLETON == typeScope) ?
             new SingletonProducer<>(type.getType(), supplier) :
             new Producer<>(type.getType(), supplier);
         return (T) bindProducer(type, producer).get();
     }
 
-    private <T> T constructObject(Class<T> type) {
-        final Constructor<T> constructor = (Constructor<T>) Helper.getInjectConstructor(type);
-        final Object[] paramValues = this.createParams(constructor);
+    private <T> T constructObject(InjectType<T> type, final List<InjectType<?>> dependencies) {
+        final Constructor<T> constructor = (Constructor<T>) Helper.getInjectConstructor(type.getType());
+        final Object[] paramValues = this.createParams(type, constructor, dependencies);
         try {
             return constructor.newInstance(paramValues);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new InjectException("Failed to new instance of :" + type.getSimpleName(), e);
+            throw new InjectException("Failed to new instance of :" + type.getType().getSimpleName(), e);
         }
     }
 
-    private Object[] createParams(Executable method) {
+    private Object[] createParams(final InjectType<?> type, Executable method, final List<InjectType<?>> dependencies) {
         final Class<?>[] paramTypes = method.getParameterTypes();
         final Type[] paramGenericTypes = method.getGenericParameterTypes();
         final Annotation[][] annotations = method.getParameterAnnotations();
@@ -116,9 +121,25 @@ public class Injector {
                 paramValues[i] = (Provider) () -> getInstance(genericType.getClass());
             } else {
                 InjectType<?> paramInjectType = InjectType.of(paramType, Helper.getQualifier(annotations[i]));
-                paramValues[i] = this.getInstance(paramInjectType);
+                final List<InjectType<?>> newDependencies = this.appendDependency(dependencies, type);
+                if (newDependencies.contains(paramInjectType)) {
+                    throw new InjectException(
+                        "Circular dependencies detected:" + Helper.printDependencies(newDependencies, type));
+                } else {
+                    newDependencies.add(paramInjectType);
+                }
+                paramValues[i] = this.getInstance(paramInjectType, newDependencies);
             }
         }
         return paramValues;
+    }
+
+    private List<InjectType<?>> appendDependency(final List<InjectType<?>> dependencies, InjectType<?> type) {
+        List<InjectType<?>> newDependencies = new LinkedList<>();
+        if (dependencies != null) {
+            newDependencies.addAll(dependencies);
+        }
+        newDependencies.add(type);
+        return newDependencies;
     }
 }

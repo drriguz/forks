@@ -1,10 +1,7 @@
 package forks.ioc;
 
-import com.riguz.forks.ioc.InjectType;
 import javax.inject.Qualifier;
 import org.junit.Test;
-
-import static org.junit.Assert.assertNotEquals;
 
 public class InjectTypeTest {
 

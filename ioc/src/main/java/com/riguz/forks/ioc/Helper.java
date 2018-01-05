@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
+import java.util.List;
 import java.util.Objects;
 
 public final class Helper {
@@ -71,5 +72,13 @@ public final class Helper {
             return InjectScope.SINGLETON;
         }
         return InjectScope.DEFAULT;
+    }
+
+    static String printDependencies(final List<InjectType<?>> dependencies, final InjectType<?> target) {
+        StringBuilder chainString = new StringBuilder();
+        for (InjectType<?> key : dependencies) {
+            chainString.append(key.toString()).append(" -> ");
+        }
+        return chainString.append(target.toString()).toString();
     }
 }
