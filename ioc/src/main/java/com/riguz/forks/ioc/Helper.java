@@ -1,14 +1,11 @@
 package com.riguz.forks.ioc;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Qualifier;
-import javax.inject.Singleton;
+import javax.inject.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.Objects;
 
 public final class Helper {

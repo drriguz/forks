@@ -1,5 +1,6 @@
 package com.riguz.forks.ioc;
 
+import javax.inject.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +65,14 @@ public class Injector {
         return producer;
     }
 
+    public <T> Provider<T> getProvider(InjectType<T> type) {
+        return () -> this.getInstance(type);
+    }
+
+    public <T> Provider<T> getProvider(Class<T> type) {
+        return getProvider(InjectType.of(type));
+    }
+
     public <T> T getInstance(Class<T> type) {
         return getInstance(InjectType.of(type));
     }
@@ -72,7 +81,7 @@ public class Injector {
     public <T> T getInstance(InjectType<T> type) {
         Producer<T> impl = this.getProducer(type);
         if (impl != null) {
-            logger.debug("Getting instance from existing producer:{}", type);
+            logger.debug("Getting instance {} from existing producer:{}", type, impl);
             return impl.get();
         }
 
@@ -101,8 +110,14 @@ public class Injector {
 
         final Object[] paramValues = new Object[paramTypes.length];
         for (int i = 0; i < paramTypes.length; i++) {
-            InjectType<?> paramInjectType = InjectType.of(paramTypes[i], Helper.getQualifier(annotations[i]));
-            paramValues[i] = this.getInstance(paramInjectType);
+            Class<?> paramType = paramTypes[i];
+            if (paramType == Provider.class) {
+                Type genericType = paramGenericTypes[i];
+                paramValues[i] = (Provider) () -> getInstance(genericType.getClass());
+            } else {
+                InjectType<?> paramInjectType = InjectType.of(paramType, Helper.getQualifier(annotations[i]));
+                paramValues[i] = this.getInstance(paramInjectType);
+            }
         }
         return paramValues;
     }
