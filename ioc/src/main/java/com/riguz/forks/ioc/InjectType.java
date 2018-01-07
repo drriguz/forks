@@ -78,7 +78,7 @@ public class InjectType<T> {
             if (this.isNamedType()) {
                 return Objects.equals(this.getName(), o.getName());
             } else {
-                return Objects.equals(this.getQualifierType(), this.getQualifierType());
+                return Objects.equals(this.getQualifierType(), o.getQualifierType());
             }
         }
     }
@@ -124,6 +124,6 @@ public class InjectType<T> {
                 remark += " name=" + ((Named) this.qualifier).value();
             }
         }
-        return "[" + this.type.getSimpleName() + "]" +remark;
+        return "[" + this.type.getSimpleName() + "]" + remark;
     }
 }

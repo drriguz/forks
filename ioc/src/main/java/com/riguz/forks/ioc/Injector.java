@@ -60,7 +60,7 @@ public class Injector {
     private Producer<?> bindProducer(InjectType<?> type, Producer<?> producer) {
         Producer<?> existing = this.producers.putIfAbsent(type, producer);
         if (existing != null) {
-            logger.warn("Concurrent problem detected when binding producer:{}", type);
+            logger.warn("Concurrent problem detected when binding producer:{}, existing：{}", type, existing);
             return existing;
         }
         logger.debug("Bind {} to producer: {}", type, producer);
@@ -141,5 +141,25 @@ public class Injector {
         }
         newDependencies.add(type);
         return newDependencies;
+    }
+
+    private final ConcurrentMap<Class<?>, List<InjectField>> injectFieldsCache = new ConcurrentHashMap<>();
+
+    public void injectFields(Object target) {
+        List<InjectField> fields = this.injectFieldsCache.get(target.getClass());
+        if (fields == null) {
+            fields = Helper.getInjectFields(target.getClass());
+            this.injectFieldsCache.putIfAbsent(target.getClass(), fields);
+        }
+        for (InjectField fieldProperties : fields) {
+            Field injectField = fieldProperties.getField();
+            Object value = fieldProperties.isProvider ? this.getProvider(fieldProperties.getTarget())
+                : this.getInstance(fieldProperties.getTarget());
+            try {
+                injectField.set(target, value);
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                throw new InjectException("Failed to inject field", e);
+            }
+        }
     }
 }

@@ -5,9 +5,9 @@ import javax.inject.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public final class Helper {
 
@@ -80,5 +80,29 @@ public final class Helper {
             chainString.append(key.toString()).append(" -> ");
         }
         return chainString.append(target.toString()).toString();
+    }
+
+    public static List<InjectField> getInjectFields(Class<?> type) {
+        Set<Field> fields = getInjectFieldsRecursively(type);
+        List<InjectField> result = new ArrayList<>();
+        for (Field field : fields) {
+            result.add(InjectField.of(field));
+        }
+        return result;
+    }
+
+    public static Set<Field> getInjectFieldsRecursively(Class<?> type) {
+        Class<?> current = type;
+        Set<Field> fields = new HashSet<>();
+        while (!current.equals(Object.class)) {
+            for (Field field : current.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Inject.class)) {
+                    field.setAccessible(true);
+                    fields.add(field);
+                }
+            }
+            current = current.getSuperclass();
+        }
+        return fields;
     }
 }
