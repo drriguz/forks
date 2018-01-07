@@ -39,6 +39,9 @@ public class Injector {
         InjectScope injectScope,
         Object config,
         Method provider) {
+        if (producers.containsKey(injectType)) {
+            throw new InjectException("Multi provider found:" + injectType);
+        }
         @SuppressWarnings("unchecked")
         Supplier<T> supplier = () -> {
             try {
