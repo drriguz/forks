@@ -1,7 +1,6 @@
 package forks.ioc;
 
 import com.riguz.forks.ioc.Bind;
-import com.riguz.forks.ioc.InjectConfig;
 import com.riguz.forks.ioc.Injector;
 import org.junit.Test;
 
@@ -10,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class InjectorTest {
 
-    public static class Config implements InjectConfig {
+    public static class Config {
 
         @Bind
         String str() {

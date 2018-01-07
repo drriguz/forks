@@ -1,9 +1,9 @@
 package com.riguz.forks;
 
+import com.riguz.forks.ioc.Injector;
 import javax.inject.Inject;
 
 import com.riguz.forks.config.DefaultConfig;
-import com.riguz.forks.ioc.old.Injector;
 import com.riguz.forks.router.Router;
 
 public final class Forks {
