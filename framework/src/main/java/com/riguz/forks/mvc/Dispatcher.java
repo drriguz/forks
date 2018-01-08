@@ -1,6 +1,5 @@
 package com.riguz.forks.mvc;
 
-import com.riguz.forks.router.RequestHandler;
 import javax.inject.Inject;
 
 import com.riguz.forks.http.HttpRequest;
@@ -10,10 +9,10 @@ import com.riguz.forks.router.Router;
 
 public class Dispatcher implements RequestDelegate {
 
-    protected final Router router;
+    protected final Router<RequestHandler> router;
 
     @Inject
-    public Dispatcher(Router router) {
+    public Dispatcher(Router<RequestHandler> router) {
         this.router = router;
     }
 
@@ -24,6 +23,7 @@ public class Dispatcher implements RequestDelegate {
             response.sendError(404, "Not found");
             return;
         }
-        response.writeContent("Hello :" + request.getRequestURI());
+        Result result = handler.handle(new RequestContext(request, response));
+        response.writeContent(result.toString());
     }
 }

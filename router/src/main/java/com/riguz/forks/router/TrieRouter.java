@@ -8,14 +8,14 @@ import com.riguz.gags.struct.Trie;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TrieRouter extends Trie<Map<HttpMethod, RequestHandler>> implements Router {
+public class TrieRouter<T> extends Trie<Map<HttpMethod, T>> implements Router<T> {
 
     @Override
-    public void add(HttpMethod method, String pattern, RequestHandler handler) {
+    public void add(HttpMethod method, String pattern, T handler) {
         if (method == null || Strings.isNullOrEmpty(pattern) || handler == null) {
             throw new IllegalArgumentException("Invalid route path:" + method + " " + pattern);
         }
-        Map<HttpMethod, RequestHandler> handlers = this.find(pattern);
+        Map<HttpMethod, T> handlers = this.find(pattern);
         if (handlers == null) {
             handlers = new HashMap<>(HttpMethod.values().length);
             handlers.put(method, handler);
@@ -34,13 +34,13 @@ public class TrieRouter extends Trie<Map<HttpMethod, RequestHandler>> implements
     }
 
     @Override
-    public RequestHandler resolve(RouteFeature request) {
-        if (request == null) {
+    public T resolve(HttpMethod method, String requestPath) {
+        if (method == null || requestPath == null) {
             throw new IllegalArgumentException("Request could not be null");
         }
-        Map<HttpMethod, RequestHandler> handlers = this.find(request.getRequestPath());
+        Map<HttpMethod, T> handlers = this.find(requestPath);
         if (handlers != null) {
-            return handlers.get(request);
+            return handlers.get(method);
         } else {
             return null;
         }
