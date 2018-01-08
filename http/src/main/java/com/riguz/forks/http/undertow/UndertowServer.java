@@ -13,7 +13,7 @@ import org.xnio.XnioWorker;
 import org.xnio.channels.AcceptingChannel;
 
 import com.riguz.forks.http.NetworkServer;
-import com.riguz.forks.http.RequestDelegator;
+import com.riguz.forks.http.RequestDelegate;
 
 import io.undertow.UndertowOptions;
 import io.undertow.connector.ByteBufferPool;
@@ -32,7 +32,7 @@ public class UndertowServer extends NetworkServer {
 		cpuCores = Runtime.getRuntime().availableProcessors();
 	}
 
-	public UndertowServer(int port, RequestDelegator handler) {
+	public UndertowServer(int port, RequestDelegate handler) {
 		super(port, handler);
 	}
 

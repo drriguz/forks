@@ -4,7 +4,7 @@ import com.riguz.forks.ioc.Bind;
 import javax.inject.Singleton;
 
 import com.riguz.forks.http.NetworkServer;
-import com.riguz.forks.http.RequestDelegator;
+import com.riguz.forks.http.RequestDelegate;
 import com.riguz.forks.http.undertow.UndertowServer;
 import com.riguz.forks.mvc.Dispatcher;
 import com.riguz.forks.router.Router;
@@ -20,13 +20,13 @@ public class DefaultConfig {
 
 	@Bind
 	@Singleton
-	public RequestDelegator delegator(Dispatcher dispatcher) {
+	public RequestDelegate delegator(Dispatcher dispatcher) {
 		return dispatcher;
 	}
 
 	@Bind
 	@Singleton
-	public NetworkServer server(RequestDelegator handler) {
-		return new UndertowServer(8080, handler);
+	public NetworkServer server(RequestDelegate delegate) {
+		return new UndertowServer(8080, delegate);
 	}
 }

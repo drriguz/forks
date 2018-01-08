@@ -1,46 +1,42 @@
 package com.riguz.forks;
 
+import com.riguz.forks.http.NetworkServer;
 import com.riguz.forks.ioc.Injector;
 import javax.inject.Inject;
 
-import com.riguz.forks.config.DefaultConfig;
 import com.riguz.forks.router.Router;
 
 public final class Forks {
 
-	public static Forks instance = new Forks();
-	private static final Injector iocContext;
+    private final Injector injector;
 
-	@Inject
-	private Router router;
+    public Forks(final Injector injector) {
+        this.injector = injector;
+        this.injector.injectFields(this);
+    }
 
-	// @Inject
-	// private NetworkServer networkServer;
+    @Inject
+    private Router router;
 
-	static {
-		iocContext = new Injector(new DefaultConfig());
-		iocContext.injectFields(Forks.instance);
-	}
+    @Inject
+    private NetworkServer networkServer;
 
-	private Forks() {
+    private Forks() {
+        this.injector = null;
+    }
 
-	}
+    private boolean started = false;
 
-	private void internalServe() {
-		// this.networkServer.start();
-		// this.networkServer.afterStart();
-	}
+    public void start() {
+        if (this.started) {
+            return;
+        }
+        this.networkServer.start();
+        this.networkServer.afterStart();
+        this.started = true;
+    }
 
-	public static void serve() {
-		instance.internalServe();
-	}
+    public static void stop() {
 
-	public static void stop() {
-
-	}
-
-	public static void main(String[] args) {
-		Forks.serve();
-	}
-
+    }
 }

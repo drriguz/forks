@@ -2,9 +2,9 @@ package com.riguz.forks.http;
 
 public abstract class NetworkServer {
 	protected final int port;
-	protected final RequestDelegator handler;
+	protected final RequestDelegate handler;
 
-	public NetworkServer(int port, RequestDelegator handler) {
+	public NetworkServer(int port, RequestDelegate handler) {
 		this.port = port;
 		this.handler = handler;
 	}

@@ -1,6 +1,6 @@
 package com.riguz.forks.http;
 
-public interface RequestDelegator {
+public interface RequestDelegate {
 
 	void delegate(HttpRequest request, HttpResponse response);
 }

@@ -1,5 +1,6 @@
 package com.riguz.forks.ioc;
 
+import com.riguz.gags.base.Classes;
 import javax.inject.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class Injector {
             if (module == null) {
                 throw new IllegalArgumentException("Invalid null config found");
             }
-            for (Method method : module.getClass().getDeclaredMethods()) {
+            for (Method method : Classes.getAllMethods(module.getClass())) {
                 if (method.isAnnotationPresent(Bind.class)) {
                     InjectType<?> injectType = InjectType.of(method);
                     InjectScope injectScope = InjectScope.of(method);

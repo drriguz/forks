@@ -39,7 +39,10 @@ public class TrieRouter extends Trie<Map<HttpMethod, RequestHandler>> implements
             throw new IllegalArgumentException("Request could not be null");
         }
         Map<HttpMethod, RequestHandler> handlers = this.find(request.getRequestPath());
-        RequestHandler handler = handlers.get(request);
-        return handler;
+        if (handlers != null) {
+            return handlers.get(request);
+        } else {
+            return null;
+        }
     }
 }
