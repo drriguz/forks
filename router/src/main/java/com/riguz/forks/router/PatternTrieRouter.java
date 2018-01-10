@@ -2,12 +2,25 @@ package com.riguz.forks.router;
 
 import com.riguz.forks.http.HttpMethod;
 import com.riguz.gags.base.Strings;
-import com.riguz.gags.struct.Trie;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TrieRouter<T> extends Trie<Map<HttpMethod, T>> implements Router<T> {
+public class PatternTrieRouter<T> implements Router<T> {
+
+    private PatternTrieNode<Map<HttpMethod, T>> root = new PatternTrieNode<>();
+
+    private Map<HttpMethod, T> find(String path) {
+        PatternTrieNode<Map<HttpMethod, T>> node = this.root.find(path, 0);
+        if (node == null) {
+            return null;
+        }
+        return node.payload;
+    }
+
+    private void insert(String path, Map<HttpMethod, T> handlers) {
+        this.root.insert(path, 0, handlers);
+    }
 
     @Override
     public void add(HttpMethod method, String pattern, T handler) {

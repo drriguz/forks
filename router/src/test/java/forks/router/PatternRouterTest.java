@@ -1,17 +1,17 @@
 package forks.router;
 
 import com.riguz.forks.http.HttpMethod;
+import com.riguz.forks.router.PatternTrieRouter;
 import com.riguz.forks.router.Router;
-import com.riguz.forks.router.TrieRouter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class TrieRouterTest {
+public class PatternRouterTest {
 
     @Test
     public void resolve() {
-        Router<String> router = new TrieRouter<>();
+        Router<String> router = new PatternTrieRouter<>();
         router.addGet("/", "index");
         router.addGet("/home", "home");
         router.addGet("/about", "about");
@@ -23,14 +23,14 @@ public class TrieRouterTest {
 
     @Test
     public void resolveSharedPrefix() {
-        Router<String> router = new TrieRouter<>();
+        Router<String> router = new PatternTrieRouter<>();
         router.addGet("/", "index");
         router.addGet("/user", "user");
         router.addGet("/user/index", "userIndex");
         router.addGet("/user/profile", "userProfile");
-        assertEquals("/index", router.resolve(HttpMethod.GET, "/"));
-        assertEquals("/user", router.resolve(HttpMethod.GET, "/user"));
-        assertEquals("/user/index", router.resolve(HttpMethod.GET, "/userIndex"));
-        assertEquals("/user/profile", router.resolve(HttpMethod.GET, "/userProfile"));
+        assertEquals("index", router.resolve(HttpMethod.GET, "/"));
+        assertEquals("user", router.resolve(HttpMethod.GET, "/user"));
+        assertEquals("userIndex", router.resolve(HttpMethod.GET, "/user/index"));
+        assertEquals("userProfile", router.resolve(HttpMethod.GET, "/user/profile"));
     }
 }
