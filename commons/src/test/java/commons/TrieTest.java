@@ -9,7 +9,7 @@ import static org.junit.Assert.fail;
 public class TrieTest {
 
     @Test
-    public void testTrieStructure() {
+    public void basicStructure() {
         Trie<String> tree = new Trie<>();
         tree.insert("/home", "Hello");
         assertEquals("Hello", tree.find("/home"));
@@ -25,7 +25,7 @@ public class TrieTest {
     }
 
     @Test
-    public void testDuplicateInsert() {
+    public void duplicateInsert() {
         Trie<String> tree = new Trie<>();
         tree.insert("/home", "Hello");
         try {
@@ -35,5 +35,34 @@ public class TrieTest {
 
         }
         assertEquals("Hello", tree.find("/home"));
+    }
+
+    @Test
+    public void print() {
+        Trie<String> tree = new Trie<>();
+        tree.insert("/home", "Hello");
+        tree.insert("/user", "User");
+        tree.insert("/user/profile", "profile");
+        tree.insert("/user/profile/1", "profile1");
+        tree.insert("/user/profile/2", "profile1");
+        tree.insert("/user/profile/3", "profile1");
+        tree.insert("/user/settings", "settings");
+        tree.insert("/user/settings/private", "settings");
+        tree.insert("/user/settings/system", "settings");
+        tree.insert("/user/settings/system/1", "settings");
+        tree.insert("/user/settings/system/2", "settings");
+        tree.insert("/about", "profile");
+        String str = tree.dump();
+        System.out.println(str);
+    }
+
+    @Test
+    public void print1() {
+        Trie<String> tree = new Trie<>();
+        tree.insert("/abc/de", "profile");
+        tree.insert("/abc/fg", "settings");
+        tree.insert("/xyz", "settings");
+        String str = tree.dump();
+        System.out.println(str);
     }
 }

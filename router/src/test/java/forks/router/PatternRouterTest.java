@@ -15,10 +15,30 @@ public class PatternRouterTest {
         router.addGet("/", "index");
         router.addGet("/home", "home");
         router.addGet("/about", "about");
+        router.complete();
+
         assertEquals("index", router.resolve(HttpMethod.GET, "/"));
         assertEquals("home", router.resolve(HttpMethod.GET, "/home"));
         assertEquals("about", router.resolve(HttpMethod.GET, "/about"));
         assertEquals(null, router.resolve(HttpMethod.GET, "/foo"));
+    }
+
+    @Test
+    public void resolvePattern() {
+        Router<String> router = new PatternTrieRouter<>();
+        router.addGet("/", "index");
+        router.addGet("/user", "user");
+        router.addGet("/user/:id", "userDetail");
+        router.addGet("/user/:id/profile", "userProfile");
+        router.addGet("/files/*file", "file");
+
+        router.complete();
+
+        assertEquals("index", router.resolve(HttpMethod.GET, "/"));
+        assertEquals("user", router.resolve(HttpMethod.GET, "/user"));
+        assertEquals("userDetail", router.resolve(HttpMethod.GET, "/user/1"));
+        assertEquals("userProfile", router.resolve(HttpMethod.GET, "/user/1/profile"));
+        assertEquals("file", router.resolve(HttpMethod.GET, "/files/1.jpg"));
     }
 
     @Test

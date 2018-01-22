@@ -24,3 +24,20 @@ reserved    = gen-delims / sub-delims
 
       sub-delims  = "!" / "$" / "&" / "'" / "(" / ")"
                   / "*" / "+" / "," / ";" / "="
+
+print:
+
+/
+├user/
+|    ╰index
+╰about/
+
+/
+├about
+├user/
+|    ├profile/1
+|    ╰settings
+╰home
+/abc
+   ├de
+   ╰fg

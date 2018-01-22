@@ -4,6 +4,7 @@ import com.riguz.gags.base.Strings;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 class TrieNode<T> {
 
@@ -22,6 +23,25 @@ class TrieNode<T> {
     TrieNode(char path) {
         this.path = path;
         this.payload = null;
+    }
+
+    public String getPathAsString() {
+        return this.path == null ? "" : String.valueOf(this.path);
+    }
+
+    public boolean hasPayload() {
+        return this.payload != null;
+    }
+
+    public boolean isContinuous() {
+        return this.children.size() == 1;
+    }
+
+    public TrieNode<T> getNext() {
+        if (!this.isContinuous()) {
+            throw new UnsupportedOperationException("No next node found");
+        }
+        return this.children.values().stream().findFirst().get();
     }
 
     int insert(String path, int offset, T payload) {
@@ -57,5 +77,19 @@ class TrieNode<T> {
         }
         TrieNode<T> node = this.children.get(key);
         return node == null ? null : node.find(path, offset + 1);
+    }
+
+    private void print(TrieNode<T> node, String parentPath) {
+        String path = parentPath + node.path;
+        if (node.payload != null) {
+            System.out.println(path + "->" + node.payload);
+        }
+        for (Entry<Character, TrieNode<T>> e : node.children.entrySet()) {
+            print(e.getValue(), path);
+        }
+    }
+
+    public void print() {
+        print(this, "");
     }
 }

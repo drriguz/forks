@@ -29,7 +29,7 @@ public class TrieRouter<T> extends Trie<Map<HttpMethod, T>> implements Router<T>
 
     @Override
     public void complete() {
-
+        this.print();
     }
 
     @Override

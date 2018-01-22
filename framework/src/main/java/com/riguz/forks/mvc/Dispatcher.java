@@ -18,7 +18,7 @@ public class Dispatcher implements RequestDelegate {
 
     @Override
     public void delegate(HttpRequest request, HttpResponse response) {
-        RequestHandler handler = this.router.resolve(request);
+        RequestHandler handler = this.router.resolve(request.getRequestMethod(), request.getRequestPath());
         if (handler == null) {
             response.sendError(404, "Not found");
             return;

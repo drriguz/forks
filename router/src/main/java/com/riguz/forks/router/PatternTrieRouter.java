@@ -42,7 +42,7 @@ public class PatternTrieRouter<T> implements Router<T> {
 
     @Override
     public void complete() {
-
+        this.root.print();
     }
 
     @Override
