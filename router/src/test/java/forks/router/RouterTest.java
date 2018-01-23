@@ -1,7 +1,6 @@
 package forks.router;
 
 import com.riguz.forks.http.HttpMethod;
-import com.riguz.forks.router.PatternTrieRouter;
 import com.riguz.forks.router.Router;
 import com.riguz.forks.router.TrieRouter;
 import org.junit.Test;
