@@ -61,7 +61,18 @@ public class TrieTest {
         Trie<String> tree = new Trie<>();
         tree.insert("/abc/de", "profile");
         tree.insert("/abc/fg", "settings");
-        tree.insert("/xyz", "settings");
+        String str = tree.dump();
+        System.out.println(str);
+    }
+
+    @Test
+    public void print2() {
+        Trie<String> tree = new Trie<>();
+        tree.insert("/abc/", "0");
+        tree.insert("/abc/def", "1");
+        tree.insert("/abc/bcd", "2");
+        tree.insert("/abc/def/g", "3");
+        tree.insert("/cmg", "4");
         String str = tree.dump();
         System.out.println(str);
     }

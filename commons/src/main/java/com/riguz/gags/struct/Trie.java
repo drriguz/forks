@@ -5,10 +5,8 @@ import com.riguz.gags.base.Strings;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 
 public class Trie<T> {
-
     protected TrieNode<T> root;
 
     public Trie() {
@@ -30,32 +28,19 @@ public class Trie<T> {
         return node.payload;
     }
 
-    public void print() {
-        this.print(this.root, "");
-    }
-
-    private void print(TrieNode<T> node, String parentPath) {
-        if (node.path != null) {
-            System.out.println(node.path);
-        }
-        for (Entry<Character, TrieNode<T>> child : node.children.entrySet()) {
-            System.out.println(child.getKey());
-            this.print(child.getValue(), child.getKey() + "");
-        }
-    }
-
     private List<String> dump(TrieNode<T> node, String path) {
         if (node.isContinuous()) {
             return dump(node.getNext(), path + node.getPathAsString());
         }
         List<String> tree = new LinkedList<>();
-        tree.add(path + node.getPathAsString());
-
-        Iterator<TrieNode<T>> iterator = node.children.values().iterator();
+        String payload = node.payload == null ? " × " : " (" + node.payload.toString() + ")";
+        tree.add(path + node.getPathAsString() + payload);
 
         String childPrefix = path.replaceAll("├", "│")
             .replaceAll("╰", " ")
+            .replaceAll("/", " ")
             .replaceAll("\\w", " ");
+        Iterator<TrieNode<T>> iterator = node.children.values().iterator();
         while (iterator.hasNext()) {
             TrieNode<T> childNode = iterator.next();
             String subPath = childPrefix + (iterator.hasNext() ? "├" : "╰");

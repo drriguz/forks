@@ -4,13 +4,10 @@ import com.riguz.gags.base.Strings;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 class TrieNode<T> {
 
     final Character path;
-    boolean isLeaf;
-    int occurances = 0;
     final Map<Character, TrieNode<T>> children = new HashMap<>();
 
     T payload;
@@ -34,7 +31,7 @@ class TrieNode<T> {
     }
 
     public boolean isContinuous() {
-        return this.children.size() == 1;
+        return this.children.size() == 1 && !hasPayload();
     }
 
     public TrieNode<T> getNext() {
@@ -55,7 +52,6 @@ class TrieNode<T> {
             children.put(key, node);
         }
         if (offset == path.length() - 1) {
-            node.occurances += 1;
             if (node.payload != null) {
                 throw new IllegalArgumentException("Conflict path detected:" + path);
             }
@@ -77,19 +73,5 @@ class TrieNode<T> {
         }
         TrieNode<T> node = this.children.get(key);
         return node == null ? null : node.find(path, offset + 1);
-    }
-
-    private void print(TrieNode<T> node, String parentPath) {
-        String path = parentPath + node.path;
-        if (node.payload != null) {
-            System.out.println(path + "->" + node.payload);
-        }
-        for (Entry<Character, TrieNode<T>> e : node.children.entrySet()) {
-            print(e.getValue(), path);
-        }
-    }
-
-    public void print() {
-        print(this, "");
     }
 }

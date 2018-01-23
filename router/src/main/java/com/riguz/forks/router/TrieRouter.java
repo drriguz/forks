@@ -5,6 +5,7 @@ import com.riguz.gags.base.Strings;
 import com.riguz.gags.struct.Trie;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TrieRouter<T> extends Trie<Map<HttpMethod, T>> implements Router<T> {
@@ -29,7 +30,8 @@ public class TrieRouter<T> extends Trie<Map<HttpMethod, T>> implements Router<T>
 
     @Override
     public void complete() {
-        this.print();
+        String tree = this.dump();
+        System.out.println(tree);
     }
 
     @Override
