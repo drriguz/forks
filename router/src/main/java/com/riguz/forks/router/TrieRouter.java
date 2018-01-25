@@ -10,5 +10,4 @@ public class TrieRouter<T>
     public TrieRouter() {
         super(TrieNode.empty());
     }
-
 }

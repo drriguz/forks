@@ -23,18 +23,7 @@ public class Trie<T, E extends AbstractTrieNode<T, E>> {
 
     public T find(String path) {
         E node = this.root.find(path);
-        if (node == null) {
-            return null;
-        }
-        return node.payload;
-    }
-
-    public T resolve(String path) {
-        E node = this.root.resolve(path);
-        if (node == null) {
-            return null;
-        }
-        return node.payload;
+        return node == null ? null : node.payload;
     }
 
     protected String descPath(E node) {

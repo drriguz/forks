@@ -1,5 +1,7 @@
 package com.riguz.forks.router;
 
+import com.riguz.gags.base.Strings;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,7 +58,21 @@ public abstract class AbstractTrieNode<T, E extends AbstractTrieNode<T, E>> {
 
     public abstract int insert(String path, T payload);
 
-    protected abstract E find(String path);
+    protected E find(String path) {
+        return this.find(path, 0);
+    }
+
+    protected E find(String path, int offset) {
+        if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
+            return null;
+        }
+        char key = path.charAt(offset);
+        if (offset == path.length() - 1) {
+            return this.children.get(key);
+        }
+        E node = this.children.get(key);
+        return node == null ? null : node.find(path, offset + 1);
+    }
 
     public abstract E resolve(String path);
 

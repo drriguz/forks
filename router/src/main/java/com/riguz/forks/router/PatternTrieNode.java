@@ -120,7 +120,7 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         return this.insert(path, 0, payload);
     }
 
-    public int insert(String path, int offset, T payload) {
+    protected int insert(String path, int offset, T payload) {
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
             return 0;
         }
@@ -143,30 +143,16 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
     }
 
     @Override
-    public PatternTrieNode<T> find(String path) {
-        return this.find(path, 0);
-    }
-
-    @Override
     public PatternTrieNode<T> resolve(String path) {
         return null;
     }
 
+    @Override
     public PatternTrieNode<T> find(String path, int offset) {
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
             return null;
         }
         char key = path.charAt(offset);
-        System.out.println("->" + key + this.path);
-        if (this.isEmpty()) {
-            // must be root node
-            PatternTrieNode<T> node = this.children.get(key);
-            if (node == null) {
-                throw new RuntimeException("Invalid router detected");
-            }
-            return node.
-                find(path, offset + 1);
-        }
 
         if (this.path == NAMED_PARAM_PATTERN) {
             StringBuilder param = new StringBuilder();

@@ -39,27 +39,10 @@ public class TrieNode<T> extends AbstractTrieNode<T, TrieNode<T>> {
         }
         return node.insert(path, offset + 1, payload);
     }
-
-    @Override
-    protected TrieNode<T> find(String path) {
-        return this.find(path, 0);
-    }
-
+    
     @Override
     public TrieNode<T> resolve(String path) {
         return this.find(path);
-    }
-
-    public TrieNode<T> find(String path, int offset) {
-        if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
-            return null;
-        }
-        char key = path.charAt(offset);
-        if (offset == path.length() - 1) {
-            return this.children.get(key);
-        }
-        TrieNode<T> node = this.children.get(key);
-        return node == null ? null : node.find(path, offset + 1);
     }
 
 }

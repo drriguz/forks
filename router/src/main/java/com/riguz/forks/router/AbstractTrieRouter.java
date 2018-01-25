@@ -43,7 +43,6 @@ public abstract class AbstractTrieRouter<T, E extends AbstractTrieNode<Map<HttpM
         if (method == null || requestPath == null) {
             throw new IllegalArgumentException("Request could not be null");
         }
-        System.out.println("Resolving:" + requestPath);
         Map<HttpMethod, T> handlers = this.find(requestPath);
         if (handlers != null) {
             return handlers.get(method);
