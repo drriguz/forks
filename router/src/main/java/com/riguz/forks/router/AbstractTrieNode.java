@@ -10,14 +10,21 @@ public abstract class AbstractTrieNode<T, E extends AbstractTrieNode<T, E>> {
 
     protected T payload;
 
-    public AbstractTrieNode() {
+    protected AbstractTrieNode() {
         this.path = null;
         this.payload = null;
     }
 
-    public AbstractTrieNode(char path) {
+    public AbstractTrieNode(Character path) {
+        if (path == null) {
+            throw new IllegalArgumentException("None root node should has a valid path");
+        }
         this.path = path;
         this.payload = null;
+    }
+
+    public boolean isEmpty() {
+        return this.path == null;
     }
 
     public T getPayload() {
@@ -47,7 +54,10 @@ public abstract class AbstractTrieNode<T, E extends AbstractTrieNode<T, E>> {
         return this.children.values().stream().findFirst().get();
     }
 
-    public abstract int insert(String path, int offset, T payload);
+    public abstract int insert(String path, T payload);
 
-    public abstract E find(String path, int offset);
+    protected abstract E find(String path);
+
+    public abstract E resolve(String path);
+
 }

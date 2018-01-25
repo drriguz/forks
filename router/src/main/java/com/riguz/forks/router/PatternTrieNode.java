@@ -11,12 +11,13 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
 
     protected final String paramName;
 
-    public PatternTrieNode() {
-        this(null, null, null);
+    public static <T> PatternTrieNode<T> empty() {
+        return new PatternTrieNode<>();
     }
 
-    public PatternTrieNode(Character pattern) {
-        this(pattern, null, null);
+    private PatternTrieNode() {
+        super();
+        this.paramName = null;
     }
 
     public PatternTrieNode(Character pattern, String paramName) {
@@ -27,6 +28,14 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         super(pattern);
         this.paramName = paramName;
         this.payload = payload;
+    }
+
+    public String getParamName() {
+        return paramName;
+    }
+
+    public boolean hasPattern() {
+        return this.path == NAMED_PARAM_PATTERN || this.path == WILDCARD_PARAM_PATTERN;
     }
 
     private static boolean isReserved(Character path) {
@@ -94,27 +103,36 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
     }
 
     private PatternTrieNode<T> getOrCreate(Character key) {
+        return this.getOrCreate(key, null);
+    }
+
+    private PatternTrieNode<T> getOrCreate(Character key, String paramName) {
         PatternTrieNode<T> node = this.children.get(key);
         if (node == null) {
-            node = new PatternTrieNode<>(key);
+            node = new PatternTrieNode<>(key, paramName);
             this.children.put(key, node);
         }
         return node;
     }
 
     @Override
+    public int insert(String path, T payload) {
+        return this.insert(path, 0, payload);
+    }
+
     public int insert(String path, int offset, T payload) {
-        System.out.println("+" + path + " " + offset + " " + payload);
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
             return 0;
         }
         char key = path.charAt(offset);
-        PatternTrieNode<T> node = this.getOrCreate(key);
         Pair<Character, String> param = this.extractParam(path, offset);
         if (param != null) {
-            node = new PatternTrieNode<>(param.getLeft(), param.getRight());
+            key = param.getLeft();
             offset += param.getRight().length();
         }
+
+        PatternTrieNode<T> node = param == null ? this.getOrCreate(key) : this.getOrCreate(key, param.getRight());
+
         if (offset == path.length() - 1) {
             if (node.payload != null) {
                 throw new IllegalArgumentException("Conflict path detected:" + path);
@@ -125,15 +143,54 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
     }
 
     @Override
+    public PatternTrieNode<T> find(String path) {
+        return this.find(path, 0);
+    }
+
+    @Override
+    public PatternTrieNode<T> resolve(String path) {
+        return null;
+    }
+
     public PatternTrieNode<T> find(String path, int offset) {
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
             return null;
         }
         char key = path.charAt(offset);
-        if (offset == path.length() - 1) {
-            return this.children.get(key);
+        System.out.println("->" + key + this.path);
+        if (this.isEmpty()) {
+            // must be root node
+            PatternTrieNode<T> node = this.children.get(key);
+            if (node == null) {
+                throw new RuntimeException("Invalid router detected");
+            }
+            return node.
+                find(path, offset + 1);
         }
-        PatternTrieNode<T> node = this.children.get(key);
-        return node == null ? null : node.find(path, offset + 1);
+
+        if (this.path == NAMED_PARAM_PATTERN) {
+            StringBuilder param = new StringBuilder();
+            while (offset < path.length() && path.charAt(offset) != PATH_SPLITTER) {
+                param.append(path.charAt(offset++));
+            }
+            System.out.println("Param Value:" + path + " => " + param.toString());
+        } else if (this.path == WILDCARD_PARAM_PATTERN) {
+            StringBuilder param = new StringBuilder();
+            while (offset < path.length() && path.charAt(offset) != PATH_SPLITTER) {
+                param.append(path.charAt(offset++));
+            }
+            System.out.println("Param Value:" + path + " => " + param.toString());
+        } else {
+
+            if (this.path != key) {
+                return null;
+            }
+            PatternTrieNode<T> node = this.children.get(key);
+            if (node == null) {
+                throw new RuntimeException("Invalid router detected");
+            }
+            return node.find(path, offset + 1);
+        }
+        return null;
     }
 }

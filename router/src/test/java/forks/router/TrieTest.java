@@ -11,7 +11,7 @@ public class TrieTest {
 
     @Test
     public void basicStructure() {
-        Trie<String, TrieNode<String>> tree = new Trie<>(new TrieNode<>());
+        Trie<String, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
         tree.insert("/home", "Hello");
         assertEquals("Hello", tree.find("/home"));
         assertEquals(null, tree.find("/home/"));
@@ -27,7 +27,7 @@ public class TrieTest {
 
     @Test
     public void duplicateInsert() {
-        Trie<String, TrieNode<String>> tree = new Trie<>(new TrieNode<>());
+        Trie<String, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
         tree.insert("/home", "Hello");
         try {
             tree.insert("/home", "Hello");
@@ -40,7 +40,7 @@ public class TrieTest {
 
     @Test
     public void print() {
-        Trie<String, TrieNode<String>> tree = new Trie<>(new TrieNode<>());
+        Trie<String, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
         tree.insert("/home", "Hello");
         tree.insert("/user", "User");
         tree.insert("/user/profile", "profile");
@@ -59,7 +59,7 @@ public class TrieTest {
 
     @Test
     public void print1() {
-        Trie<String, TrieNode<String>> tree = new Trie<>(new TrieNode<>());
+        Trie<String, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
         tree.insert("/abc/de", "profile");
         tree.insert("/abc/fg", "settings");
         String str = tree.dump();
@@ -68,7 +68,7 @@ public class TrieTest {
 
     @Test
     public void print2() {
-        Trie<String, TrieNode<String>> tree = new Trie<>(new TrieNode<>());
+        Trie<String, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
         tree.insert("/abc/", "0");
         tree.insert("/abc/def", "1");
         tree.insert("/abc/bcd", "2");

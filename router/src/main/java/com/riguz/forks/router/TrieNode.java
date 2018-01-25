@@ -4,8 +4,12 @@ import com.riguz.gags.base.Strings;
 
 public class TrieNode<T> extends AbstractTrieNode<T, TrieNode<T>> {
 
-    public TrieNode() {
+    private TrieNode() {
         super();
+    }
+
+    public static <T> TrieNode<T> empty() {
+        return new TrieNode<>();
     }
 
     public TrieNode(char path) {
@@ -13,6 +17,10 @@ public class TrieNode<T> extends AbstractTrieNode<T, TrieNode<T>> {
     }
 
     @Override
+    public int insert(String path, T payload) {
+        return this.insert(path, 0, payload);
+    }
+
     public int insert(String path, int offset, T payload) {
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
             return 0;
@@ -33,6 +41,15 @@ public class TrieNode<T> extends AbstractTrieNode<T, TrieNode<T>> {
     }
 
     @Override
+    protected TrieNode<T> find(String path) {
+        return this.find(path, 0);
+    }
+
+    @Override
+    public TrieNode<T> resolve(String path) {
+        return this.find(path);
+    }
+
     public TrieNode<T> find(String path, int offset) {
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
             return null;
@@ -44,4 +61,5 @@ public class TrieNode<T> extends AbstractTrieNode<T, TrieNode<T>> {
         TrieNode<T> node = this.children.get(key);
         return node == null ? null : node.find(path, offset + 1);
     }
+
 }

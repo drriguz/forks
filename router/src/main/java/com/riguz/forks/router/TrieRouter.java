@@ -8,7 +8,7 @@ public class TrieRouter<T>
     extends AbstractTrieRouter<T, TrieNode<Map<HttpMethod, T>>> {
 
     public TrieRouter() {
-        super(new TrieNode<>());
+        super(TrieNode.empty());
     }
 
 }

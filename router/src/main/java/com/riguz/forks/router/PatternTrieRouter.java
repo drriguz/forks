@@ -8,6 +8,17 @@ public class PatternTrieRouter<T>
     extends AbstractTrieRouter<T, PatternTrieNode<Map<HttpMethod, T>>> {
 
     public PatternTrieRouter() {
-        super(new PatternTrieNode<>());
+        super(PatternTrieNode.empty());
+    }
+
+    @Override
+    protected String descPath(PatternTrieNode<Map<HttpMethod, T>> node) {
+        String paramDesc = node.hasPattern() ? "{" + node.getParamName() + "}" : "";
+        return paramDesc + super.descPath(node);
+    }
+
+    @Override
+    public Map<HttpMethod, T> find(String path) {
+        return super.find(path);
     }
 }

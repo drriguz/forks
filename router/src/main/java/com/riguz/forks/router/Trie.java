@@ -18,24 +18,36 @@ public class Trie<T, E extends AbstractTrieNode<T, E>> {
         if (Strings.isNullOrEmpty(path)) {
             throw new IllegalArgumentException("Path cannot be empty");
         }
-        return this.root.insert(path, 0, payload);
+        return this.root.insert(path, payload);
     }
 
     public T find(String path) {
-        E node = this.root.find(path, 0);
+        E node = this.root.find(path);
         if (node == null) {
             return null;
         }
         return node.payload;
     }
 
-    private List<String> dump(E node, String path) {
+    public T resolve(String path) {
+        E node = this.root.resolve(path);
+        if (node == null) {
+            return null;
+        }
+        return node.payload;
+    }
+
+    protected String descPath(E node) {
+        String payload = node.payload == null ? " × " : " (" + node.payload.toString() + ")";
+        return payload;
+    }
+
+    protected List<String> dump(E node, String path) {
         if (node.isContinuous() && !node.hasPayload()) {
             return dump(node.getNext(), path + node.getPathAsString());
         }
         List<String> tree = new LinkedList<>();
-        String payload = node.payload == null ? " × " : " (" + node.payload.toString() + ")";
-        tree.add(path + node.getPathAsString() + payload);
+        tree.add(path + node.getPathAsString() + this.descPath(node));
 
         String childPrefix = path.replaceAll("├", "│")
             .replaceAll("╰", " ")
