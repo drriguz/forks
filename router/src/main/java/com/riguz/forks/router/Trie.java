@@ -40,7 +40,7 @@ public class Trie<T, E extends AbstractTrieNode<T, E>> {
     }
 
     protected List<String> dump(E node, String path) {
-        if (node.isContinuous() && !node.hasPayload()) {
+        if (node.isContinuous() && !node.shouldBreakTree()) {
             return dump(node.getNext(), path + node.getPathAsString());
         }
         List<String> tree = new LinkedList<>();

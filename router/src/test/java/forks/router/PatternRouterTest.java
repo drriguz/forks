@@ -42,6 +42,24 @@ public class PatternRouterTest {
     }
 
     @Test
+    public void resolveMultiNamedPath() {
+        Router<String> router = new PatternTrieRouter<>();
+        router.addGet("/", "index");
+        router.addGet("/users/:user/profile/:id", "user");
+        router.complete();
+        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile/2"));
+    }
+
+    @Test
+    public void resolveComplexNamedPath() {
+        Router<String> router = new PatternTrieRouter<>();
+        router.addGet("/", "index");
+        router.addGet("/users/:user/profile/:id/*file", "user");
+        router.complete();
+        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile/2/1.jpg"));
+    }
+
+    @Test
     public void resolvePattern() {
         Router<String> router = new PatternTrieRouter<>();
         router.addGet("/", "index");

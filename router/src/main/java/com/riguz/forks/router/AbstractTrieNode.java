@@ -41,6 +41,10 @@ public abstract class AbstractTrieNode<T, E extends AbstractTrieNode<T, E>> {
         return this.path == null ? "" : String.valueOf(this.path);
     }
 
+    protected boolean shouldBreakTree() {
+        return hasPayload();
+    }
+
     public boolean hasPayload() {
         return this.payload != null;
     }

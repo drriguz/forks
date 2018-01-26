@@ -45,6 +45,11 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         return this.path == NAMED_PARAM_PATTERN || this.path == WILDCARD_PARAM_PATTERN;
     }
 
+    @Override
+    protected boolean shouldBreakTree() {
+        return super.shouldBreakTree() || this.hasPattern();
+    }
+
     private static boolean isReserved(Character path) {
         return NAMED_PARAM_PATTERN == path
             || WILDCARD_PARAM_PATTERN == path
