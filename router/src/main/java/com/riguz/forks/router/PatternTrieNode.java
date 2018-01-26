@@ -26,12 +26,19 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
 
     public PatternTrieNode(Character pattern, String paramName, T payload) {
         super(pattern);
+        if (isPattern(pattern) && Strings.isNullOrEmpty(paramName)) {
+            throw new IllegalArgumentException("No argument name with pattern:" + pattern);
+        }
         this.paramName = paramName;
         this.payload = payload;
     }
 
     public String getParamName() {
         return paramName;
+    }
+
+    public boolean hasParam() {
+        return this.hasPattern() && !Strings.isNullOrEmpty(this.paramName);
     }
 
     public boolean hasPattern() {
@@ -42,6 +49,10 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         return NAMED_PARAM_PATTERN == path
             || WILDCARD_PARAM_PATTERN == path
             || PATH_SPLITTER == path;
+    }
+
+    private static boolean isPattern(Character path) {
+        return NAMED_PARAM_PATTERN == path || WILDCARD_PARAM_PATTERN == path;
     }
 
     private Pair<Character, String> extractNameParam(String path, int offset) {
@@ -111,6 +122,16 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         if (node == null) {
             node = new PatternTrieNode<>(key, paramName);
             this.children.put(key, node);
+        } else {
+            if (paramName == null) {
+                if (node.hasParam()) {
+                    throw new IllegalArgumentException(
+                        "Conflict path: existing path with param:" + node.getParamName());
+                }
+            } else if (!paramName.equals(node.getParamName())) {
+                throw new IllegalArgumentException(
+                    "Ambiguous argument name found:" + paramName + "," + node.getParamName());
+            }
         }
         return node;
     }
@@ -126,57 +147,59 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         }
         char key = path.charAt(offset);
         Pair<Character, String> param = this.extractParam(path, offset);
+        PatternTrieNode<T> node;
         if (param != null) {
             key = param.getLeft();
             offset += param.getRight().length();
+            node = this.getOrCreate(key, param.getRight());
+        } else {
+            node = this.getOrCreate(key);
         }
-
-        PatternTrieNode<T> node = param == null ? this.getOrCreate(key) : this.getOrCreate(key, param.getRight());
 
         if (offset == path.length() - 1) {
             if (node.payload != null) {
                 throw new IllegalArgumentException("Conflict path detected:" + path);
             }
             node.payload = payload;
+            return 1;
+        } else {
+            return node.insert(path, offset + 1, payload);
         }
-        return node.insert(path, offset + 1, payload);
     }
 
     @Override
     public PatternTrieNode<T> resolve(String path) {
-        return null;
+        return this.resolve(path, 0);
     }
 
-    @Override
-    public PatternTrieNode<T> find(String path, int offset) {
+    public PatternTrieNode<T> resolve(String path, int offset) {
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
             return null;
         }
         char key = path.charAt(offset);
-
-        if (this.path == NAMED_PARAM_PATTERN) {
-            StringBuilder param = new StringBuilder();
-            while (offset < path.length() && path.charAt(offset) != PATH_SPLITTER) {
-                param.append(path.charAt(offset++));
-            }
-            System.out.println("Param Value:" + path + " => " + param.toString());
-        } else if (this.path == WILDCARD_PARAM_PATTERN) {
-            StringBuilder param = new StringBuilder();
-            while (offset < path.length() && path.charAt(offset) != PATH_SPLITTER) {
-                param.append(path.charAt(offset++));
-            }
-            System.out.println("Param Value:" + path + " => " + param.toString());
-        } else {
-
-            if (this.path != key) {
-                return null;
-            }
-            PatternTrieNode<T> node = this.children.get(key);
-            if (node == null) {
-                throw new RuntimeException("Invalid router detected");
-            }
-            return node.find(path, offset + 1);
+        PatternTrieNode<T> next = this.children.get(WILDCARD_PARAM_PATTERN);
+        if (next != null) {
+            String paramValue = path.substring(offset);
+            return next;
         }
-        return null;
+        next = this.children.get(NAMED_PARAM_PATTERN);
+        if (next != null) {
+            StringBuilder builder = new StringBuilder();
+            while (offset < path.length() - 1) {
+                builder.append(path.charAt(offset));
+                if (PATH_SPLITTER == path.charAt(offset + 1)) {
+                    break;
+                }
+                offset += 1;
+            }
+            String paramValue = builder.toString();
+        } else {
+            next = this.children.get(key);
+        }
+        if (offset == path.length() - 1 || next == null) {
+            return next;
+        } else {
+            return next.resolve(path, offset + 1);
+        }
     }
 }

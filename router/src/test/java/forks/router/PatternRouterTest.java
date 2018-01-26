@@ -24,6 +24,24 @@ public class PatternRouterTest {
     }
 
     @Test
+    public void resolveWildcardPath() {
+        Router<String> router = new PatternTrieRouter<>();
+        router.addGet("/", "index");
+        router.addGet("/files/*file", "file");
+        router.complete();
+        assertEquals("file", router.resolve(HttpMethod.GET, "/files/1.jpg"));
+    }
+
+    @Test
+    public void resolveNamedPath() {
+        Router<String> router = new PatternTrieRouter<>();
+        router.addGet("/", "index");
+        router.addGet("/users/:user/profile", "user");
+        router.complete();
+        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile"));
+    }
+
+    @Test
     public void resolvePattern() {
         Router<String> router = new PatternTrieRouter<>();
         router.addGet("/", "index");

@@ -11,6 +11,9 @@ public class Trie<T, E extends AbstractTrieNode<T, E>> {
     protected E root;
 
     public Trie(E root) {
+        if (root == null || !root.isEmpty()) {
+            throw new IllegalArgumentException("Illegal root node");
+        }
         this.root = root;
     }
 
@@ -23,6 +26,11 @@ public class Trie<T, E extends AbstractTrieNode<T, E>> {
 
     public T find(String path) {
         E node = this.root.find(path);
+        return node == null ? null : node.payload;
+    }
+
+    public T resolve(String path) {
+        E node = this.root.resolve(path);
         return node == null ? null : node.payload;
     }
 
