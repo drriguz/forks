@@ -66,12 +66,13 @@ public abstract class AbstractTrieNode<T, E extends AbstractTrieNode<T, E>> {
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
             return null;
         }
-        char key = path.charAt(offset);
-        if (offset == path.length() - 1) {
-            return this.children.get(key);
+        E node = this.children.get(path.charAt(offset));
+
+        if (node == null || offset == path.length() - 1) {
+            return node;
+        } else {
+            return node.find(path, offset + 1);
         }
-        E node = this.children.get(key);
-        return node == null ? null : node.find(path, offset + 1);
     }
 
     public abstract E resolve(String path);

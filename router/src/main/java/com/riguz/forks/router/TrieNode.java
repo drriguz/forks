@@ -32,14 +32,16 @@ public class TrieNode<T> extends AbstractTrieNode<T, TrieNode<T>> {
             children.put(key, node);
         }
         if (offset == path.length() - 1) {
-            if (node.payload != null) {
+            if (node.hasPayload()) {
                 throw new IllegalArgumentException("Conflict path detected:" + path);
             }
             node.payload = payload;
+            return 1;
+        } else {
+            return node.insert(path, offset + 1, payload);
         }
-        return node.insert(path, offset + 1, payload);
     }
-    
+
     @Override
     public TrieNode<T> resolve(String path) {
         return this.find(path);
