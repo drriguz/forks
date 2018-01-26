@@ -2,6 +2,7 @@ package com.riguz.forks.router;
 
 import com.riguz.forks.http.HttpMethod;
 import com.riguz.gags.base.Strings;
+import com.riguz.gags.tuple.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,15 +40,18 @@ public abstract class AbstractTrieRouter<T, E extends AbstractTrieNode<Map<HttpM
     }
 
     @Override
-    public T resolve(HttpMethod method, String requestPath) {
+    public Pair<T, Map<String, String>> resolve(HttpMethod method, String requestPath) {
         if (method == null || requestPath == null) {
             throw new IllegalArgumentException("Request could not be null");
         }
-        Map<HttpMethod, T> handlers = this.resolve(requestPath);
-        if (handlers != null) {
-            return handlers.get(method);
-        } else {
-            return null;
+        Pair<Map<HttpMethod, T>, Map<String, String>> handlersPair = this.resolve(requestPath);
+        if (handlersPair != null) {
+            Map<HttpMethod, T> handlers = handlersPair.getLeft();
+            T handler = handlers.get(method);
+            if (handler != null) {
+                return Pair.of(handler, handlersPair.getRight());
+            }
         }
+        return null;
     }
 }

@@ -16,9 +16,9 @@ public class RouterTest {
         router.addGet("/home", "home");
         router.addGet("/about", "about");
         router.complete();
-        assertEquals("index", router.resolve(HttpMethod.GET, "/"));
-        assertEquals("home", router.resolve(HttpMethod.GET, "/home"));
-        assertEquals("about", router.resolve(HttpMethod.GET, "/about"));
+        assertEquals("index", router.resolve(HttpMethod.GET, "/").getLeft());
+        assertEquals("home", router.resolve(HttpMethod.GET, "/home").getLeft());
+        assertEquals("about", router.resolve(HttpMethod.GET, "/about").getLeft());
         assertEquals(null, router.resolve(HttpMethod.GET, "/foo"));
     }
 
@@ -30,9 +30,9 @@ public class RouterTest {
         router.addGet("/user/index", "userIndex");
         router.addGet("/user/profile", "userProfile");
         router.complete();
-        assertEquals("index", router.resolve(HttpMethod.GET, "/"));
-        assertEquals("user", router.resolve(HttpMethod.GET, "/user"));
-        assertEquals("userIndex", router.resolve(HttpMethod.GET, "/user/index"));
-        assertEquals("userProfile", router.resolve(HttpMethod.GET, "/user/profile"));
+        assertEquals("index", router.resolve(HttpMethod.GET, "/").getLeft());
+        assertEquals("user", router.resolve(HttpMethod.GET, "/user").getLeft());
+        assertEquals("userIndex", router.resolve(HttpMethod.GET, "/user/index").getLeft());
+        assertEquals("userProfile", router.resolve(HttpMethod.GET, "/user/profile").getLeft());
     }
 }

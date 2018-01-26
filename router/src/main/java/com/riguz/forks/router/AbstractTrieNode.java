@@ -1,6 +1,7 @@
 package com.riguz.forks.router;
 
 import com.riguz.gags.base.Strings;
+import com.riguz.gags.tuple.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,6 +80,6 @@ public abstract class AbstractTrieNode<T, E extends AbstractTrieNode<T, E>> {
         }
     }
 
-    public abstract E resolve(String path);
+    public abstract Pair<E, Map<String, String>> resolve(String path);
 
 }

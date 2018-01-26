@@ -3,6 +3,9 @@ package com.riguz.forks.router;
 import com.riguz.gags.base.Strings;
 import com.riguz.gags.tuple.Pair;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> {
 
     protected static final Character WILDCARD_PARAM_PATTERN = '*';
@@ -173,11 +176,13 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
     }
 
     @Override
-    public PatternTrieNode<T> resolve(String path) {
-        return this.resolve(path, 0);
+    public Pair<PatternTrieNode<T>, Map<String, String>> resolve(String path) {
+        final Map<String, String> pathVariables = new LinkedHashMap<>();
+        PatternTrieNode<T> node = this.resolve(path, 0, pathVariables);
+        return node == null ? null : Pair.of(node, pathVariables);
     }
 
-    public PatternTrieNode<T> resolve(String path, int offset) {
+    public PatternTrieNode<T> resolve(String path, int offset, Map<String, String> pathVariables) {
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
             return null;
         }
@@ -185,6 +190,7 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         PatternTrieNode<T> next = this.children.get(WILDCARD_PARAM_PATTERN);
         if (next != null) {
             String paramValue = path.substring(offset);
+            pathVariables.put(next.getParamName(), paramValue);
             return next;
         }
         next = this.children.get(NAMED_PARAM_PATTERN);
@@ -198,13 +204,14 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
                 offset += 1;
             }
             String paramValue = builder.toString();
+            pathVariables.put(next.getParamName(), paramValue);
         } else {
             next = this.children.get(key);
         }
         if (offset == path.length() - 1 || next == null) {
             return next;
         } else {
-            return next.resolve(path, offset + 1);
+            return next.resolve(path, offset + 1, pathVariables);
         }
     }
 }

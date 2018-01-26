@@ -1,6 +1,10 @@
 package com.riguz.forks.router;
 
 import com.riguz.gags.base.Strings;
+import com.riguz.gags.tuple.Pair;
+
+import java.util.Collections;
+import java.util.Map;
 
 public class TrieNode<T> extends AbstractTrieNode<T, TrieNode<T>> {
 
@@ -43,8 +47,9 @@ public class TrieNode<T> extends AbstractTrieNode<T, TrieNode<T>> {
     }
 
     @Override
-    public TrieNode<T> resolve(String path) {
-        return this.find(path);
+    public Pair<TrieNode<T>, Map<String, String>> resolve(String path) {
+        TrieNode<T> node = this.find(path);
+        return node == null ? null : Pair.of(node, Collections.emptyMap());
     }
 
 }

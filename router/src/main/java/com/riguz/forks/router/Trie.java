@@ -1,10 +1,12 @@
 package com.riguz.forks.router;
 
 import com.riguz.gags.base.Strings;
+import com.riguz.gags.tuple.Pair;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class Trie<T, E extends AbstractTrieNode<T, E>> {
 
@@ -29,9 +31,9 @@ public class Trie<T, E extends AbstractTrieNode<T, E>> {
         return node == null ? null : node.payload;
     }
 
-    public T resolve(String path) {
-        E node = this.root.resolve(path);
-        return node == null ? null : node.payload;
+    public Pair<T, Map<String, String>> resolve(String path) {
+        Pair<E, Map<String, String>> node = this.root.resolve(path);
+        return node == null ? null : Pair.of(node.getLeft().getPayload(), node.getRight());
     }
 
     protected String descPath(E node) {

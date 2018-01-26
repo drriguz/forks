@@ -17,9 +17,9 @@ public class PatternRouterTest {
         router.addGet("/about", "about");
         router.complete();
 
-        assertEquals("index", router.resolve(HttpMethod.GET, "/"));
-        assertEquals("home", router.resolve(HttpMethod.GET, "/home"));
-        assertEquals("about", router.resolve(HttpMethod.GET, "/about"));
+        assertEquals("index", router.resolve(HttpMethod.GET, "/").getLeft());
+        assertEquals("home", router.resolve(HttpMethod.GET, "/home").getLeft());
+        assertEquals("about", router.resolve(HttpMethod.GET, "/about").getLeft());
         assertEquals(null, router.resolve(HttpMethod.GET, "/foo"));
     }
 
@@ -29,7 +29,7 @@ public class PatternRouterTest {
         router.addGet("/", "index");
         router.addGet("/files/*file", "file");
         router.complete();
-        assertEquals("file", router.resolve(HttpMethod.GET, "/files/1.jpg"));
+        assertEquals("file", router.resolve(HttpMethod.GET, "/files/1.jpg").getLeft());
     }
 
     @Test
@@ -38,7 +38,7 @@ public class PatternRouterTest {
         router.addGet("/", "index");
         router.addGet("/users/:user/profile", "user");
         router.complete();
-        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile"));
+        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile").getLeft());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class PatternRouterTest {
         router.addGet("/", "index");
         router.addGet("/users/:user/profile/:id", "user");
         router.complete();
-        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile/2"));
+        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile/2").getLeft());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class PatternRouterTest {
         router.addGet("/", "index");
         router.addGet("/users/:user/profile/:id/*file", "user");
         router.complete();
-        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile/2/1.jpg"));
+        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile/2/1.jpg").getLeft());
     }
 
     @Test
@@ -70,11 +70,11 @@ public class PatternRouterTest {
 
         router.complete();
 
-        assertEquals("index", router.resolve(HttpMethod.GET, "/"));
-        assertEquals("user", router.resolve(HttpMethod.GET, "/user"));
-        assertEquals("userDetail", router.resolve(HttpMethod.GET, "/user/1"));
-        assertEquals("userProfile", router.resolve(HttpMethod.GET, "/user/1/profile"));
-        assertEquals("file", router.resolve(HttpMethod.GET, "/files/1.jpg"));
+        assertEquals("index", router.resolve(HttpMethod.GET, "/").getLeft());
+        assertEquals("user", router.resolve(HttpMethod.GET, "/user").getLeft());
+        assertEquals("userDetail", router.resolve(HttpMethod.GET, "/user/1").getLeft());
+        assertEquals("userProfile", router.resolve(HttpMethod.GET, "/user/1/profile").getLeft());
+        assertEquals("file", router.resolve(HttpMethod.GET, "/files/1.jpg").getLeft());
     }
 
     @Test
@@ -84,9 +84,9 @@ public class PatternRouterTest {
         router.addGet("/user", "user");
         router.addGet("/user/index", "userIndex");
         router.addGet("/user/profile", "userProfile");
-        assertEquals("index", router.resolve(HttpMethod.GET, "/"));
-        assertEquals("user", router.resolve(HttpMethod.GET, "/user"));
-        assertEquals("userIndex", router.resolve(HttpMethod.GET, "/user/index"));
-        assertEquals("userProfile", router.resolve(HttpMethod.GET, "/user/profile"));
+        assertEquals("index", router.resolve(HttpMethod.GET, "/").getLeft());
+        assertEquals("user", router.resolve(HttpMethod.GET, "/user").getLeft());
+        assertEquals("userIndex", router.resolve(HttpMethod.GET, "/user/index").getLeft());
+        assertEquals("userProfile", router.resolve(HttpMethod.GET, "/user/profile").getLeft());
     }
 }
