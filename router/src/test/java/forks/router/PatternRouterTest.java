@@ -3,9 +3,13 @@ package forks.router;
 import com.riguz.forks.http.HttpMethod;
 import com.riguz.forks.router.PatternTrieRouter;
 import com.riguz.forks.router.Router;
+import com.riguz.gags.tuple.Pair;
 import org.junit.Test;
 
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class PatternRouterTest {
 
@@ -29,7 +33,19 @@ public class PatternRouterTest {
         router.addGet("/", "index");
         router.addGet("/files/*file", "file");
         router.complete();
-        assertEquals("file", router.resolve(HttpMethod.GET, "/files/1.jpg").getLeft());
+        validate(router.resolve(HttpMethod.GET, "/files/1.jpg"), "file", "1.jpg");
+    }
+
+    private void validate(Pair<String, Map<String, String>> result, String handler, String... args) {
+        if (handler == null) {
+            assertNull(result);
+        } else {
+            assertEquals(handler, result.getLeft());
+            assertEquals(args.length, result.getRight().size());
+            for (String arg : args) {
+                assertEquals(true, result.getRight().containsValue(arg));
+            }
+        }
     }
 
     @Test
@@ -38,7 +54,7 @@ public class PatternRouterTest {
         router.addGet("/", "index");
         router.addGet("/users/:user/profile", "user");
         router.complete();
-        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile").getLeft());
+        validate(router.resolve(HttpMethod.GET, "/users/1/profile"), "user", "1");
     }
 
     @Test
