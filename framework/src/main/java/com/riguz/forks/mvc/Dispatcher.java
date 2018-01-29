@@ -20,13 +20,16 @@ public class Dispatcher implements RequestDelegate {
 
     @Override
     public void delegate(HttpRequest request, HttpResponse response) {
-        Pair<RequestHandler, Map<String, String>> handler = this.router
+        Pair<RequestHandler, Map<String, String>> resolved = this.router
             .resolve(request.getRequestMethod(), request.getRequestPath());
-        if (handler == null) {
+        if (resolved == null) {
+
             response.sendError(404, "Not found");
-            return;
+        } else {
+            RequestHandler hander = resolved.getLeft();
+            Map<String, String> pathVariables = resolved.getRight();
+            Result result = hander.handle(new RequestContext(request, response, pathVariables));
+            response.writeContent(result.toString());
         }
-        Result result = handler.getLeft().handle(new RequestContext(request, response));
-        response.writeContent(result.toString());
     }
 }

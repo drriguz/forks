@@ -1,29 +1,26 @@
 package com.riguz.forks.mvc;
 
+import com.riguz.forks.http.HttpStatus;
+
 import java.io.Serializable;
 
 public abstract class Result implements Serializable {
-    private static final long serialVersionUID = -355866140808231232L;
 
-    public static final int OK = 200;
-    public static final int NOT_FOUND = 404;
-
-    int code;
+    protected HttpStatus httpStatus;
 
     public Result() {
-        this.code = OK;
+        this.httpStatus = HttpStatus.OK;
     }
 
-    public Result(int code) {
-        this.code = code;
+    public Result(HttpStatus httpStatus) {
+        this.httpStatus = httpStatus;
     }
 
-    public int getCode() {
-        return this.code;
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
     }
 
-    protected void setCode(int code) {
-        this.code = code;
+    public void setHttpStatus(HttpStatus httpStatus) {
+        this.httpStatus = httpStatus;
     }
-
 }

@@ -3,12 +3,11 @@ package com.riguz.forks.mvc.view;
 import com.riguz.forks.mvc.Result;
 
 public class Redirect extends Result {
-    private static final long serialVersionUID = 3141042849245711550L;
 
     String path = "";
 
     public Redirect(String path) {
-        super(Result.OK);
+        super();
         this.path = path;
     }
 

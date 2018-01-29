@@ -2,16 +2,15 @@ package com.riguz.forks;
 
 import com.riguz.forks.http.NetworkServer;
 import com.riguz.forks.ioc.Injector;
-import javax.inject.Inject;
-
 import com.riguz.forks.router.Router;
+import javax.inject.Inject;
 
 public final class Forks {
 
     private final Injector injector;
 
-    public Forks(final Injector injector) {
-        this.injector = injector;
+    public Forks(Object... configs) {
+        this.injector = new Injector(configs);
         this.injector.injectFields(this);
     }
 

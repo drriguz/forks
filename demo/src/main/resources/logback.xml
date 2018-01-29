@@ -6,8 +6,9 @@
     </encoder>
   </appender>
 
-  <logger name="com.riguz" level="debug" />
+  <logger name="com.riguz" level="debug"/>
+  <logger name="org.xnio.nio" level="info"/>
   <root level="info">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="STDOUT"/>
   </root>
 </configuration>

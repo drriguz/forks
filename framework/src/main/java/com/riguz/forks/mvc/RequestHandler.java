@@ -1,6 +1,5 @@
 package com.riguz.forks.mvc;
 
-import java.lang.reflect.Method;
 import java.util.function.Function;
 
 public class RequestHandler {
@@ -14,8 +13,8 @@ public class RequestHandler {
         this.action = action;
     }
 
-    public static RequestHandler of(Object controller, Method actionMethod) {
-
+    public static RequestHandler of(Class<?> controllerClass) {
+        //public Result action(RequestContext context)
         return null;
     }
 

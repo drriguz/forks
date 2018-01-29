@@ -2,21 +2,22 @@ package com.riguz.forks.mvc.view;
 
 import com.riguz.forks.mvc.Result;
 
-public class JsonResult extends Result {
+public class JsonResult<T> extends Result {
+
     private static final long serialVersionUID = 3141042849245711550L;
 
-    Object data = null;
+    T data = null;
 
-    public JsonResult(Object data) {
-        super(Result.OK);
+    public JsonResult(T data) {
+        super();
         this.data = data;
     }
 
-    public Object getData() {
+    public T getData() {
         return this.data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 }

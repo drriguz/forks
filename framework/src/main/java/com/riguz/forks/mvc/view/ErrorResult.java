@@ -1,14 +1,14 @@
 package com.riguz.forks.mvc.view;
 
+import com.riguz.forks.http.HttpStatus;
 import com.riguz.forks.mvc.Result;
 
 public class ErrorResult extends Result {
-    private static final long serialVersionUID = 3141042849245711550L;
 
     String message = "";
 
-    public ErrorResult(int code, String message) {
-        super(code);
+    public ErrorResult(HttpStatus httpStatus, String message) {
+        super(httpStatus);
         this.message = message;
     }
 

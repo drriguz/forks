@@ -1,13 +1,12 @@
 package com.riguz.forks.mvc.view;
 
-
 import com.riguz.forks.mvc.Result;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class View extends Result {
-    private static final long serialVersionUID = 3141042849245711550L;
+
     String path;
     Map<String, Object> parameters = new HashMap<>();
 
