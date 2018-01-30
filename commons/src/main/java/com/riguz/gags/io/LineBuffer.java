@@ -17,8 +17,9 @@ package com.riguz.gags.io;
 import java.io.IOException;
 
 public abstract class LineBuffer {
-    private StringBuilder line      = new StringBuilder();
-    private boolean       sawReturn = false;
+
+    private StringBuilder line = new StringBuilder();
+    private boolean sawReturn = false;
 
     protected void add(char[] cbuf, int off, int len) throws IOException {
         int pos = off;

@@ -14,27 +14,28 @@
  *******************************************************************************/
 package com.riguz.gags.io;
 
-import static com.riguz.gags.base.Preconditions.checkNotNull;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.CharBuffer;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import static com.riguz.gags.base.Preconditions.checkNotNull;
+
 public class LineReader {
-    private final Readable   readable;
-    private final Reader     reader;
-    private final char[]     buf  = new char[0x1000];    // 4K
+
+    private final Readable readable;
+    private final Reader reader;
+    private final char[] buf = new char[0x1000];    // 4K
     private final CharBuffer cbuf = CharBuffer.wrap(buf);
 
-    private final Queue<String> lines   = new LinkedList<String>();
-    private final LineBuffer    lineBuf = new LineBuffer() {
-                                            @Override
-                                            protected void handleLine(String line, String end) {
-                                                lines.add(line);
-                                            }
-                                        };
+    private final Queue<String> lines = new LinkedList<>();
+    private final LineBuffer lineBuf = new LineBuffer() {
+        @Override
+        protected void handleLine(String line, String end) {
+            lines.add(line);
+        }
+    };
 
     public LineReader(Readable readable) {
         this.readable = checkNotNull(readable);

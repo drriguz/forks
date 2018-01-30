@@ -15,7 +15,8 @@
 package com.riguz.gags.io;
 
 public interface LineProcessor<T> {
-    public boolean processLine(String line);
-    
+
+    boolean processLine(String line);
+
     T getResult();
 }
