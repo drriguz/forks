@@ -12,6 +12,6 @@ public class IniReaderTest {
     @Test
     public void readIniFile() throws IOException {
         IniReader reader = new IniReader("config.ini");
-        assertEquals("Hello World!", reader.get("example", "str").asString());
+        assertEquals("\"Hello World!\"", reader.get("example", "str"));
     }
 }

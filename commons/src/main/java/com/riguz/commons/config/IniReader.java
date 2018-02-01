@@ -2,8 +2,6 @@ package com.riguz.commons.config;
 
 import com.riguz.commons.base.Strings;
 import com.riguz.commons.io.Files;
-import com.riguz.commons.json.Json;
-import com.riguz.commons.json.JsonValue;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -14,16 +12,16 @@ public class IniReader {
 
     public static class Section {
 
-        protected final Map<String, JsonValue> properties = new HashMap<>();
+        protected final Map<String, String> properties = new HashMap<>();
 
         public Section() {
         }
 
-        public void put(String key, JsonValue value) {
+        public void put(String key, String value) {
             this.properties.put(key, value);
         }
 
-        public JsonValue get(String key) {
+        public String get(String key) {
             return this.properties.get(key);
         }
     }
@@ -54,18 +52,17 @@ public class IniReader {
                 String[] arr = line.split("=");
                 String key = arr[0].trim();
                 System.out.println("->" + key + "=" + arr[1].trim());
-                JsonValue value = Json.parse(arr[1].trim());
                 if (lastSection == null) {
                     throw new IllegalArgumentException("No section specified for:" + line);
                 }
-                lastSection.put(key, value);
+                lastSection.put(key, arr[1].trim());
             } else {
                 throw new IllegalArgumentException("Invalid config file format:" + line);
             }
         }
     }
 
-    public JsonValue get(String sectionName, String key) {
+    public String get(String sectionName, String key) {
         Section section = this.sections.get(sectionName);
         if (section == null) {
             return null;
