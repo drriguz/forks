@@ -1,7 +1,7 @@
 package com.riguz.forks.router;
 
-import com.riguz.gags.base.Strings;
-import com.riguz.gags.tuple.Pair;
+import com.riguz.commons.base.Strings;
+import com.riguz.commons.tuple.Pair;
 
 import java.util.Collections;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package commons;
 
-import com.riguz.gags.base.Arrays;
+import com.riguz.commons.base.Arrays;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

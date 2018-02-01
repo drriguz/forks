@@ -1,0 +1,75 @@
+package com.riguz.commons.config;
+
+import com.riguz.commons.base.Strings;
+import com.riguz.commons.io.Files;
+import com.riguz.commons.json.Json;
+import com.riguz.commons.json.JsonValue;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class IniReader {
+
+    public static class Section {
+
+        protected final Map<String, JsonValue> properties = new HashMap<>();
+
+        public Section() {
+        }
+
+        public void put(String key, JsonValue value) {
+            this.properties.put(key, value);
+        }
+
+        public JsonValue get(String key) {
+            return this.properties.get(key);
+        }
+    }
+
+    protected final List<String> content;
+    protected final Map<String, Section> sections = new HashMap<>();
+
+    public IniReader(String fileName) throws IOException {
+        this.content = Files.readLines(fileName);
+        this.parse();
+    }
+
+    protected void parse() {
+        Section lastSection = null;
+        for (String line : this.content) {
+            line = line.trim();
+            if (Strings.isNullOrEmpty(line) || line.startsWith(";")) {
+                continue;
+            }
+            if (line.matches("\\[\\w+\\]")) {
+                String sectionName = line.substring(1, line.length() - 1);
+                if (this.sections.containsKey(sectionName)) {
+                    throw new IllegalArgumentException("Duplicate section:" + sectionName);
+                }
+                lastSection = new Section();
+                this.sections.put(sectionName, lastSection);
+            } else if (line.matches("\\w+\\s*=\\s*.*")) {
+                String[] arr = line.split("=");
+                String key = arr[0].trim();
+                System.out.println("->" + key + "=" + arr[1].trim());
+                JsonValue value = Json.parse(arr[1].trim());
+                if (lastSection == null) {
+                    throw new IllegalArgumentException("No section specified for:" + line);
+                }
+                lastSection.put(key, value);
+            } else {
+                throw new IllegalArgumentException("Invalid config file format:" + line);
+            }
+        }
+    }
+
+    public JsonValue get(String sectionName, String key) {
+        Section section = this.sections.get(sectionName);
+        if (section == null) {
+            return null;
+        }
+        return section.get(key);
+    }
+}

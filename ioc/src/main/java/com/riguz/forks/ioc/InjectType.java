@@ -1,6 +1,6 @@
 package com.riguz.forks.ioc;
 
-import com.riguz.gags.base.Classes;
+import com.riguz.commons.base.Classes;
 import javax.inject.Named;
 
 import java.lang.annotation.Annotation;

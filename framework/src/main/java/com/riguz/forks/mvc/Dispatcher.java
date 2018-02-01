@@ -1,10 +1,10 @@
 package com.riguz.forks.mvc;
 
+import com.riguz.commons.tuple.Pair;
 import com.riguz.forks.http.HttpRequest;
 import com.riguz.forks.http.HttpResponse;
 import com.riguz.forks.http.RequestDelegate;
 import com.riguz.forks.router.Router;
-import com.riguz.gags.tuple.Pair;
 import javax.inject.Inject;
 
 import java.util.Map;

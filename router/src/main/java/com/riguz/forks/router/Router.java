@@ -1,7 +1,7 @@
 package com.riguz.forks.router;
 
+import com.riguz.commons.tuple.Pair;
 import com.riguz.forks.http.HttpMethod;
-import com.riguz.gags.tuple.Pair;
 
 import java.util.Map;
 
