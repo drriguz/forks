@@ -21,9 +21,6 @@
  ******************************************************************************/
 package com.riguz.forks.json;
 
-/**
- * An immutable object that represents a location in the parsed text.
- */
 public class Location {
 
     /**

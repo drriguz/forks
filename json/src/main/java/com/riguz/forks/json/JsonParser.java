@@ -25,9 +25,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-/**
- * A streaming parser for JSON text. The parser reports all events to a given handler.
- */
 public class JsonParser {
 
     private static final int MAX_NESTING_LEVEL = 1000;
@@ -38,28 +35,22 @@ public class JsonParser {
     private Reader reader;
     private char[] buffer;
     private int bufferOffset;
-    private int index;
-    private int fill;
+    private int currentIndexOfBuffer;
+    private int bufferActualLength;
     private int line;
     private int lineOffset;
-    private int current;
+    private int currentValue;
     private StringBuilder captureBuffer;
-    private int captureStart;
+    private int captureStartIndexOfBuffer;
     private int nestingLevel;
 
-  /*
-   * |                      bufferOffset
-   *                        v
-   * [a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t]        < input
-   *                       [l|m|n|o|p|q|r|s|t|?|?]    < buffer
-   *                          ^               ^
-   *                       |  index           fill
-   */
-
-    /**
-     * Creates a new JsonParser with the given handler. The parser will report all parser events to this handler.
-     *
-     * @param handler the handler to process parser events
+    /*
+     * |                      bufferOffset
+     *                        v
+     * [a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t]        < input
+     *                       [l|m|n|o|p|q|r|s|t|?|?]    < buffer
+     *                          ^               ^
+     *                       |  currentIndexOfBuffer           bufferActualLength
      */
     @SuppressWarnings("unchecked")
     public JsonParser(JsonHandler<?, ?> handler) {
@@ -70,12 +61,6 @@ public class JsonParser {
         handler.parser = this;
     }
 
-    /**
-     * Parses the given input string. The input must contain a valid JSON value, optionally padded with whitespace.
-     *
-     * @param string the input string, must be valid JSON
-     * @throws ParseException if the input is not valid JSON
-     */
     public void parse(String string) {
         if (string == null) {
             throw new NullPointerException("string is null");
@@ -89,46 +74,26 @@ public class JsonParser {
         }
     }
 
-    /**
-     * Reads the entire input from the given reader and parses it as JSON. The input must contain a valid JSON value,
-     * optionally padded with whitespace. <p> Characters are read in chunks into a default-sized input buffer. Hence,
-     * wrapping a reader in an additional <code>BufferedReader</code> likely won't improve reading performance. </p>
-     *
-     * @param reader the reader to read the input from
-     * @throws IOException if an I/O error occurs in the reader
-     * @throws ParseException if the input is not valid JSON
-     */
     public void parse(Reader reader) throws IOException {
         parse(reader, DEFAULT_BUFFER_SIZE);
     }
 
-    /**
-     * Reads the entire input from the given reader and parses it as JSON. The input must contain a valid JSON value,
-     * optionally padded with whitespace. <p> Characters are read in chunks into an input buffer of the given size.
-     * Hence, wrapping a reader in an additional <code>BufferedReader</code> likely won't improve reading performance.
-     * </p>
-     *
-     * @param reader the reader to read the input from
-     * @param buffersize the size of the input buffer in chars
-     * @throws IOException if an I/O error occurs in the reader
-     * @throws ParseException if the input is not valid JSON
-     */
-    public void parse(Reader reader, int buffersize) throws IOException {
+    public void parse(Reader reader, int bufferSize) throws IOException {
         if (reader == null) {
             throw new NullPointerException("reader is null");
         }
-        if (buffersize <= 0) {
-            throw new IllegalArgumentException("buffersize is zero or negative");
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("buffer size is zero or negative");
         }
         this.reader = reader;
-        buffer = new char[buffersize];
+        buffer = new char[bufferSize];
         bufferOffset = 0;
-        index = 0;
-        fill = 0;
+        currentIndexOfBuffer = 0;
+        bufferActualLength = 0;
         line = 1;
         lineOffset = 0;
-        current = 0;
-        captureStart = -1;
+        currentValue = 0;
+        captureStartIndexOfBuffer = -1;
         read();
         skipWhiteSpace();
         readValue();
@@ -139,7 +104,7 @@ public class JsonParser {
     }
 
     private void readValue() throws IOException {
-        switch (current) {
+        switch (currentValue) {
             case 'n':
                 readNull();
                 break;
@@ -237,7 +202,7 @@ public class JsonParser {
     }
 
     private String readName() throws IOException {
-        if (current != '"') {
+        if (currentValue != '"') {
             throw expected("name");
         }
         return readStringInternal();
@@ -285,12 +250,12 @@ public class JsonParser {
     private String readStringInternal() throws IOException {
         read();
         startCapture();
-        while (current != '"') {
-            if (current == '\\') {
+        while (currentValue != '"') {
+            if (currentValue == '\\') {
                 pauseCapture();
                 readEscape();
                 startCapture();
-            } else if (current < 0x20) {
+            } else if (currentValue < 0x20) {
                 throw expected("valid string character");
             } else {
                 read();
@@ -303,11 +268,11 @@ public class JsonParser {
 
     private void readEscape() throws IOException {
         read();
-        switch (current) {
+        switch (currentValue) {
             case '"':
             case '/':
             case '\\':
-                captureBuffer.append((char) current);
+                captureBuffer.append((char) currentValue);
                 break;
             case 'b':
                 captureBuffer.append('\b');
@@ -331,7 +296,7 @@ public class JsonParser {
                     if (!isHexDigit()) {
                         throw expected("hexadecimal digit");
                     }
-                    hexChars[i] = (char) current;
+                    hexChars[i] = (char) currentValue;
                 }
                 captureBuffer.append((char) Integer.parseInt(new String(hexChars), 16));
                 break;
@@ -345,7 +310,7 @@ public class JsonParser {
         handler.startNumber();
         startCapture();
         readChar('-');
-        int firstDigit = current;
+        int firstDigit = currentValue;
         if (!readDigit()) {
             throw expected("digit");
         }
@@ -386,7 +351,7 @@ public class JsonParser {
     }
 
     private boolean readChar(char ch) throws IOException {
-        if (current != ch) {
+        if (currentValue != ch) {
             return false;
         }
         read();
@@ -408,44 +373,45 @@ public class JsonParser {
     }
 
     private void read() throws IOException {
-        if (index == fill) {
-            if (captureStart != -1) {
-                captureBuffer.append(buffer, captureStart, fill - captureStart);
-                captureStart = 0;
+        if (currentIndexOfBuffer == bufferActualLength) {
+            if (captureStartIndexOfBuffer != -1) {
+                captureBuffer.append(buffer, captureStartIndexOfBuffer, bufferActualLength - captureStartIndexOfBuffer);
+                captureStartIndexOfBuffer = 0;
             }
-            bufferOffset += fill;
-            fill = reader.read(buffer, 0, buffer.length);
-            index = 0;
-            if (fill == -1) {
-                current = -1;
-                index++;
+            bufferOffset += bufferActualLength;
+            bufferActualLength = reader.read(buffer, 0, buffer.length);
+            currentIndexOfBuffer = 0;
+            if (bufferActualLength == -1) {
+                // no more data
+                currentValue = -1;
+                currentIndexOfBuffer++;
                 return;
             }
         }
-        if (current == '\n') {
+        if (currentValue == '\n') {
             line++;
-            lineOffset = bufferOffset + index;
+            lineOffset = bufferOffset + currentIndexOfBuffer;
         }
-        current = buffer[index++];
+        currentValue = buffer[currentIndexOfBuffer++];
     }
 
     private void startCapture() {
         if (captureBuffer == null) {
             captureBuffer = new StringBuilder();
         }
-        captureStart = index - 1;
+        captureStartIndexOfBuffer = currentIndexOfBuffer - 1;
     }
 
     private void pauseCapture() {
-        int end = current == -1 ? index : index - 1;
-        captureBuffer.append(buffer, captureStart, end - captureStart);
-        captureStart = -1;
+        int end = currentValue == -1 ? currentIndexOfBuffer : currentIndexOfBuffer - 1;
+        captureBuffer.append(buffer, captureStartIndexOfBuffer, end - captureStartIndexOfBuffer);
+        captureStartIndexOfBuffer = -1;
     }
 
     private String endCapture() {
-        int start = captureStart;
-        int end = index - 1;
-        captureStart = -1;
+        int start = captureStartIndexOfBuffer;
+        int end = currentIndexOfBuffer - 1;
+        captureStartIndexOfBuffer = -1;
         if (captureBuffer.length() > 0) {
             captureBuffer.append(buffer, start, end - start);
             String captured = captureBuffer.toString();
@@ -456,7 +422,7 @@ public class JsonParser {
     }
 
     Location getLocation() {
-        int offset = bufferOffset + index - 1;
+        int offset = bufferOffset + currentIndexOfBuffer - 1;
         int column = offset - lineOffset + 1;
         return new Location(offset, line, column);
     }
@@ -473,21 +439,21 @@ public class JsonParser {
     }
 
     private boolean isWhiteSpace() {
-        return current == ' ' || current == '\t' || current == '\n' || current == '\r';
+        return currentValue == ' ' || currentValue == '\t' || currentValue == '\n' || currentValue == '\r';
     }
 
     private boolean isDigit() {
-        return current >= '0' && current <= '9';
+        return currentValue >= '0' && currentValue <= '9';
     }
 
     private boolean isHexDigit() {
-        return current >= '0' && current <= '9'
-            || current >= 'a' && current <= 'f'
-            || current >= 'A' && current <= 'F';
+        return currentValue >= '0' && currentValue <= '9'
+            || currentValue >= 'a' && currentValue <= 'f'
+            || currentValue >= 'A' && currentValue <= 'F';
     }
 
     private boolean isEndOfText() {
-        return current == -1;
+        return currentValue == -1;
     }
 
 }

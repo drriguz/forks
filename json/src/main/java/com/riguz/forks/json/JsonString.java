@@ -23,8 +23,6 @@ package com.riguz.forks.json;
 
 import java.io.IOException;
 
-@SuppressWarnings("serial")
-    // use default serial UID
 class JsonString extends JsonValue {
 
     private final String string;
@@ -70,5 +68,4 @@ class JsonString extends JsonValue {
         JsonString other = (JsonString) object;
         return string.equals(other.string);
     }
-
 }
