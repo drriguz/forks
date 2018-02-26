@@ -23,12 +23,11 @@ public class Dispatcher implements RequestDelegate {
         Pair<RequestHandler, Map<String, String>> resolved = this.router
             .resolve(request.getRequestMethod(), request.getRequestPath());
         if (resolved == null) {
-
             response.sendError(404, "Not found");
         } else {
-            RequestHandler hander = resolved.getLeft();
+            RequestHandler handler = resolved.getLeft();
             Map<String, String> pathVariables = resolved.getRight();
-            Result result = hander.handle(new RequestContext(request, response, pathVariables));
+            Result result = handler.handle(new RequestContext(request, response, pathVariables));
             response.writeContent(result.toString());
         }
     }

@@ -2,6 +2,8 @@ package com.riguz.commons.config;
 
 import com.riguz.commons.base.Strings;
 import com.riguz.commons.io.Files;
+import com.riguz.forks.json.Json;
+import com.riguz.forks.json.JsonValue;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -10,31 +12,28 @@ import java.util.Map;
 
 public class IniReader {
 
-    public static class Section {
+    static class Section {
 
-        protected final Map<String, String> properties = new HashMap<>();
+        final Map<String, String> properties = new HashMap<>();
 
-        public Section() {
-        }
-
-        public void put(String key, String value) {
+        void put(String key, String value) {
             this.properties.put(key, value);
         }
 
-        public String get(String key) {
+        String get(String key) {
             return this.properties.get(key);
         }
     }
 
-    protected final List<String> content;
-    protected final Map<String, Section> sections = new HashMap<>();
+    private final List<String> content;
+    private final Map<String, Section> sections = new HashMap<>();
 
     public IniReader(String fileName) throws IOException {
         this.content = Files.readLines(fileName);
         this.parse();
     }
 
-    protected void parse() {
+    private void parse() {
         Section lastSection = null;
         for (String line : this.content) {
             line = line.trim();
@@ -51,7 +50,6 @@ public class IniReader {
             } else if (line.matches("\\w+\\s*=\\s*.*")) {
                 String[] arr = line.split("=");
                 String key = arr[0].trim();
-                System.out.println("->" + key + "=" + arr[1].trim());
                 if (lastSection == null) {
                     throw new IllegalArgumentException("No section specified for:" + line);
                 }
@@ -68,5 +66,13 @@ public class IniReader {
             return null;
         }
         return section.get(key);
+    }
+
+    public JsonValue getJson(String section, String key) {
+        String json = this.get(section, key);
+        if (json == null) {
+            return null;
+        }
+        return Json.parse(json);
     }
 }
