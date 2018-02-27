@@ -1,0 +1,5 @@
+bool   forceHttps     = true;
+int    maxConnections = 10;
+float  pi             = 3.1415926;
+string welcomeMessage = "我能吞下玻璃而不伤身体!";
+string variable = "${welcomeMessage}hello";

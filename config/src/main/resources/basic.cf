@@ -13,7 +13,7 @@ string guestUrl = _baseUrl + "/guest";
 string title = "Hello" + " " + "World";
 
 // array
-int workDays = [1, 2, 3, 4, 5];
+int workDays = [1, 2, 3];
 string guys  = ["魔礼海", "魔礼寿", "魔礼青", "魔礼红"];
 
 // map
