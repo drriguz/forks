@@ -10,5 +10,6 @@ public class ParserTest {
     public void parseBasicConfig() throws IOException {
         Parser parser = new Parser();
         parser.parse("types.cf");
+        parser.parse("basic.cf");
     }
 }

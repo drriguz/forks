@@ -16,16 +16,22 @@ stat
 assignment
   : simpleAssignment
   | arrayAssignment
+  | mapAssignment
   ;
 
 simpleAssignment
-  : dataType NAME TO expression
-  ;
-arrayAssignment
-  : dataType NAME TO '[' (expression ',')* expression ']'
+  : simpleType NAME TO expression
   ;
 
-dataType
+arrayAssignment
+  : simpleType NAME TO '[' (expression ',')* expression ']'
+  ;
+
+mapAssignment
+  : MAP NAME TO '{' (mapExpression SPLITER)* '}'
+  ;
+
+simpleType
   : BOOL
   | INT
   | FLOAT
@@ -38,6 +44,12 @@ expression
   | INT_LITERAL
   | FLOAT_LITERAL
   | stringLiteral
+  ;
+
+mapExpression
+  : simpleAssignment
+  | arrayAssignment
+  | mapAssignment
   ;
 
 stringLiteral
@@ -96,6 +108,10 @@ STRING_SEQUENCE
 
 NAME
   : [a-zA-Z_][a-zA-Z_0-9]*
+  ;
+
+LINE_COMMENT
+  : '//' ~[\r\n]* ->skip
   ;
 
 fragment

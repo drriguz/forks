@@ -1,5 +1,19 @@
+// this is comments
+
 bool   forceHttps     = true;
 int    maxConnections = 10;
 float  pi             = 3.1415926;
 string welcomeMessage = "我能吞下玻璃而不伤身体!";
 string variable = "${welcomeMessage}hello";
+
+map jdbc = {
+  bool https = false;
+  string url = "http://localhost:8080";
+};
+
+map dict = {
+  bool a = true;
+  map nested = {
+    bool a = abc;
+  };
+};

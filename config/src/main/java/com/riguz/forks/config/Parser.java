@@ -14,9 +14,14 @@ public class Parser {
     public void parse(String config) throws IOException {
         cfLexer lexer = new cfLexer(
             CharStreams.fromStream(Thread.currentThread().getContextClassLoader().getResourceAsStream(config)));
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(ThrowingErrorListener.INSTANCE);
+
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        tokens.fill();
+
         cfParser parser = new cfParser(tokens);
+        parser.removeErrorListeners();
+        parser.addErrorListener(ThrowingErrorListener.INSTANCE);
         ScriptContext context = parser.script();
         ParseTreeWalker walker = new ParseTreeWalker();
         ConfigListener listener = new ConfigListener();
