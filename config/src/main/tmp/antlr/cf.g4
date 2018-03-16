@@ -16,44 +16,49 @@ stat
 assignment
   : simpleAssignment
   | arrayAssignment
-  | mapAssignment
   ;
 
 simpleAssignment
-  : simpleType NAME TO expression
+  : dataType NAME TO expression
   ;
 
 arrayAssignment
-  : simpleType NAME TO '[' (expression ',')* expression ']'
+  : dataType NAME TO '[' (expression ',')* expression ']'
   ;
 
-mapAssignment
-  : MAP NAME TO '{' (mapExpression SPLITER)* '}'
-  ;
-
-simpleType
+dataType
   : BOOL
   | INT
   | FLOAT
   | STRING
+  | MAP
   ;
 
 expression
-  : NAME
+  : REFERENCE
   | BOOL_LITERAL
   | INT_LITERAL
   | FLOAT_LITERAL
   | stringLiteral
+  | mapExpression
   ;
 
 mapExpression
+  : '{' (propertity SPLITER)* '}'
+  ;
+
+propertity
   : simpleAssignment
   | arrayAssignment
-  | mapAssignment
+  ;
+
+longStringBlock
+  : '(\n' LONG_STRING_BLOCK_LINE* '\n)'
   ;
 
 stringLiteral
-  : STRING_SEQUENCE
+  : STRING_LITERAL
+  | longStringBlock
   ;
 
 // lexers
@@ -102,17 +107,31 @@ REFERENCE
   : '${' NAME '}'
   ;
 
-STRING_SEQUENCE
+LINE_COMMENT
+  : '//' ~[\r\n]* ->skip
+  ;
+
+STRING_LITERAL
   : '"' (Char | REFERENCE)* '"'
+  ;
+
+LONG_STRING_LINE_ENDING
+  : '(' (Char | REFERENCE)* ')'
+  ;
+
+LONG_STRING_LINE
+  : '(' (Char | REFERENCE)* '\n'
+  ;
+
+LONG_STRING_BLOCK_LINE
+  : (Char| REFERENCE)* '\n'
   ;
 
 NAME
   : [a-zA-Z_][a-zA-Z_0-9]*
   ;
 
-LINE_COMMENT
-  : '//' ~[\r\n]* ->skip
-  ;
+
 
 fragment
 Digit
@@ -121,13 +140,13 @@ Digit
 
 fragment
 Char
-  : ~["\n\r${}]
+  : ~["\n\r${}()]
   | EscapeSequence
   ;
 
 fragment
 EscapeSequence
-  : '\\' ["\\nrt${}]
+  : '\\' ["\\nrt${}()]
   ;
 
 WS
