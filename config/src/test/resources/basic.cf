@@ -1,0 +1,40 @@
+// Here is some comment
+
+// basic data types
+bool   forceHttps     = true;
+int    maxConnections = 10;
+decimal  pi             = 3.1415926;
+string welcomeMessage = "我能吞下玻璃而不伤身体!";
+
+// string operation
+string _baseUrl = "http://localhost:8080";
+string adminUrl = "${_baseUrl}/admin";
+string guestUrl = "${_baseUrl}/guest";
+string title = "HelloWorld";
+
+// array
+int workDays = [1, 2, 3, ];
+string guys  = ["魔礼海", "魔礼寿", "魔礼青", "魔礼红",];
+
+// map
+map user = {
+    string firstName = "Riguz";
+    string lastName = "Lee";
+    int age = 18;
+    bool married = false;
+};
+
+map database = {
+    string type = "mysql";
+    int port = 3306;
+    string driver = "com.mysql.jdbc.Driver";
+    string servers = [
+        "192.168.1.100",   // master
+        "192.168.1.201",   // slave
+        "192.168.1.202",   // slave
+    ];
+    bool usePool = true;
+    int poolSize = 10;
+};
+
+

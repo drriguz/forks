@@ -7,7 +7,7 @@ dependencies {
 }
 
 generateGrammarSource {
-    outputDirectory = file("src/main/java/com/riguz/forks")
+    outputDirectory = file("src/main/java/com/riguz/forks/antlr")
     //maxHeapSize = "64m"
-    arguments += ["-visitor", "-long-messages"]
+    //arguments += ["-visitor", "-long-messages"]
 }

@@ -1,5 +1,5 @@
-lexer grammar XLexer;
-@header { package com.riguz.forks; }
+lexer grammar CfLexer;
+@header { package com.riguz.forks.antlr; }
 
 // types
 STRING   : 'string';
