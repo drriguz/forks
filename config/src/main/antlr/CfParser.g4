@@ -33,6 +33,7 @@ expression
     | stringExpression     #string
     | mapExpression        #map
     ;
+
 stringExpression
     : (STRING_LITERAL | REFERENCE ) (LINK stringExpression)?
     ;

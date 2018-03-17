@@ -4,13 +4,15 @@
 bool   forceHttps     = true;
 int    maxConnections = 10;
 decimal  pi             = 3.1415926;
-string welcomeMessage = "我能吞下玻璃而不伤身体!";
+string welcomeMessage = "我能..,吞下(玻璃)而不伤身体!";
 
 // string operation
+string message = ${welcomeMessage};
 string _baseUrl = "http://localhost:8080";
-string adminUrl = "${_baseUrl}/admin";
+string adminUrl = ${_baseUrl}.."/admin";
 string guestUrl = "${_baseUrl}/guest";
 string title = "HelloWorld";
+string all = ${title} ..${title} ..${adminUrl};
 
 // array
 int workDays = [1, 2, 3, ];
