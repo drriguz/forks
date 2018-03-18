@@ -26,11 +26,17 @@ type
     | MAP
     ;
 expression
+    : basicExpression      #basic
+    | nestedExpression     #nested
+    ;
+basicExpression
     : BOOL_LITERAL         #bool
     | INT_LITERAL          #int
     | HEX_LITERAL          #hex
     | DECIMAL_LITERAL      #decimal
-    | stringExpression     #string
+    ;
+nestedExpression
+    : stringExpression     #string
     | mapExpression        #map
     ;
 

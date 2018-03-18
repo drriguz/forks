@@ -58,74 +58,98 @@ public interface CfParserListener extends ParseTreeListener {
 	 */
 	void exitType(CfParser.TypeContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code bool}
+	 * Enter a parse tree produced by the {@code basic}
 	 * labeled alternative in {@link CfParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBasic(CfParser.BasicContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code basic}
+	 * labeled alternative in {@link CfParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBasic(CfParser.BasicContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code nested}
+	 * labeled alternative in {@link CfParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterNested(CfParser.NestedContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code nested}
+	 * labeled alternative in {@link CfParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitNested(CfParser.NestedContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code bool}
+	 * labeled alternative in {@link CfParser#basicExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterBool(CfParser.BoolContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code bool}
-	 * labeled alternative in {@link CfParser#expression}.
+	 * labeled alternative in {@link CfParser#basicExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitBool(CfParser.BoolContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code int}
-	 * labeled alternative in {@link CfParser#expression}.
+	 * labeled alternative in {@link CfParser#basicExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterInt(CfParser.IntContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code int}
-	 * labeled alternative in {@link CfParser#expression}.
+	 * labeled alternative in {@link CfParser#basicExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitInt(CfParser.IntContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code hex}
-	 * labeled alternative in {@link CfParser#expression}.
+	 * labeled alternative in {@link CfParser#basicExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterHex(CfParser.HexContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code hex}
-	 * labeled alternative in {@link CfParser#expression}.
+	 * labeled alternative in {@link CfParser#basicExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitHex(CfParser.HexContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code decimal}
-	 * labeled alternative in {@link CfParser#expression}.
+	 * labeled alternative in {@link CfParser#basicExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterDecimal(CfParser.DecimalContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code decimal}
-	 * labeled alternative in {@link CfParser#expression}.
+	 * labeled alternative in {@link CfParser#basicExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitDecimal(CfParser.DecimalContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code string}
-	 * labeled alternative in {@link CfParser#expression}.
+	 * labeled alternative in {@link CfParser#nestedExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterString(CfParser.StringContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code string}
-	 * labeled alternative in {@link CfParser#expression}.
+	 * labeled alternative in {@link CfParser#nestedExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitString(CfParser.StringContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code map}
-	 * labeled alternative in {@link CfParser#expression}.
+	 * labeled alternative in {@link CfParser#nestedExpression}.
 	 * @param ctx the parse tree
 	 */
 	void enterMap(CfParser.MapContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code map}
-	 * labeled alternative in {@link CfParser#expression}.
+	 * labeled alternative in {@link CfParser#nestedExpression}.
 	 * @param ctx the parse tree
 	 */
 	void exitMap(CfParser.MapContext ctx);
