@@ -28,6 +28,18 @@ public class CfParserBaseListener implements CfParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSharedProperty(CfParser.SharedPropertyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSharedProperty(CfParser.SharedPropertyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterProperty(CfParser.PropertyContext ctx) { }
 	/**
 	 * {@inheritDoc}

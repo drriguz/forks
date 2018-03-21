@@ -38,9 +38,9 @@ public class PropertyParser extends AntlrBasedParser<CfLexer, CfParser> {
     @Override
     protected void walk(CfLexer lexer, CfParser parser) {
         this.properties = new HashMap<>();
-        PropertyListener rootListener = new PropertyListener(this.properties);
+        CfListener rootListener = new CfListener();
         CfParser.PropertiesContext context = parser.properties();
         ParseTreeWalker.DEFAULT.walk(rootListener, context);
-        this.properties.putAll(rootListener.context);
+        this.properties.putAll(rootListener.properties);
     }
 }

@@ -8,6 +8,9 @@ BOOL     : 'bool';
 DECIMAL  : 'decimal';
 MAP      : 'map';
 
+// keywords
+SHARED   : 'shared';
+
 // operators & marks
 ASSIGN: '=';
 LBRACE: '{';

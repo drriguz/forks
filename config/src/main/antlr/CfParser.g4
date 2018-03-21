@@ -4,8 +4,11 @@ parser grammar CfParser;
 options { tokenVocab=CfLexer; }
 
 properties
-    : (property SEMI)*
+    : (sharedProperty SEMI)* (property SEMI)*
     EOF
+    ;
+sharedProperty
+    : SHARED property
     ;
 
 property

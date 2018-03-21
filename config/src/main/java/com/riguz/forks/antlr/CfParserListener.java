@@ -18,6 +18,16 @@ public interface CfParserListener extends ParseTreeListener {
 	 */
 	void exitProperties(CfParser.PropertiesContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CfParser#sharedProperty}.
+	 * @param ctx the parse tree
+	 */
+	void enterSharedProperty(CfParser.SharedPropertyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CfParser#sharedProperty}.
+	 * @param ctx the parse tree
+	 */
+	void exitSharedProperty(CfParser.SharedPropertyContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CfParser#property}.
 	 * @param ctx the parse tree
 	 */

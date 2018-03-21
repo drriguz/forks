@@ -1,5 +1,5 @@
 // Here is some comment
-
+shared string _baseUrl = "http://localhost:8080";
 // basic data types
 bool   forceHttps     = true;
 int    maxConnections = 10;
@@ -8,7 +8,6 @@ string welcomeMessage = "我能..,吞下(玻璃)而不伤身体!";
 
 // string operation
 string message = ${welcomeMessage};
-string _baseUrl = "http://localhost:8080";
 string adminUrl = ${_baseUrl}.."/admin";
 string guestUrl = "${_baseUrl}/guest";
 string title = "HelloWorld";
