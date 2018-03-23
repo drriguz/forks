@@ -1,0 +1,23 @@
+// Here is some comment
+shared {
+    string _baseUrl = "http://localhost:8080";
+    string domain   = "riguz.com";
+    bool ssl        = false;
+    int version     = 19;
+    int subVersion  = 25;
+    decimal number  = 19.25;
+
+    string urls         = ["http://localhost:8080", "http://riguz.com:8080"];
+    string domains      = ["riguz.com", "dr.riguz.com"];
+    bool sslArray       = [true, false];
+    int versionArray    = [19, 25];
+    decimal numberArray = [18.01, 19.25, 20.23];
+};
+
+scope dev_db {
+    string url = ${domain} .. ":3306/mysql";
+    string user = "lihaifeng";
+    int connections = 10;
+    string password = "iikjouioqueyjkajkqq==";
+    string domains = ${domains};
+};

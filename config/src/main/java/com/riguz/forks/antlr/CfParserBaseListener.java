@@ -16,37 +16,37 @@ public class CfParserBaseListener implements CfParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterProperties(CfParser.PropertiesContext ctx) { }
+	@Override public void enterScript(CfParser.ScriptContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitProperties(CfParser.PropertiesContext ctx) { }
+	@Override public void exitScript(CfParser.ScriptContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSharedProperty(CfParser.SharedPropertyContext ctx) { }
+	@Override public void enterScope(CfParser.ScopeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSharedProperty(CfParser.SharedPropertyContext ctx) { }
+	@Override public void exitScope(CfParser.ScopeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterProperty(CfParser.PropertyContext ctx) { }
+	@Override public void enterShared(CfParser.SharedContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitProperty(CfParser.PropertyContext ctx) { }
+	@Override public void exitShared(CfParser.SharedContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -83,30 +83,6 @@ public class CfParserBaseListener implements CfParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitType(CfParser.TypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBasic(CfParser.BasicContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBasic(CfParser.BasicContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterNested(CfParser.NestedContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitNested(CfParser.NestedContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -172,18 +148,6 @@ public class CfParserBaseListener implements CfParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMap(CfParser.MapContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMap(CfParser.MapContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterStringExpression(CfParser.StringExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -191,18 +155,6 @@ public class CfParserBaseListener implements CfParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStringExpression(CfParser.StringExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterMapExpression(CfParser.MapExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMapExpression(CfParser.MapExpressionContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

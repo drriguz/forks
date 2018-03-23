@@ -17,29 +17,16 @@ public abstract class AntlrBasedParser<L extends Lexer, P extends Parser> {
     protected final Function<TokenStream, P> parserMaker;
 
     public AntlrBasedParser(Function<CharStream, L> lexerMaker,
-                            Function<TokenStream, P> parserMaker,
-                            String fileName) throws IOException {
-        this(lexerMaker, parserMaker,
-                CharStreams.fromStream(Thread.currentThread()
-                        .getContextClassLoader()
-                        .getResourceAsStream(fileName)));
-    }
-
-    public AntlrBasedParser(Function<CharStream, L> lexerMaker,
-                            Function<TokenStream, P> parserMaker,
-                            CharStream source) {
-        this(false, lexerMaker, parserMaker, source);
+                            Function<TokenStream, P> parserMaker) {
+        this(false, lexerMaker, parserMaker);
     }
 
     public AntlrBasedParser(boolean ignoreSyntaxError,
                             Function<CharStream, L> lexerMaker,
-                            Function<TokenStream, P> parserMaker,
-                            CharStream source) {
+                            Function<TokenStream, P> parserMaker) {
         this.ignoreSyntaxError = ignoreSyntaxError;
         this.parserMaker = parserMaker;
         this.lexerMaker = lexerMaker;
-
-        this.parse(source);
     }
 
     protected void parse(CharStream source) {

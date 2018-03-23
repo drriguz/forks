@@ -1,5 +1,16 @@
 // Here is some comment
 shared string _baseUrl = "http://localhost:8080";
+shared string domain   = "riguz.com";
+shared bool ssl = false;
+shared int version = 19;
+shared int subVersion = 25;
+shared decimal number = 19.25;
+shared map fullVersion = {
+    int version = 19;
+    int subVersion = 25;
+    decimal number = 19.25;
+    string releaseDate = "2018-09-10";
+};
 // basic data types
 bool   forceHttps     = true;
 int    maxConnections = 10;

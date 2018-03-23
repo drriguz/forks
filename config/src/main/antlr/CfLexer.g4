@@ -6,10 +6,10 @@ STRING   : 'string';
 INT      : 'int';
 BOOL     : 'bool';
 DECIMAL  : 'decimal';
-MAP      : 'map';
 
 // keywords
 SHARED   : 'shared';
+SCOPE    : 'scope';
 
 // operators & marks
 ASSIGN: '=';

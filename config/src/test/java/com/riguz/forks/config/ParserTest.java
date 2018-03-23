@@ -13,11 +13,11 @@ import static org.junit.Assert.assertNull;
 public class ParserTest {
     @Test
     public void basicTypes() throws IOException {
-        PropertyParser parser = new PropertyParser("basic.cf");
+        PropertyParser parser = PropertyParser.fromResource("example.cf");
         assertNull(parser.get("notexists"));
         assertEquals(true, parser.get("forceHttps"));
-        assertEquals(10, (int)parser.get("maxConnections"));
-        assertEquals(3.1415926, (double)parser.get("pi"), 0);
+        assertEquals(10, (int) parser.get("maxConnections"));
+        assertEquals(3.1415926, (double) parser.get("pi"), 0);
         assertEquals("我能..,吞下(玻璃)而不伤身体!", parser.get("welcomeMessage"));
         assertEquals("我能..,吞下(玻璃)而不伤身体!", parser.get("message"));
         assertEquals("http://localhost:8080", parser.get("_baseUrl"));
