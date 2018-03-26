@@ -5,13 +5,13 @@ shared {
     bool ssl        = false;
     int version     = 19;
     int subVersion  = 25;
-    decimal number  = 19.25;
+    float number  = 19.25;
 
     string urls         = ["http://localhost:8080", "http://riguz.com:8080"];
     string domains      = ["riguz.com", "dr.riguz.com"];
     bool sslArray       = [true, false];
     int versionArray    = [19, 25];
-    decimal numberArray = [18.01, 19.25, 20.23];
+    float numberArray   = [18.01, 19.25, 20.23];
 };
 
 scope dev_db {

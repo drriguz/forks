@@ -124,7 +124,9 @@ public class ScriptVisitor extends CfParserBaseVisitor<Map<String, ScriptVisitor
             if (value == null)
                 throw new NullPointerException("Value not evaluated:" + ctx.getText());
             Type type = Type.valueOf(ctx.type().getText().toUpperCase());
-            if (!type.getType().isAssignableFrom(value.getClass()))
+            Class<?> valueClass = value.getClass().isArray() ?
+                    value.getClass().getComponentType() : value.getClass();
+            if (!type.getType().isAssignableFrom(valueClass))
                 throw new InvalidValueException("Invalid value found of " + name + ":expected is " + type + " but get:" + value.getClass());
             return new Property(name, value);
         }

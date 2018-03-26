@@ -1,7 +1,10 @@
 package com.riguz.forks.config;
 
+import com.riguz.forks.config.property.Property;
 import com.riguz.forks.config.property.PropertyParser;
 import org.junit.Test;
+
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -46,5 +49,11 @@ public class SimpleTypeTest {
     public void parseDuplicatedInShared() {
         String rule = "shared{ string msg = \"Hello World!\";string msg = \"123\";};";
         PropertyParser parser = PropertyParser.fromString(rule);
+    }
+
+    @Test
+    public void parseFile() throws IOException {
+        PropertyParser parser = PropertyParser.fromResource("example.cf");
+        assertEquals("lihaifeng", parser.get("dev_db", "user"));
     }
 }
