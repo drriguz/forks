@@ -23,10 +23,10 @@ public class SimpleTypeTest {
     }
 
     @Test
-    public void parsefloat() {
+    public void parseFloat() {
         String rule = "scope default{ float pi = 3.14159;};";
         PropertyParser parser = PropertyParser.fromString(rule);
-        assertEquals(3.14159f, (float)parser.get("pi"), 0.0f);
+        assertEquals(3.14159f, (float) parser.get("pi"), 0.0f);
     }
 
     @Test
@@ -34,5 +34,17 @@ public class SimpleTypeTest {
         String rule = "scope default{ string msg = \"Hello World!\";};";
         PropertyParser parser = PropertyParser.fromString(rule);
         assertEquals("Hello World!", parser.get("msg"));
+    }
+
+    @Test(expected = DuplicateException.class)
+    public void parseDuplicated() {
+        String rule = "scope default{ string msg = \"Hello World!\";string msg = \"123\";};";
+        PropertyParser parser = PropertyParser.fromString(rule);
+    }
+
+    @Test(expected = DuplicateException.class)
+    public void parseDuplicatedInShared() {
+        String rule = "shared{ string msg = \"Hello World!\";string msg = \"123\";};";
+        PropertyParser parser = PropertyParser.fromString(rule);
     }
 }

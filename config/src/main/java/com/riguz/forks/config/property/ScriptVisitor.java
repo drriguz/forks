@@ -2,10 +2,13 @@ package com.riguz.forks.config.property;
 
 import com.riguz.forks.antlr.CfParser;
 import com.riguz.forks.antlr.CfParserBaseVisitor;
+import com.riguz.forks.config.DuplicateException;
 import com.riguz.forks.config.InvalidValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +33,9 @@ public class ScriptVisitor extends CfParserBaseVisitor<Map<String, ScriptVisitor
                         if (property == null)
                             throw new NullPointerException("Property not parsed:" + ctx.getText());
                         logger.debug("Setting shared:{} = {}({})", property.name, property.value, property.value.getClass());
+                        if (sharedProperties.containsKey(property.name))
+                            throw new DuplicateException("Duplicate property of " + property.name
+                                    + " in shared");
                         sharedProperties.put(property.name, property.value);
                     });
                     return sharedProperties;
@@ -72,6 +78,9 @@ public class ScriptVisitor extends CfParserBaseVisitor<Map<String, ScriptVisitor
                 Property property = propertyContext.accept(propertyVisitor);
                 if (property == null)
                     throw new NullPointerException("Property not parsed:" + ctx.getText());
+                if (properties.containsKey(property.name))
+                    throw new DuplicateException("Duplicate property of " + property.name
+                            + " in scope " + ctx.NAME().getText());
                 logger.debug("Setting shared:{} = {}", property.name, property.value);
                 properties.put(property.name, property.value);
             });
@@ -110,27 +119,27 @@ public class ScriptVisitor extends CfParserBaseVisitor<Map<String, ScriptVisitor
         @Override
         public Property visitBasicProperty(CfParser.BasicPropertyContext ctx) {
             logger.debug("Visit basic property:{}", ctx.getText());
-            Property property = new Property();
-            property.name = ctx.NAME().getText();
-            ExpressionVisitor expressionVisitor = new ExpressionVisitor();
-            property.value = ctx.expression().accept(expressionVisitor);
-            if (property.value == null)
+            String name = ctx.NAME().getText();
+            Object value = ctx.expression().accept(new ExpressionVisitor());
+            if (value == null)
                 throw new NullPointerException("Value not evaluated:" + ctx.getText());
             Type type = Type.valueOf(ctx.type().getText().toUpperCase());
-            if (!type.getType().isAssignableFrom(property.value.getClass()))
-                throw new InvalidValueException("Invalid value found of "
-                        + property
-                        + ":expected="
-                        + type
-                        + " but get:"
-                        + property.value.getClass());
-            return property;
+            if (!type.getType().isAssignableFrom(value.getClass()))
+                throw new InvalidValueException("Invalid value found of " + name + ":expected is " + type + " but get:" + value.getClass());
+            return new Property(name, value);
         }
 
         @Override
         public Property visitArrayProperty(CfParser.ArrayPropertyContext ctx) {
-
-            return super.visitArrayProperty(ctx);
+            String name = ctx.NAME().getText();
+            Type type = Type.valueOf(ctx.type().getText().toUpperCase());
+            Object value = Array.newInstance(type.getType(), ctx.expression().size());
+            ExpressionVisitor expressionVisitor = new ExpressionVisitor();
+            for (int i = 0; i < ctx.expression().size(); i++) {
+                Object item = ctx.expression().get(i).accept(expressionVisitor);
+                Array.set(value, i, item);
+            }
+            return new Property(name, value);
         }
 
         private class ExpressionVisitor extends CfParserBaseVisitor<Object> {
@@ -141,7 +150,7 @@ public class ScriptVisitor extends CfParserBaseVisitor<Map<String, ScriptVisitor
                 else if ("false".equals(ctx.BOOL_LITERAL().getText()))
                     return false;
                 else
-                    return null;
+                    throw new InvalidValueException("Unrecognized bool literal:" + ctx.getText());
             }
 
             @Override
