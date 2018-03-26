@@ -3,13 +3,15 @@ package com.riguz.forks.config;
 import com.riguz.forks.config.property.PropertyParser;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-public class SimpleTypeTest {
+public class ReferenceTest {
+
+    String shared = "shared{bool https=false;int max=100;decimal xx=4.29;string author=\"riguz\";};";
 
     @Test
     public void parseBool() {
-        String rule = "scope default{ bool ssl = false; bool unsafe = true;};";
+        String rule = shared + "scope default{ bool ssl = ${https}; bool unsafe = true;};";
         PropertyParser parser = PropertyParser.fromString(rule);
         assertEquals(false, parser.get("ssl"));
         assertEquals(true, parser.get("unsafe"));
@@ -17,9 +19,9 @@ public class SimpleTypeTest {
 
     @Test
     public void parseInt() {
-        String rule = "scope default{ int version = 19;};";
+        String rule = shared + "scope default{ int version = ${max};};";
         PropertyParser parser = PropertyParser.fromString(rule);
-        assertEquals(19, (int) parser.get("version"));
+        assertEquals(100, (int) parser.get("version"));
     }
 
     @Test

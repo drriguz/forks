@@ -2,6 +2,13 @@ package com.riguz.forks.config.property;
 
 public class Property {
     String name;
-    Type type;
     Object value;
+
+    @Override
+    public String toString() {
+        return "Property{" +
+                "name='" + name + '\'' +
+                ", value=" + value +
+                '}';
+    }
 }

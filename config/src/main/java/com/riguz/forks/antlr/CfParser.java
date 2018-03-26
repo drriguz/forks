@@ -531,6 +531,23 @@ public class CfParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	public static class ReferenceContext extends ExpressionContext {
+		public TerminalNode REFERENCE() { return getToken(CfParser.REFERENCE, 0); }
+		public ReferenceContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof CfParserListener ) ((CfParserListener)listener).enterReference(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof CfParserListener ) ((CfParserListener)listener).exitReference(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CfParserVisitor ) return ((CfParserVisitor<? extends T>)visitor).visitReference(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 	public static class BoolContext extends ExpressionContext {
 		public TerminalNode BOOL_LITERAL() { return getToken(CfParser.BOOL_LITERAL, 0); }
 		public BoolContext(ExpressionContext ctx) { copyFrom(ctx); }
@@ -623,10 +640,10 @@ public class CfParser extends Parser {
 		ExpressionContext _localctx = new ExpressionContext(_ctx, getState());
 		enterRule(_localctx, 10, RULE_expression);
 		try {
-			setState(82);
+			setState(83);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case BOOL_LITERAL:
+			switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
+			case 1:
 				_localctx = new BoolContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
@@ -634,7 +651,7 @@ public class CfParser extends Parser {
 				match(BOOL_LITERAL);
 				}
 				break;
-			case INT_LITERAL:
+			case 2:
 				_localctx = new IntContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
@@ -642,7 +659,7 @@ public class CfParser extends Parser {
 				match(INT_LITERAL);
 				}
 				break;
-			case HEX_LITERAL:
+			case 3:
 				_localctx = new HexContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
@@ -650,7 +667,7 @@ public class CfParser extends Parser {
 				match(HEX_LITERAL);
 				}
 				break;
-			case DECIMAL_LITERAL:
+			case 4:
 				_localctx = new DecimalContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
@@ -658,17 +675,22 @@ public class CfParser extends Parser {
 				match(DECIMAL_LITERAL);
 				}
 				break;
-			case STRING_LITERAL:
-			case REFERENCE:
-				_localctx = new StringContext(_localctx);
+			case 5:
+				_localctx = new ReferenceContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(81);
+				match(REFERENCE);
+				}
+				break;
+			case 6:
+				_localctx = new StringContext(_localctx);
+				enterOuterAlt(_localctx, 6);
+				{
+				setState(82);
 				stringExpression();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -715,7 +737,7 @@ public class CfParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(84);
+			setState(85);
 			_la = _input.LA(1);
 			if ( !(_la==STRING_LITERAL || _la==REFERENCE) ) {
 			_errHandler.recoverInline(this);
@@ -725,14 +747,14 @@ public class CfParser extends Parser {
 				_errHandler.reportMatch(this);
 				consume();
 			}
-			setState(87);
+			setState(88);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==LINK) {
 				{
-				setState(85);
-				match(LINK);
 				setState(86);
+				match(LINK);
+				setState(87);
 				stringExpression();
 				}
 			}
@@ -751,15 +773,15 @@ public class CfParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\32\\\4\2\t\2\4\3"+
-		"\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\5\2\22\n\2\3\2\7\2\25"+
-		"\n\2\f\2\16\2\30\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\7\3\"\n\3\f\3\16"+
-		"\3%\13\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\7\4/\n\4\f\4\16\4\62\13\4\3\4"+
-		"\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5A\n\5\3\5\3\5\7\5"+
-		"E\n\5\f\5\16\5H\13\5\3\5\3\5\5\5L\n\5\3\6\3\6\3\7\3\7\3\7\3\7\3\7\5\7"+
-		"U\n\7\3\b\3\b\3\b\5\bZ\n\b\3\b\2\2\t\2\4\6\b\n\f\16\2\4\3\2\3\6\4\2\25"+
-		"\25\27\27\2`\2\21\3\2\2\2\4\33\3\2\2\2\6)\3\2\2\2\bK\3\2\2\2\nM\3\2\2"+
-		"\2\fT\3\2\2\2\16V\3\2\2\2\20\22\5\6\4\2\21\20\3\2\2\2\21\22\3\2\2\2\22"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\32]\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\5\2\22\n\2\3\2\7\2\25\n"+
+		"\2\f\2\16\2\30\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\7\3\"\n\3\f\3\16\3"+
+		"%\13\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\7\4/\n\4\f\4\16\4\62\13\4\3\4\3"+
+		"\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5A\n\5\3\5\3\5\7\5E\n"+
+		"\5\f\5\16\5H\13\5\3\5\3\5\5\5L\n\5\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7\5\7"+
+		"V\n\7\3\b\3\b\3\b\5\b[\n\b\3\b\2\2\t\2\4\6\b\n\f\16\2\4\3\2\3\6\4\2\25"+
+		"\25\27\27\2b\2\21\3\2\2\2\4\33\3\2\2\2\6)\3\2\2\2\bK\3\2\2\2\nM\3\2\2"+
+		"\2\fU\3\2\2\2\16W\3\2\2\2\20\22\5\6\4\2\21\20\3\2\2\2\21\22\3\2\2\2\22"+
 		"\26\3\2\2\2\23\25\5\4\3\2\24\23\3\2\2\2\25\30\3\2\2\2\26\24\3\2\2\2\26"+
 		"\27\3\2\2\2\27\31\3\2\2\2\30\26\3\2\2\2\31\32\7\2\2\3\32\3\3\2\2\2\33"+
 		"\34\7\b\2\2\34\35\7\26\2\2\35#\7\n\2\2\36\37\5\b\5\2\37 \7\16\2\2 \"\3"+
@@ -771,9 +793,10 @@ public class CfParser extends Parser {
 		"\2\2=>\7\t\2\2>@\7\f\2\2?A\5\f\7\2@?\3\2\2\2@A\3\2\2\2AF\3\2\2\2BC\7\17"+
 		"\2\2CE\5\f\7\2DB\3\2\2\2EH\3\2\2\2FD\3\2\2\2FG\3\2\2\2GI\3\2\2\2HF\3\2"+
 		"\2\2IJ\7\r\2\2JL\3\2\2\2K\66\3\2\2\2K;\3\2\2\2L\t\3\2\2\2MN\t\2\2\2N\13"+
-		"\3\2\2\2OU\7\21\2\2PU\7\22\2\2QU\7\23\2\2RU\7\24\2\2SU\5\16\b\2TO\3\2"+
-		"\2\2TP\3\2\2\2TQ\3\2\2\2TR\3\2\2\2TS\3\2\2\2U\r\3\2\2\2VY\t\3\2\2WX\7"+
-		"\20\2\2XZ\5\16\b\2YW\3\2\2\2YZ\3\2\2\2Z\17\3\2\2\2\13\21\26#\60@FKTY";
+		"\3\2\2\2OV\7\21\2\2PV\7\22\2\2QV\7\23\2\2RV\7\24\2\2SV\7\27\2\2TV\5\16"+
+		"\b\2UO\3\2\2\2UP\3\2\2\2UQ\3\2\2\2UR\3\2\2\2US\3\2\2\2UT\3\2\2\2V\r\3"+
+		"\2\2\2WZ\t\3\2\2XY\7\20\2\2Y[\5\16\b\2ZX\3\2\2\2Z[\3\2\2\2[\17\3\2\2\2"+
+		"\13\21\26#\60@FKUZ";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

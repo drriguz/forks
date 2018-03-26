@@ -120,6 +120,18 @@ public interface CfParserListener extends ParseTreeListener {
 	 */
 	void exitDecimal(CfParser.DecimalContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code reference}
+	 * labeled alternative in {@link CfParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterReference(CfParser.ReferenceContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code reference}
+	 * labeled alternative in {@link CfParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitReference(CfParser.ReferenceContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code string}
 	 * labeled alternative in {@link CfParser#expression}.
 	 * @param ctx the parse tree

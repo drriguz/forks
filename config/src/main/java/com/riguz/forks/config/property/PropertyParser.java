@@ -2,19 +2,17 @@ package com.riguz.forks.config.property;
 
 import com.riguz.forks.antlr.CfLexer;
 import com.riguz.forks.antlr.CfParser;
-import com.riguz.forks.antlr.CfParserBaseListener;
-import com.riguz.forks.antlr.CfParserBaseVisitor;
 import com.riguz.forks.config.AntlrBasedParser;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class PropertyParser extends AntlrBasedParser<CfLexer, CfParser> {
     private static final Logger logger = LoggerFactory.getLogger(PropertyParser.class);
@@ -26,15 +24,23 @@ public class PropertyParser extends AntlrBasedParser<CfLexer, CfParser> {
         this.parse(source);
     }
 
-    Map<String, Object> properties = Collections.emptyMap();
-    Map<String, Object> sharedProperties = Collections.emptyMap();
+    Map<String, ScriptVisitor.Scope> scopes = Collections.emptyMap();
 
-    public <T> T get(String name) {
-        return (T) this.properties.get(name);
+    public List<String> getScopes() {
+        return this.scopes.keySet().stream().collect(Collectors.toList());
     }
 
-    public <T> T getShared(String name) {
-        return (T) this.sharedProperties.get(name);
+    public <T> T get(String scope, String name) {
+        ScriptVisitor.Scope scopeObject = this.scopes.get(scope);
+        if (scopeObject == null)
+            return null;
+        return (T) scopeObject.properties.get(name);
+    }
+
+    public static final String DEFAULT_SCOPE = "default";
+
+    public <T> T get(String name) {
+        return (T) this.get(DEFAULT_SCOPE, name);
     }
 
     public static PropertyParser fromString(String string) {
@@ -52,11 +58,12 @@ public class PropertyParser extends AntlrBasedParser<CfLexer, CfParser> {
 
     @Override
     protected void walk(CfLexer lexer, CfParser parser) {
-        ScriptVisitor visitor = ScriptVisitor.ofShared();
-        Map<String, Object> shared = visitor.visit(parser.shared());
-        logger.debug("shared:{}", shared);
-        if (shared == null)
+        ScriptVisitor contextVisitor = new ScriptVisitor();
+        Map<String, ScriptVisitor.Scope> scopes = contextVisitor.visit(parser.script());
+        logger.debug("parsed :{}", scopes);
+        if (scopes != null)
+            this.scopes = scopes;
+        else
             throw new RuntimeException("Unexpected null value occurs. this must be a bug");
-        this.sharedProperties = shared;
     }
 }

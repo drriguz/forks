@@ -77,6 +77,13 @@ public interface CfParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDecimal(CfParser.DecimalContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code reference}
+	 * labeled alternative in {@link CfParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReference(CfParser.ReferenceContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code string}
 	 * labeled alternative in {@link CfParser#expression}.
 	 * @param ctx the parse tree

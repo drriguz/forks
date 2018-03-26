@@ -31,9 +31,10 @@ expression
     | INT_LITERAL          #int
     | HEX_LITERAL          #hex
     | DECIMAL_LITERAL      #decimal
+    | REFERENCE            #reference
     | stringExpression     #string
     ;
 
 stringExpression
-    : (STRING_LITERAL | REFERENCE ) (LINK stringExpression)?
+    : (STRING_LITERAL | REFERENCE) (LINK stringExpression)?
     ;
