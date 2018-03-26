@@ -5,7 +5,7 @@ lexer grammar CfLexer;
 STRING   : 'string';
 INT      : 'int';
 BOOL     : 'bool';
-DECIMAL  : 'decimal';
+FLOAT    : 'float';
 
 // keywords
 SHARED   : 'shared';
@@ -26,7 +26,7 @@ LINK  : '..';
 BOOL_LITERAL    : 'true' | 'false';
 INT_LITERAL     : Digit+;
 HEX_LITERAL     : '0x' HexDigit+;
-DECIMAL_LITERAL : Digit+ '.' Digit+;
+FLOAT_LITERAL   : Digit+ '.' Digit+;
 STRING_LITERAL  : '"' (Char | EscapeSequence )* '"';
 
 NAME     : [a-zA-Z_][a-zA-Z_0-9]*;

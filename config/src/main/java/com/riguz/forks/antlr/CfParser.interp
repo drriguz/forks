@@ -3,7 +3,7 @@ null
 'string'
 'int'
 'bool'
-'decimal'
+'float'
 'shared'
 'scope'
 '='
@@ -30,7 +30,7 @@ null
 STRING
 INT
 BOOL
-DECIMAL
+FLOAT
 SHARED
 SCOPE
 ASSIGN
@@ -44,7 +44,7 @@ LINK
 BOOL_LITERAL
 INT_LITERAL
 HEX_LITERAL
-DECIMAL_LITERAL
+FLOAT_LITERAL
 STRING_LITERAL
 NAME
 REFERENCE

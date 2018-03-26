@@ -124,13 +124,13 @@ public class CfParserBaseListener implements CfParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDecimal(CfParser.DecimalContext ctx) { }
+	@Override public void enterFloat(CfParser.FloatContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDecimal(CfParser.DecimalContext ctx) { }
+	@Override public void exitFloat(CfParser.FloatContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

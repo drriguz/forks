@@ -70,12 +70,12 @@ public interface CfParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitHex(CfParser.HexContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code decimal}
+	 * Visit a parse tree produced by the {@code float}
 	 * labeled alternative in {@link CfParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDecimal(CfParser.DecimalContext ctx);
+	T visitFloat(CfParser.FloatContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code reference}
 	 * labeled alternative in {@link CfParser#expression}.

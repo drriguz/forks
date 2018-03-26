@@ -3,13 +3,13 @@ package com.riguz.forks.config;
 import com.riguz.forks.config.property.PropertyParser;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-public class SimpleTypeTest {
+public class ArrayTypeTest {
 
     @Test
     public void parseBool() {
-        String rule = "scope default{ bool ssl = false; bool unsafe = true;};";
+        String rule = "scope default{ bool ssl = [false, true];};";
         PropertyParser parser = PropertyParser.fromString(rule);
         assertEquals(false, parser.get("ssl"));
         assertEquals(true, parser.get("unsafe"));
@@ -23,10 +23,10 @@ public class SimpleTypeTest {
     }
 
     @Test
-    public void parsefloat() {
-        String rule = "scope default{ float pi = 3.14159;};";
+    public void parseDecimal() {
+        String rule = "scope default{ decimal pi = 3.14159;};";
         PropertyParser parser = PropertyParser.fromString(rule);
-        assertEquals(3.14159f, (float)parser.get("pi"), 0.0f);
+        assertEquals(3.14159, parser.<Double>get("pi"), 0);
     }
 
     @Test

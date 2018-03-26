@@ -108,17 +108,17 @@ public interface CfParserListener extends ParseTreeListener {
 	 */
 	void exitHex(CfParser.HexContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code decimal}
+	 * Enter a parse tree produced by the {@code float}
 	 * labeled alternative in {@link CfParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterDecimal(CfParser.DecimalContext ctx);
+	void enterFloat(CfParser.FloatContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code decimal}
+	 * Exit a parse tree produced by the {@code float}
 	 * labeled alternative in {@link CfParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitDecimal(CfParser.DecimalContext ctx);
+	void exitFloat(CfParser.FloatContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code reference}
 	 * labeled alternative in {@link CfParser#expression}.

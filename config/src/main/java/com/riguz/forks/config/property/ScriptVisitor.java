@@ -27,6 +27,8 @@ public class ScriptVisitor extends CfParserBaseVisitor<Map<String, ScriptVisitor
                     ctx.property().forEach(propertyContext -> {
                         PropertyVisitor propertyVisitor = PropertyVisitor.withoutReference();
                         Property property = propertyContext.accept(propertyVisitor);
+                        if (property == null)
+                            throw new NullPointerException("Property not parsed:" + ctx.getText());
                         logger.debug("Setting shared:{} = {}({})", property.name, property.value, property.value.getClass());
                         sharedProperties.put(property.name, property.value);
                     });
@@ -48,8 +50,6 @@ public class ScriptVisitor extends CfParserBaseVisitor<Map<String, ScriptVisitor
         Map<String, Object> properties;
 
         public Scope(String name, Map<String, Object> properties) {
-            if (properties == null)
-                throw new RuntimeException("Invalid scope detected, name or scopes is empty");
             this.name = name;
             this.properties = Collections.unmodifiableMap(properties);
         }
@@ -70,6 +70,8 @@ public class ScriptVisitor extends CfParserBaseVisitor<Map<String, ScriptVisitor
             ctx.property().forEach(propertyContext -> {
                 PropertyVisitor propertyVisitor = PropertyVisitor.withReference(this.context);
                 Property property = propertyContext.accept(propertyVisitor);
+                if (property == null)
+                    throw new NullPointerException("Property not parsed:" + ctx.getText());
                 logger.debug("Setting shared:{} = {}", property.name, property.value);
                 properties.put(property.name, property.value);
             });
@@ -113,7 +115,7 @@ public class ScriptVisitor extends CfParserBaseVisitor<Map<String, ScriptVisitor
             ExpressionVisitor expressionVisitor = new ExpressionVisitor();
             property.value = ctx.expression().accept(expressionVisitor);
             if (property.value == null)
-                throw new RuntimeException("Value not evaluated, that must be a bug?");
+                throw new NullPointerException("Value not evaluated:" + ctx.getText());
             Type type = Type.valueOf(ctx.type().getText().toUpperCase());
             if (!type.getType().isAssignableFrom(property.value.getClass()))
                 throw new InvalidValueException("Invalid value found of "
@@ -127,6 +129,7 @@ public class ScriptVisitor extends CfParserBaseVisitor<Map<String, ScriptVisitor
 
         @Override
         public Property visitArrayProperty(CfParser.ArrayPropertyContext ctx) {
+
             return super.visitArrayProperty(ctx);
         }
 
@@ -152,8 +155,8 @@ public class ScriptVisitor extends CfParserBaseVisitor<Map<String, ScriptVisitor
             }
 
             @Override
-            public Object visitDecimal(CfParser.DecimalContext ctx) {
-                return Double.parseDouble(ctx.getText());
+            public Object visitFloat(CfParser.FloatContext ctx) {
+                return Float.parseFloat(ctx.getText());
             }
 
             @Override
@@ -176,6 +179,7 @@ public class ScriptVisitor extends CfParserBaseVisitor<Map<String, ScriptVisitor
                     } else if (ctx.REFERENCE() != null) {
                         value += getReference(ctx.REFERENCE().getText());
                     }
+
                     if (ctx.stringExpression() != null) {
                         StringVisitor nestedVisitor = new StringVisitor();
                         value += ctx.stringExpression().accept(nestedVisitor);

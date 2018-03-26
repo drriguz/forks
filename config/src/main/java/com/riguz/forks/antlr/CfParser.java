@@ -17,10 +17,10 @@ public class CfParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		STRING=1, INT=2, BOOL=3, DECIMAL=4, SHARED=5, SCOPE=6, ASSIGN=7, LBRACE=8, 
+		STRING=1, INT=2, BOOL=3, FLOAT=4, SHARED=5, SCOPE=6, ASSIGN=7, LBRACE=8, 
 		RBRACE=9, LBRACK=10, RBRACK=11, SEMI=12, COMMA=13, LINK=14, BOOL_LITERAL=15, 
-		INT_LITERAL=16, HEX_LITERAL=17, DECIMAL_LITERAL=18, STRING_LITERAL=19, 
-		NAME=20, REFERENCE=21, COMMENT=22, LINE_COMMENT=23, WS=24;
+		INT_LITERAL=16, HEX_LITERAL=17, FLOAT_LITERAL=18, STRING_LITERAL=19, NAME=20, 
+		REFERENCE=21, COMMENT=22, LINE_COMMENT=23, WS=24;
 	public static final int
 		RULE_script = 0, RULE_scope = 1, RULE_shared = 2, RULE_property = 3, RULE_type = 4, 
 		RULE_expression = 5, RULE_stringExpression = 6;
@@ -29,13 +29,13 @@ public class CfParser extends Parser {
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "'string'", "'int'", "'bool'", "'decimal'", "'shared'", "'scope'", 
+		null, "'string'", "'int'", "'bool'", "'float'", "'shared'", "'scope'", 
 		"'='", "'{'", "'}'", "'['", "']'", "';'", "','", "'..'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, "STRING", "INT", "BOOL", "DECIMAL", "SHARED", "SCOPE", "ASSIGN", 
-		"LBRACE", "RBRACE", "LBRACK", "RBRACK", "SEMI", "COMMA", "LINK", "BOOL_LITERAL", 
-		"INT_LITERAL", "HEX_LITERAL", "DECIMAL_LITERAL", "STRING_LITERAL", "NAME", 
+		null, "STRING", "INT", "BOOL", "FLOAT", "SHARED", "SCOPE", "ASSIGN", "LBRACE", 
+		"RBRACE", "LBRACK", "RBRACK", "SEMI", "COMMA", "LINK", "BOOL_LITERAL", 
+		"INT_LITERAL", "HEX_LITERAL", "FLOAT_LITERAL", "STRING_LITERAL", "NAME", 
 		"REFERENCE", "COMMENT", "LINE_COMMENT", "WS"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
@@ -213,7 +213,7 @@ public class CfParser extends Parser {
 			setState(33);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING) | (1L << INT) | (1L << BOOL) | (1L << DECIMAL))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING) | (1L << INT) | (1L << BOOL) | (1L << FLOAT))) != 0)) {
 				{
 				{
 				setState(28);
@@ -290,7 +290,7 @@ public class CfParser extends Parser {
 			setState(46);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING) | (1L << INT) | (1L << BOOL) | (1L << DECIMAL))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING) | (1L << INT) | (1L << BOOL) | (1L << FLOAT))) != 0)) {
 				{
 				{
 				setState(41);
@@ -426,7 +426,7 @@ public class CfParser extends Parser {
 				setState(62);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << BOOL_LITERAL) | (1L << INT_LITERAL) | (1L << HEX_LITERAL) | (1L << DECIMAL_LITERAL) | (1L << STRING_LITERAL) | (1L << REFERENCE))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << BOOL_LITERAL) | (1L << INT_LITERAL) | (1L << HEX_LITERAL) | (1L << FLOAT_LITERAL) | (1L << STRING_LITERAL) | (1L << REFERENCE))) != 0)) {
 					{
 					setState(61);
 					expression();
@@ -469,7 +469,7 @@ public class CfParser extends Parser {
 	public static class TypeContext extends ParserRuleContext {
 		public TerminalNode BOOL() { return getToken(CfParser.BOOL, 0); }
 		public TerminalNode INT() { return getToken(CfParser.INT, 0); }
-		public TerminalNode DECIMAL() { return getToken(CfParser.DECIMAL, 0); }
+		public TerminalNode FLOAT() { return getToken(CfParser.FLOAT, 0); }
 		public TerminalNode STRING() { return getToken(CfParser.STRING, 0); }
 		public TypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -499,7 +499,7 @@ public class CfParser extends Parser {
 			{
 			setState(75);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING) | (1L << INT) | (1L << BOOL) | (1L << DECIMAL))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING) | (1L << INT) | (1L << BOOL) | (1L << FLOAT))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -601,20 +601,20 @@ public class CfParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class DecimalContext extends ExpressionContext {
-		public TerminalNode DECIMAL_LITERAL() { return getToken(CfParser.DECIMAL_LITERAL, 0); }
-		public DecimalContext(ExpressionContext ctx) { copyFrom(ctx); }
+	public static class FloatContext extends ExpressionContext {
+		public TerminalNode FLOAT_LITERAL() { return getToken(CfParser.FLOAT_LITERAL, 0); }
+		public FloatContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CfParserListener ) ((CfParserListener)listener).enterDecimal(this);
+			if ( listener instanceof CfParserListener ) ((CfParserListener)listener).enterFloat(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CfParserListener ) ((CfParserListener)listener).exitDecimal(this);
+			if ( listener instanceof CfParserListener ) ((CfParserListener)listener).exitFloat(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CfParserVisitor ) return ((CfParserVisitor<? extends T>)visitor).visitDecimal(this);
+			if ( visitor instanceof CfParserVisitor ) return ((CfParserVisitor<? extends T>)visitor).visitFloat(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -668,11 +668,11 @@ public class CfParser extends Parser {
 				}
 				break;
 			case 4:
-				_localctx = new DecimalContext(_localctx);
+				_localctx = new FloatContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(80);
-				match(DECIMAL_LITERAL);
+				match(FLOAT_LITERAL);
 				}
 				break;
 			case 5:

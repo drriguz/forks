@@ -23,14 +23,14 @@ property
 type
     : BOOL
     | INT
-    | DECIMAL
+    | FLOAT
     | STRING
     ;
 expression
     : BOOL_LITERAL         #bool
     | INT_LITERAL          #int
     | HEX_LITERAL          #hex
-    | DECIMAL_LITERAL      #decimal
+    | FLOAT_LITERAL        #float
     | REFERENCE            #reference
     | stringExpression     #string
     ;
