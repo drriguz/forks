@@ -55,5 +55,6 @@ public class SimpleTypeTest {
     public void parseFile() throws IOException {
         PropertyParser parser = PropertyParser.fromResource("example.cf");
         assertEquals("lihaifeng", parser.get("dev_db", "user"));
+        assertEquals("riguz.com:3306/mysql", parser.get("dev_db", "url"));
     }
 }
