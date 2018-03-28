@@ -2,9 +2,9 @@ grammar Route;
 @header { package com.riguz.forks.antlr; }
 
 routeConfig
-    : (controllers NEW_LINE)+
-      (filters NEW_LINE)*
-      (routes NEW_LINE)+
+    : (controllers)+
+      (filters)*
+      (routes)+
       EOF
     ;
 controllers
@@ -18,8 +18,8 @@ filters
       '}'
     ;
 classNames
-    : package NEW_LINE
-      (className NEW_LINE)+
+    : package 
+      (className )+
     ;
 package
     : PACKAGE PACKAGE_NAME
@@ -29,12 +29,12 @@ className
     : IDENTIFIER ('->' IDENTIFIER)?
     ;
 applyFilters
-    : ('+' IDENTIFIER NEW_LINE)+
+    : ('+' IDENTIFIER )+
     ;
 routes
     : ROUTES IDENTIFIER? '{'
         applyFilters?
-        (route NEW_LINE)*
+        (route)*
       '}'
     ;
 route
@@ -87,7 +87,6 @@ WILDCARD_PATH: '/*' IDENTIFIER;
 // comments
 COMMENT      : '/*' .*? '*/'    -> channel(HIDDEN);
 LINE_COMMENT : '//' ~[\r\n]*    -> channel(HIDDEN);
-WS           : [ \t]+           -> channel(HIDDEN);
-NEW_LINE     : ('\r'? '\n')+;
+WS           : [ \t\r\n]+       -> channel(HIDDEN);
 
 

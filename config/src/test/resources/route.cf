@@ -23,6 +23,11 @@ get  /users/:id             UserController.getUser(id: Long)
 post /users                 UserController.createUser()
 get  /users/:id/files/*name FileUserController.getFile(id: Long, name: String)
 }
+routes guest {
++NocsrfFilter
+get /posts      PostUserController.getPosts()
+get /posts/:id  PostUserController.getPost(id: String)
+}
 
 routes guest {
 +NocsrfFilter
