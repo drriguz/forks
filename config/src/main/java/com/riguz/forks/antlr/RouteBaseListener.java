@@ -1,5 +1,5 @@
 // Generated from Route.g4 by ANTLR 4.7.1
- package com.riguz.forks.antlr.router; 
+ package com.riguz.forks.antlr; 
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;

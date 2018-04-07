@@ -68,7 +68,7 @@ controllers
 filters
 classNames
 packageName
-className
+classIdentifier
 applyFilters
 routes
 route

@@ -1,5 +1,5 @@
 grammar Route;
-@header { package com.riguz.forks.antlr.router; }
+@header { package com.riguz.forks.antlr; }
 
 routeConfig
     : (controllers)+
@@ -19,13 +19,13 @@ filters
     ;
 classNames
     : packageName
-      (className )+
+      (classIdentifier )+
     ;
 packageName
     : PACKAGE PACKAGE_NAME
     ;
 
-className
+classIdentifier
     : IDENTIFIER ('->' IDENTIFIER)?
     ;
 applyFilters
