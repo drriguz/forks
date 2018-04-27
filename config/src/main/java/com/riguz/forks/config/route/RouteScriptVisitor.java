@@ -2,9 +2,11 @@ package com.riguz.forks.config.route;
 
 import com.riguz.forks.antlr.RouteBaseVisitor;
 import com.riguz.forks.antlr.RouteParser;
+import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -129,18 +131,21 @@ public class RouteScriptVisitor extends RouteBaseVisitor<RouteConfig> {
                 String expression = ctx.FUNCTION().getText();
                 String controllerName = expression.substring(0, expression.indexOf("."));
                 String methodName = expression.substring(expression.indexOf(".") + 1, expression.indexOf("("));
-                Class<?>[] params = ctx.params() == null ? null : ctx.params().accept(this.paramVisitor);
+                PathParam[] params = ctx.params() == null ? null : ctx.params().accept(this.paramVisitor);
+
                 return new FunctionCall(controllerName, methodName, params);
             }
 
-            private class ParamVisitor extends RouteBaseVisitor<Class<?>[]> {
+            private class ParamVisitor extends RouteBaseVisitor<PathParam[]> {
                 @Override
-                public Class<?>[] visitParams(RouteParser.ParamsContext ctx) {
-                    Class<?>[] classes = new Class[ctx.pathParamTypes().size()];
+                public PathParam[] visitParams(RouteParser.ParamsContext ctx) {
+                    PathParam[] params = new PathParam[ctx.pathParamTypes().size()];
                     for (int i = 0; i < ctx.pathParamTypes().size(); i++) {
-                        classes[i] = this.getType(ctx.pathParamTypes().get(i));
+                        String name = ctx.IDENTIFIER().get(i).getText();
+                        Class<?> type = this.getType(ctx.pathParamTypes().get(i));
+                        params[i] = new PathParam(name, type);
                     }
-                    return classes;
+                    return params;
                 }
 
                 private Class<?> getType(RouteParser.PathParamTypesContext ctx) {

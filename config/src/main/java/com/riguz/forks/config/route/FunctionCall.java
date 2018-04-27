@@ -6,12 +6,19 @@ import java.util.Objects;
 public class FunctionCall {
     private final String controller;
     private final String method;
+    private final String[] paramNames;
     private final Class<?>[] paramTypes;
 
-    public FunctionCall(String controller, String method, Class<?>[] paramTypes) {
+    public FunctionCall(String controller, String method, PathParam[] params) {
         this.controller = controller;
         this.method = method;
-        this.paramTypes = paramTypes;
+        if (params == null) {
+            this.paramNames = null;
+            this.paramTypes = null;
+        } else {
+            this.paramNames = Arrays.stream(params).map(PathParam::getName).toArray(String[]::new);
+            this.paramTypes = Arrays.stream(params).map(PathParam::getType).toArray(Class<?>[]::new);
+        }
     }
 
     public String getController() {
@@ -20,6 +27,10 @@ public class FunctionCall {
 
     public String getMethod() {
         return method;
+    }
+
+    public String[] getParamNames() {
+        return paramNames;
     }
 
     public Class<?>[] getParamTypes() {

@@ -76,8 +76,10 @@ public class RouteTest {
         assertEquals(2, rules.size());
         assertEquals("/posts", rules.get(0).getPattern());
         assertEquals("GET", rules.get(0).getMethod());
-        assertEquals(new FunctionCall("PostUserController", "getPosts", null), rules.get(0).getFunctionCall());
-        assertEquals(new FunctionCall("PostUserController", "getPost", new Class<?>[]{String.class}), rules.get(1).getFunctionCall());
+        assertEquals(new FunctionCall("PostUserController", "getPosts", null),
+                rules.get(0).getFunctionCall());
+        assertEquals(new FunctionCall("PostUserController", "getPost", new PathParam[]{new PathParam("id", String.class)}),
+                rules.get(1).getFunctionCall());
         assertEquals("/posts/:id", rules.get(1).getPattern());
         assertEquals("GET", rules.get(1).getMethod());
     }
