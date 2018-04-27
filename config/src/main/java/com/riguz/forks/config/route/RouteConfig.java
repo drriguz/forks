@@ -6,9 +6,9 @@ import java.util.List;
 public class RouteConfig {
     private List<ClassIdentifier> controllers = Collections.emptyList();
     private List<ClassIdentifier> filters = Collections.emptyList();
-    private List<RouteGroup> routes = Collections.emptyList();
+    private List<RouteRule> routes = Collections.emptyList();
 
-    public RouteConfig(List<ClassIdentifier> controllers, List<ClassIdentifier> filters, List<RouteGroup> routes) {
+    public RouteConfig(List<ClassIdentifier> controllers, List<ClassIdentifier> filters, List<RouteRule> routes) {
         this.controllers = Collections.unmodifiableList(controllers);
         this.filters = Collections.unmodifiableList(filters);
         this.routes = Collections.unmodifiableList(routes);
@@ -22,7 +22,7 @@ public class RouteConfig {
         return filters;
     }
 
-    public List<RouteGroup> getRoutes() {
+    public List<RouteRule> getRoutes() {
         return routes;
     }
 }
