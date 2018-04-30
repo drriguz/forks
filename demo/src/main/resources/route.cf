@@ -1,0 +1,9 @@
+controllers{
+package com.riguz.demo
+UserController
+}
+
+routes default {
+get  /users/:id             UserController.getUser(id: String)
+}
+

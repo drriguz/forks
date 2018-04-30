@@ -1,6 +1,5 @@
 package com.riguz.forks.config;
 
-import com.riguz.forks.antlr.RouteParser;
 import com.riguz.forks.config.route.*;
 import org.junit.Test;
 
@@ -31,7 +30,7 @@ public class RouteTest {
     public void loadControllers() {
         String cfg = controllers1 + route1;
 
-        RouteLoader loader = RouteLoader.fromString(cfg);
+        RouteParser loader = RouteParser.fromString(cfg);
         RouteConfig config = loader.getRouteConfig();
         assertNotNull(config);
         assertEquals(2, config.getControllers().size());
@@ -51,7 +50,7 @@ public class RouteTest {
     public void loadMultiControllers() {
         String cfg = controllers1 + controllers2 + route1;
 
-        RouteLoader loader = RouteLoader.fromString(cfg);
+        RouteParser loader = RouteParser.fromString(cfg);
         RouteConfig config = loader.getRouteConfig();
         assertNotNull(config);
         assertEquals(4, config.getControllers().size());
@@ -68,7 +67,7 @@ public class RouteTest {
     @Test
     public void loadRoute() {
         String cfg = controllers1 + route1;
-        RouteLoader loader = RouteLoader.fromString(cfg);
+        RouteParser loader = RouteParser.fromString(cfg);
         RouteConfig config = loader.getRouteConfig();
         assertNotNull(config);
         List<RouteRule> rules = config.getRoutes();

@@ -3,8 +3,11 @@ package forks.ioc;
 import com.riguz.forks.ioc.Bind;
 import com.riguz.forks.ioc.InjectException;
 import com.riguz.forks.ioc.Injector;
+
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ExceptionTest {
@@ -65,6 +68,13 @@ public class ExceptionTest {
         }
     }
 
+    public static class NullPointerConfig {
+        @Bind
+        public String str() {
+            return null;
+        }
+    }
+
     @Test(expected = InjectException.class)
     public void noInjectConstructor() {
         Injector injector = new Injector();
@@ -91,5 +101,12 @@ public class ExceptionTest {
     @Test(expected = InjectException.class)
     public void ambiguousNamedConfig() {
         new Injector(new AmbiguousNamedProvidesConfig());
+    }
+
+    @Test(expected = InjectException.class)
+    @Ignore
+    public void nullConfig() {
+        // TODO: exception when config method returns null
+        new Injector(new NullPointerConfig());
     }
 }

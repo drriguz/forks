@@ -33,7 +33,18 @@ public class Trie<T, E extends AbstractTrieNode<T, E>> {
 
     public Pair<T, Map<String, String>> resolve(String path) {
         Pair<E, Map<String, String>> node = this.root.resolve(path);
-        return node == null ? null : Pair.of(node.getLeft().getPayload(), node.getRight());
+
+        if (node == null)
+            return null;
+        else {
+            T payload = node.getLeft().getPayload();
+            if (payload == null) {
+                // TODO: support 405 method not supported
+                return null;
+            } else {
+                return Pair.of(node.getLeft().getPayload(), node.getRight());
+            }
+        }
     }
 
     protected String descPath(E node) {
@@ -49,9 +60,9 @@ public class Trie<T, E extends AbstractTrieNode<T, E>> {
         tree.add(path + node.getPathAsString() + this.descPath(node));
 
         String childPrefix = path.replaceAll("├", "│")
-            .replaceAll("╰", " ")
-            .replaceAll("/", " ")
-            .replaceAll("\\w", " ");
+                .replaceAll("╰", " ")
+                .replaceAll("/", " ")
+                .replaceAll("\\w", " ");
         Iterator<E> iterator = node.children.values().iterator();
         while (iterator.hasNext()) {
             E childNode = iterator.next();

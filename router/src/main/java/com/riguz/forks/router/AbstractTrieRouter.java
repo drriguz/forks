@@ -34,12 +34,6 @@ public abstract class AbstractTrieRouter<T, E extends AbstractTrieNode<Map<HttpM
     }
 
     @Override
-    public void complete() {
-        String tree = this.dump();
-        System.out.println(tree);
-    }
-
-    @Override
     public Pair<T, Map<String, String>> resolve(HttpMethod method, String requestPath) {
         if (method == null || requestPath == null) {
             throw new IllegalArgumentException("Request could not be null");

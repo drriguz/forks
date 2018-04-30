@@ -182,7 +182,7 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         return node == null ? null : Pair.of(node, pathVariables);
     }
 
-    public PatternTrieNode<T> resolve(String path, int offset, Map<String, String> pathVariables) {
+    private PatternTrieNode<T> resolve(String path, int offset, Map<String, String> pathVariables) {
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
             return null;
         }

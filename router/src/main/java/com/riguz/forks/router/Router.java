@@ -25,7 +25,8 @@ public interface Router<T> {
         this.add(HttpMethod.DELETE, pattern, handler);
     }
 
-    void complete();
+    default void complete() {
+    }
 
     Pair<T, Map<String, String>> resolve(HttpMethod method, String requestPath);
 }

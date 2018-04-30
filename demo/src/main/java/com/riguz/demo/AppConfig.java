@@ -7,10 +7,5 @@ import com.riguz.forks.router.Router;
 
 public class AppConfig extends AbstractConfig {
 
-    @Override
-    protected Router<RequestHandler> loadRoute(Router<RequestHandler> router) {
-        UserController userController = new UserController();
-        router.add(HttpMethod.GET, "/", new RequestHandler("1", null));
-        return router;
-    }
+
 }

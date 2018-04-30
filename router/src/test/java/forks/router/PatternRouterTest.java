@@ -9,9 +9,23 @@ import org.junit.Test;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class PatternRouterTest {
+
+    @Test
+    public void resolveMethodNotSupported() {
+        Router<String> router = new PatternTrieRouter<>();
+        router.addGet("/user/:id", "user");
+        router.complete();
+
+        assertEquals(null, router.resolve(HttpMethod.POST, "/"));
+        assertEquals(null, router.resolve(HttpMethod.POST, "//"));
+        assertEquals(null, router.resolve(HttpMethod.POST, "/user/1"));
+        assertEquals(null, router.resolve(HttpMethod.POST, "/system"));
+        assertNotNull(router.resolve(HttpMethod.GET, "/user/1"));
+    }
 
     @Test
     public void resolve() {

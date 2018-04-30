@@ -1,30 +1,37 @@
 package com.riguz.forks;
 
+import com.riguz.forks.exceptions.InitializeException;
 import com.riguz.forks.http.NetworkServer;
 import com.riguz.forks.http.RequestDelegate;
 import com.riguz.forks.http.undertow.UndertowServer;
 import com.riguz.forks.ioc.Bind;
-import com.riguz.forks.ioc.Injector;
 import com.riguz.forks.mvc.Dispatcher;
 import com.riguz.forks.mvc.RequestHandler;
+import com.riguz.forks.router.FileBasedPatternRouteLoader;
+import com.riguz.forks.router.RouteLoader;
 import com.riguz.forks.router.Router;
 import com.riguz.forks.router.TrieRouter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Singleton;
+import java.io.IOException;
 
 public abstract class AbstractConfig {
-
-    protected final Injector injector = new Injector();
-
-    protected abstract Router<RequestHandler> loadRoute(Router<RequestHandler> router);
-
-    protected void addRoute(Class<?> controllerClass, String url) {
-
-    }
+    private static final Logger logger = LoggerFactory.getLogger(AbstractConfig.class);
+    public static final String ROUTER_FILE = "route.cf";
 
     @Bind
     @Singleton
     public Router<RequestHandler> router(TrieRouter<RequestHandler> router) {
-        return this.loadRoute(router);
+        RouteLoader<RequestHandler> loader = null;
+        try {
+            loader = new FileBasedPatternRouteLoader(ROUTER_FILE);
+        } catch (IOException e) {
+            logger.error("Failed to load route:{}", e);
+            throw new InitializeException("Failed to load route from " + ROUTER_FILE);
+        }
+        return loader.load();
     }
 
     @Bind

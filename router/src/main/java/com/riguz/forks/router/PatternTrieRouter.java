@@ -21,4 +21,10 @@ public class PatternTrieRouter<T>
     public Map<HttpMethod, T> find(String path) {
         return super.find(path);
     }
+
+    @Override
+    public void complete() {
+        String tree = this.dump();
+        System.out.println(tree);
+    }
 }
