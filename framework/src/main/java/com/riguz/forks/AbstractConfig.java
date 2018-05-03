@@ -6,7 +6,9 @@ import com.riguz.forks.http.RequestDelegate;
 import com.riguz.forks.http.undertow.UndertowServer;
 import com.riguz.forks.ioc.Bind;
 import com.riguz.forks.ioc.Injector;
+import com.riguz.forks.mvc.DefaultExceptionResolver;
 import com.riguz.forks.mvc.Dispatcher;
+import com.riguz.forks.mvc.ExceptionResolver;
 import com.riguz.forks.mvc.RequestHandler;
 import com.riguz.forks.router.FileBasedPatternRouteLoader;
 import com.riguz.forks.router.RouteLoader;
@@ -21,6 +23,13 @@ import java.io.IOException;
 public abstract class AbstractConfig {
     private static final Logger logger = LoggerFactory.getLogger(AbstractConfig.class);
     public static final String ROUTER_FILE = "route.cf";
+
+
+    @Bind
+    @Singleton
+    public ExceptionResolver exceptionResolver(DefaultExceptionResolver exceptionResolver) {
+        return exceptionResolver;
+    }
 
     @Bind
     @Singleton
