@@ -55,8 +55,8 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
 
     private static boolean isReserved(Character path) {
         return NAMED_PARAM_PATTERN == path
-            || WILDCARD_PARAM_PATTERN == path
-            || PATH_SPLITTER == path;
+                || WILDCARD_PARAM_PATTERN == path
+                || PATH_SPLITTER == path;
     }
 
     private static boolean isPattern(Character path) {
@@ -134,11 +134,11 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
             if (paramName == null) {
                 if (node.hasParam()) {
                     throw new IllegalArgumentException(
-                        "Conflict path: existing path with param:" + node.getParamName());
+                            "Conflict path: existing path with param:" + node.getParamName());
                 }
             } else if (!paramName.equals(node.getParamName())) {
                 throw new IllegalArgumentException(
-                    "Ambiguous argument name found:" + paramName + "," + node.getParamName());
+                        "Ambiguous argument name found:" + paramName + "," + node.getParamName());
             }
         }
         return node;
@@ -196,9 +196,9 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         next = this.children.get(NAMED_PARAM_PATTERN);
         if (next != null) {
             StringBuilder builder = new StringBuilder();
-            while (offset < path.length() - 1) {
+            while (offset <= path.length() - 1) {
                 builder.append(path.charAt(offset));
-                if (PATH_SPLITTER == path.charAt(offset + 1)) {
+                if (offset == path.length() - 1 || PATH_SPLITTER == path.charAt(offset + 1)) {
                     break;
                 }
                 offset += 1;

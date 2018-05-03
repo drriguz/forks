@@ -10,7 +10,7 @@ import java.util.Date;
 public class UserController implements UserApi {
 
     @Override
-    public JsonResult<UserDto> getUser(String id) {
+    public JsonResult<UserDto> getUser(int id) {
         UserDto user = new UserDto(1, "Riguz", new Date(), "Hello World!");
         JsonResult<UserDto> result = new JsonResult<>(user);
         return result;

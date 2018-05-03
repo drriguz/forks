@@ -55,7 +55,7 @@ public class FileBasedPatternRouteLoader implements RouteLoader<RequestHandler> 
             Class<?> controllerClass = Class.forName(controllerAlias.get(functionCall.getController()));
             Object controller = this.injector.getInstance(controllerClass);
             Method action = controllerClass.getMethod(functionCall.getMethod(), functionCall.getParamTypes());
-            return new RequestHandler(controller, action);
+            return new RequestHandler(controller, action, functionCall);
         } catch (NoSuchMethodException | ClassNotFoundException e) {
             logger.error("Failed to build handler:{}", e);
             throw new ActionNotFoundException(functionCall);

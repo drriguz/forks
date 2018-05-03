@@ -35,6 +35,7 @@ public class Dispatcher implements RequestDelegate {
         } else {
             RequestHandler handler = resolved.getLeft();
             Map<String, String> pathVariables = resolved.getRight();
+            logger.debug("Resolved path variables:{}", pathVariables);
             Result result = this.actionExecutor.execute(handler, new RequestContext(request, response, pathVariables));
             response.writeContent(result.toString());
         }

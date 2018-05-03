@@ -12,15 +12,17 @@ public class RequestHandler {
     private final String id;
     private final Object controller;
     private final Method action;
+    private final FunctionCall functionCall;
 
-    public RequestHandler(Object controller, Method action) throws ActionNotFoundException {
-        this(Hashs.md5(controller.getClass().toString()), controller, action);
+    public RequestHandler(Object controller, Method action, FunctionCall functionCall) throws ActionNotFoundException {
+        this(Hashs.md5(controller.getClass().toString()), controller, action, functionCall);
     }
 
-    public RequestHandler(String id, Object controller, Method action) throws ActionNotFoundException {
+    public RequestHandler(String id, Object controller, Method action, FunctionCall functionCall) throws ActionNotFoundException {
         this.id = id;
         this.controller = controller;
         this.action = action;
+        this.functionCall = functionCall;
     }
 
     public String getId() {
@@ -33,6 +35,10 @@ public class RequestHandler {
 
     public Object getController() {
         return controller;
+    }
+
+    public FunctionCall getFunctionCall() {
+        return functionCall;
     }
 
     @Override

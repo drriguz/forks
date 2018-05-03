@@ -67,8 +67,10 @@ public class PatternRouterTest {
         Router<String> router = new PatternTrieRouter<>();
         router.addGet("/", "index");
         router.addGet("/users/:user/profile", "user");
+        router.addGet("/users/:user", "userId");
         router.complete();
         validate(router.resolve(HttpMethod.GET, "/users/1/profile"), "user", "1");
+        validate(router.resolve(HttpMethod.GET, "/users/1"), "userId", "1");
     }
 
     @Test

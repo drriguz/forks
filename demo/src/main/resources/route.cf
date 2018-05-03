@@ -4,6 +4,6 @@ UserController
 }
 
 routes default {
-get  /users/:id             UserController.getUser(id: String)
+get  /users/:id             UserController.getUser(id: Integer)
 }
 
