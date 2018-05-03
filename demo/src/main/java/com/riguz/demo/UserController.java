@@ -3,8 +3,10 @@ package com.riguz.demo;
 import com.riguz.demo.api.UserApi;
 import com.riguz.forks.mvc.view.JsonResult;
 
+import javax.inject.Singleton;
 import java.util.Date;
 
+@Singleton
 public class UserController implements UserApi {
 
     @Override

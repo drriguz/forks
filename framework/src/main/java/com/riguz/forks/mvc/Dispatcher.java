@@ -17,12 +17,12 @@ public class Dispatcher implements RequestDelegate {
     private static final Logger logger = LoggerFactory.getLogger(Dispatcher.class);
     protected final Router<RequestHandler> router;
 
-    @Inject
-    protected ActionExecutor actionExecutor;
+    protected final ActionExecutor actionExecutor;
 
     @Inject
-    public Dispatcher(Router<RequestHandler> router) {
+    public Dispatcher(Router<RequestHandler> router, ActionExecutor actionExecutor) {
         this.router = router;
+        this.actionExecutor = actionExecutor;
     }
 
     @Override

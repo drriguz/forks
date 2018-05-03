@@ -4,6 +4,8 @@ import com.riguz.forks.ioc.Bind;
 import com.riguz.forks.ioc.Injector;
 import org.junit.Test;
 
+import javax.inject.Inject;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -46,5 +48,12 @@ public class InjectorTest {
         Bar bar = injector.getInstance(Bar.class);
         assertNotNull(bar);
         assertNotNull(bar.foo);
+    }
+
+    @Test
+    public void getInjectorInstance() {
+        Injector injector = new Injector(new Config());
+        Injector self = injector.getInstance(Injector.class);
+        assertEquals(injector, self);
     }
 }

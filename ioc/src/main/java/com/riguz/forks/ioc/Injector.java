@@ -1,7 +1,10 @@
 package com.riguz.forks.ioc;
 
 import com.riguz.commons.base.Classes;
+
+import javax.inject.Inject;
 import javax.inject.Provider;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,12 +37,20 @@ public class Injector {
                 }
             }
         }
+        this.bindSelf();
+    }
+
+    private void bindSelf() {
+        Producer<Injector> self = new SingletonProducer<>(Injector.class, () -> {
+            return this;
+        });
+        this.bindProducer(InjectType.of(Injector.class), self);
     }
 
     private <T> Producer<T> createProducer(InjectType<T> injectType,
-        InjectScope injectScope,
-        Object config,
-        Method provider) {
+                                           InjectScope injectScope,
+                                           Object config,
+                                           Method provider) {
         if (producers.containsKey(injectType)) {
             throw new InjectException("Multi provider found:" + injectType);
         }
@@ -52,8 +63,8 @@ public class Injector {
             }
         };
         return InjectScope.SINGLETON == injectScope ?
-            new SingletonProducer<>(injectType.getType(), supplier) :
-            new Producer<>(injectType.getType(), supplier);
+                new SingletonProducer<>(injectType.getType(), supplier) :
+                new Producer<>(injectType.getType(), supplier);
     }
 
     @SuppressWarnings("unchecked")
@@ -97,8 +108,8 @@ public class Injector {
         InjectScope typeScope = Helper.getTypeScope(type.getType());
         Supplier<T> supplier = () -> constructObject(type, dependencies);
         Producer<T> producer = (InjectScope.SINGLETON == typeScope) ?
-            new SingletonProducer<>(type.getType(), supplier) :
-            new Producer<>(type.getType(), supplier);
+                new SingletonProducer<>(type.getType(), supplier) :
+                new Producer<>(type.getType(), supplier);
         return (T) bindProducer(type, producer).get();
     }
 
@@ -128,7 +139,7 @@ public class Injector {
                 final List<InjectType<?>> newDependencies = this.appendDependency(dependencies, type);
                 if (newDependencies.contains(paramInjectType)) {
                     throw new InjectException(
-                        "Circular dependencies detected:" + Helper.printDependencies(newDependencies, type));
+                            "Circular dependencies detected:" + Helper.printDependencies(newDependencies, type));
                 } else {
                     newDependencies.add(paramInjectType);
                 }
@@ -158,7 +169,7 @@ public class Injector {
         for (InjectField fieldProperties : fields) {
             Field injectField = fieldProperties.getField();
             Object value = fieldProperties.isProvider ? this.getProvider(fieldProperties.getTarget())
-                : this.getInstance(fieldProperties.getTarget());
+                    : this.getInstance(fieldProperties.getTarget());
             try {
                 injectField.set(target, value);
             } catch (IllegalArgumentException | IllegalAccessException e) {

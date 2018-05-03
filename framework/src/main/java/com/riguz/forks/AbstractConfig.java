@@ -5,6 +5,7 @@ import com.riguz.forks.http.NetworkServer;
 import com.riguz.forks.http.RequestDelegate;
 import com.riguz.forks.http.undertow.UndertowServer;
 import com.riguz.forks.ioc.Bind;
+import com.riguz.forks.ioc.Injector;
 import com.riguz.forks.mvc.Dispatcher;
 import com.riguz.forks.mvc.RequestHandler;
 import com.riguz.forks.router.FileBasedPatternRouteLoader;
@@ -23,10 +24,10 @@ public abstract class AbstractConfig {
 
     @Bind
     @Singleton
-    public Router<RequestHandler> router(TrieRouter<RequestHandler> router) {
+    public Router<RequestHandler> router(TrieRouter<RequestHandler> router, Injector injector) {
         RouteLoader<RequestHandler> loader = null;
         try {
-            loader = new FileBasedPatternRouteLoader(ROUTER_FILE);
+            loader = new FileBasedPatternRouteLoader(ROUTER_FILE, injector);
         } catch (IOException e) {
             logger.error("Failed to load route:{}", e);
             throw new InitializeException("Failed to load route from " + ROUTER_FILE);
