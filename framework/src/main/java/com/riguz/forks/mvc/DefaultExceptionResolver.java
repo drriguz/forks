@@ -5,7 +5,7 @@ import com.riguz.forks.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultExceptionResolver implements ExceptionResolver {
+public class DefaultExceptionResolver implements Resolver<Exception> {
     private static final Logger logger = LoggerFactory.getLogger(DefaultExceptionResolver.class);
 
     @Override

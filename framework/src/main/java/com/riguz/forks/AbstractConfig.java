@@ -8,7 +8,7 @@ import com.riguz.forks.ioc.Bind;
 import com.riguz.forks.ioc.Injector;
 import com.riguz.forks.mvc.DefaultExceptionResolver;
 import com.riguz.forks.mvc.Dispatcher;
-import com.riguz.forks.mvc.ExceptionResolver;
+import com.riguz.forks.mvc.Resolver;
 import com.riguz.forks.mvc.RequestHandler;
 import com.riguz.forks.router.FileBasedPatternRouteLoader;
 import com.riguz.forks.router.RouteLoader;
@@ -17,6 +17,7 @@ import com.riguz.forks.router.TrieRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.IOException;
 
@@ -26,8 +27,16 @@ public abstract class AbstractConfig {
 
 
     @Bind
+    @Named("exceptionResolver")
     @Singleton
-    public ExceptionResolver exceptionResolver(DefaultExceptionResolver exceptionResolver) {
+    public Resolver<Exception> exceptionResolver(DefaultExceptionResolver exceptionResolver) {
+        return exceptionResolver;
+    }
+
+    @Bind
+    @Named("viewResolver")
+    @Singleton
+    public Resolver<Exception> viewResolver(DefaultExceptionResolver exceptionResolver) {
         return exceptionResolver;
     }
 

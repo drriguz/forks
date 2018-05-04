@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import java.util.Map;
 
@@ -18,15 +19,18 @@ public class Dispatcher implements RequestDelegate {
 
     protected final Router<RequestHandler> router;
     protected final ActionExecutor actionExecutor;
-    protected final ExceptionResolver exceptionResolver;
+    protected final Resolver<Exception> exceptionResolver;
+    protected final Resolver<Result> resultResolver;
 
     @Inject
     public Dispatcher(Router<RequestHandler> router,
                       ActionExecutor actionExecutor,
-                      ExceptionResolver exceptionResolver) {
+                      @Named("exceptionResolver") Resolver<Exception> exceptionResolver,
+                      @Named("viewResolver") Resolver<Result> resultResolver) {
         this.router = router;
         this.actionExecutor = actionExecutor;
         this.exceptionResolver = exceptionResolver;
+        this.resultResolver = resultResolver;
     }
 
     @Override
