@@ -2,8 +2,6 @@ package com.riguz.commons.config;
 
 import com.riguz.commons.base.Strings;
 import com.riguz.commons.io.Files;
-import com.riguz.forks.json.Json;
-import com.riguz.forks.json.JsonValue;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -66,13 +64,5 @@ public class IniReader {
             return null;
         }
         return section.get(key);
-    }
-
-    public JsonValue getJson(String section, String key) {
-        String json = this.get(section, key);
-        if (json == null) {
-            return null;
-        }
-        return Json.parse(json);
     }
 }
