@@ -20,17 +20,17 @@ public class Dispatcher implements RequestDelegate {
     protected final Router<RequestHandler> router;
     protected final ActionExecutor actionExecutor;
     protected final Resolver<Exception> exceptionResolver;
-    protected final Resolver<Result> resultResolver;
+    protected final Resolver<Result> viewResolver;
 
     @Inject
     public Dispatcher(Router<RequestHandler> router,
                       ActionExecutor actionExecutor,
                       @Named("exceptionResolver") Resolver<Exception> exceptionResolver,
-                      @Named("viewResolver") Resolver<Result> resultResolver) {
+                      @Named("viewResolver") Resolver<Result> viewResolver) {
         this.router = router;
         this.actionExecutor = actionExecutor;
         this.exceptionResolver = exceptionResolver;
-        this.resultResolver = resultResolver;
+        this.viewResolver = viewResolver;
     }
 
     @Override
@@ -48,9 +48,9 @@ public class Dispatcher implements RequestDelegate {
         Result result = null;
         try {
             result = this.actionExecutor.execute(handler, new RequestContext(request, response, pathVariables));
-            response.writeContent(result.toString());
+            this.viewResolver.resolve(request, response, result);
         } catch (ActionException e) {
-            this.exceptionResolver.resolveException(request, response, e);
+            this.exceptionResolver.resolve(request, response, e);
         }
     }
 
