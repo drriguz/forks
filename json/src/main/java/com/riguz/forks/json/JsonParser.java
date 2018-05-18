@@ -1,10 +1,10 @@
 package com.riguz.forks.json;
 
 import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import sun.security.pkcs.ParsingException;
 
 import java.io.*;
+import java.util.function.Predicate;
 
 public class JsonParser implements Closeable {
     protected static final int DEFAULT_BUFFER_SIZE = 1024;
@@ -27,7 +27,7 @@ public class JsonParser implements Closeable {
     protected int index;
     protected int loadedSize;
     protected byte value;
-    protected ByteOutputStream byteOutputStream;
+    protected ByteCapture capture = new ByteCapture();
 
     public JsonParser() {
         this(DEFAULT_BUFFER_SIZE);
@@ -61,6 +61,18 @@ public class JsonParser implements Closeable {
             case 'n':
                 readNull();
                 return null;
+            case '-':
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                return readNumber();
             case '"':
                 return readString();
             case '{':
@@ -72,24 +84,38 @@ public class JsonParser implements Closeable {
         }
     }
 
+    private Number readNumber() throws IOException {
+        capture.startCapture();
+        capture.capture(value);
+        captureUntil(b -> (b >= '0' && b <= '9'));
+        if (value == '.') {
+            // float number
+            capture.capture(value);
+            captureUntil(b -> (b >= '0' && b <= '9'));
+            return capture.toFloat();
+        } else {
+            return capture.toInt();
+        }
+    }
 
     private boolean readBool(boolean isTrue) throws IOException {
         if (isTrue)
-            read('r', 'u', 'e');
+            expect('r', 'u', 'e');
         else
-            read('a', 'l', 's', 'e');
+            expect('a', 'l', 's', 'e');
         return isTrue;
     }
 
     private void readNull() throws IOException {
-        read('u', 'l', 'l');
+        expect('u', 'l', 'l');
     }
 
     private String readString() throws IOException {
         int start = index;
-        byteOutputStream = new ByteOutputStream();
-        readUntil((byte) '"');
-        return byteOutputStream.toString();
+        capture.startCapture();
+        captureUntil((byte) '"');
+
+        return capture.toString();
     }
 
     private Object readObject() throws IOException {
@@ -144,20 +170,28 @@ public class JsonParser implements Closeable {
         return true;
     }
 
-    private int readUntil(byte expected) throws IOException {
+    private void captureUntil(byte expected) throws IOException {
         while (read()) {
             if (value == expected) {
-                return index - 1;
+                return;
             }
-            byteOutputStream.write(value);
+            capture.capture(value);
         }
         throw new ParsingException("Expected :" + (char) expected);
     }
 
-    private void read(char... expectedChars) throws IOException {
+    private void expect(char... expectedChars) throws IOException {
         for (char expected : expectedChars) {
             if (!read() || value != expected)
                 throw new ParsingException("Expected:" + expected);
+        }
+    }
+
+    private void captureUntil(Predicate<Byte> expected) throws IOException {
+        while (read()) {
+            if (!expected.test(value))
+                return;
+            capture.capture(value);
         }
     }
 

@@ -42,12 +42,23 @@ public class DirectRead {
     @Test
     public void readString() throws IOException {
         assertEquals("Hello world!", parser.parse("\"Hello world!\""));
+        assertEquals("Hello 中国!", parser.parse("\"Hello 中国!\""));
     }
 
     @Test
     public void readBoolWithBlank() throws IOException {
         assertEquals(true, parser.parse("  true"));
         assertEquals(false, parser.parse("false\n"));
+    }
+
+    @Test
+    public void readNumber() throws IOException {
+        assertEquals(0, parser.parse("0"));
+        assertEquals(1, parser.parse("1"));
+        assertEquals(123, parser.parse("123"));
+        assertEquals(-123, parser.parse("-123"));
+        assertEquals(123.98f, parser.parse("123.98"));
+        assertEquals(-123.98f, parser.parse("-123.98"));
     }
 
 }
