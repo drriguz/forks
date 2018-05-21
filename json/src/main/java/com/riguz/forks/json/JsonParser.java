@@ -1,65 +1,52 @@
 package com.riguz.forks.json;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import sun.security.pkcs.ParsingException;
 
 import java.io.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public class JsonParser implements Closeable {
     protected static final int DEFAULT_BUFFER_SIZE = 1024;
-    protected InputStream inputStream;
+    private static final char[] TRUE_TOKENS = "true".toCharArray();
+    private static final char[] FALSE_TOKENS = "false".toCharArray();
+    private static final char[] NULL_TOKENS = "null".toCharArray();
 
-    /*
-                       bufferOffset
-                       v
-        #####@@@@@#####@@@@@#####
-                       @@@@@#####?????
-                       ^         ^
-                     index      loadedSize
-        size = 20
-        bufferSize = 15
-        Round1: loaded=15, bufferOffset=0
-        Round2: loaded=10, bufferOffset=15
-     */
-    protected final byte[] buffer;
-    protected int bufferOffset;
-    protected int index;
-    protected int loadedSize;
-    protected byte value;
-    protected ByteCapture capture = new ByteCapture();
+    protected final BufferedReaderWrapper input;
+    protected final CaptureStream captureStream;
 
     public JsonParser() {
         this(DEFAULT_BUFFER_SIZE);
     }
 
     public JsonParser(int bufferSize) {
-        this.buffer = new byte[bufferSize];
+        this.input = new BufferedReaderWrapper(bufferSize);
+        this.captureStream = new CaptureStream();
     }
 
     public Object parse(String json) throws IOException {
-        return this.parse(new ByteInputStream(json.getBytes(), json.getBytes().length));
+        return this.parse(new StringReader(json));
     }
 
-    private void reset() throws IOException {
-        bufferOffset = 0;
-        index = 0;
-        loadedSize = 0;
-        loadBuffer();
+    public Object parse(Reader reader) throws IOException {
+        this.input.attach(reader);
+        if (this.input.read() == -1)
+            throw new ParsingException("Unexpected EOL found");
+        return readValue();
     }
 
-    public Object parse(InputStream input) throws IOException {
-        this.inputStream = input;
-        reset();
-        read();
-        skipBlank();
-        switch (value) {
+    private Object readValue() throws IOException {
+        input.skipWhiteSpace();
+        switch (input.getValue()) {
             case 't':
-                return readBool(true);
+                input.readExpected(TRUE_TOKENS);
+                return true;
             case 'f':
-                return readBool(false);
+                input.readExpected(FALSE_TOKENS);
+                return false;
             case 'n':
-                readNull();
+                input.readExpected(NULL_TOKENS);
                 return null;
             case '-':
             case '0':
@@ -80,124 +67,120 @@ public class JsonParser implements Closeable {
             case '[':
                 return readArray();
             default:
-                throw new ParsingException("Unexpected char:" + value);
+                throw new ParsingException("Unexpected char:" + input.getValue());
         }
     }
 
-    private Number readNumber() throws IOException {
-        capture.startCapture();
-        capture.capture(value);
-        captureUntil(b -> (b >= '0' && b <= '9'));
-        if (value == '.') {
-            // float number
-            capture.capture(value);
-            captureUntil(b -> (b >= '0' && b <= '9'));
-            return capture.toFloat();
-        } else {
-            return capture.toInt();
-        }
+    private boolean isDigit() {
+        return input.getValue() >= '0' && input.getValue() <= '9';
     }
 
-    private boolean readBool(boolean isTrue) throws IOException {
-        if (isTrue)
-            expect('r', 'u', 'e');
-        else
-            expect('a', 'l', 's', 'e');
-        return isTrue;
-    }
-
-    private void readNull() throws IOException {
-        expect('u', 'l', 'l');
+    private double readNumber() throws IOException {
+        captureStream.startCapture(input.getValue());
+        boolean foundDot = false;
+        do {
+            if (input.read() == -1 || (!isDigit() && input.getValue() != '.'))
+                break;
+            if (input.getValue() == '.') {
+                if (foundDot)
+                    throw new ParsingException("Invalid number format found: multi-dot");
+                foundDot = true;
+            }
+            captureStream.capture(input.getValue());
+        } while (true);
+        return Double.parseDouble(captureStream.toString());
     }
 
     private String readString() throws IOException {
-        int start = index;
-        capture.startCapture();
-        captureUntil((byte) '"');
-
-        return capture.toString();
+        captureStream.startCapture();
+        boolean closed = false;
+        do {
+            if (input.read() == -1)
+                break;
+            if (input.getValue() == '"') {
+                closed = true;
+                break;
+            }
+            captureStream.capture(input.getValue());
+        } while (true);
+        if (!closed)
+            throw new ParsingException("Unclosed string found");
+        return captureStream.toString();
     }
 
     private Object readObject() throws IOException {
-        return null;
+        Map<String, Object> result = new LinkedHashMap<>();
+        do {
+            if (!readNextToken())
+                throw new ParsingException("Unclosed object");
+            expect('"');
+            String name = readString();
+            if (!readNextToken())
+                throw new ParsingException("Unclosed object");
+            expect(':');
+            Object value = readValue();
+            result.put(name, value);
+        } while (read(','));
+        expect('}');
+        return result;
     }
 
     private Object readArray() throws IOException {
         return null;
     }
 
-    private static final byte END = (byte) -1;
-
-    private void skipBlank() throws IOException {
-        while (isBlank())
-            read();
-    }
-
     private boolean isBlank() {
-        return value == ' ' || value == '\n' || value == '\t' || value == '\r';
+        return false;
+//        return value == ' ' || value == '\n' || value == '\t' || value == '\r';
     }
 
-    private boolean read() throws IOException {
-        if (index > loadedSize || loadedSize < 0) {
-            System.out.println("EOF" + index);
-            return false;
-        } else if (index == loadedSize) {
-            System.out.println("load" + index);
-            // 0, 0   reach end
-            if (loadedSize == buffer.length && loadBuffer()) {
-                value = buffer[index++];
-                return true;
-            }
-            return false;
-        } else {
-            System.out.print(index + " " + (char) buffer[index] + "] ");
-            value = buffer[index++];
-            return true;
-        }
-    }
-
-    private boolean loadBuffer() throws IOException {
-        int existingSize = loadedSize;
-        System.out.println("loading:" + bufferOffset);
-        loadedSize = inputStream.read(buffer, 0, buffer.length);
-        System.out.println("loaded:" + loadedSize);
-        if (loadedSize == -1) {
-            System.out.println("Not loaded");
-            return false;
-        }
-        index = 0;
-        bufferOffset += existingSize;
-        return true;
+    private boolean readNextToken() throws IOException {
+//        if (index == loadedSize) {
+////            // 0, 0   reach end
+////            if (loadedSize == buffer.length && loadBuffer()) {
+////                value = buffer[index++];
+////                return true;
+////            }
+////            return false;
+////        } else {
+////            do {
+////                if (index > loadedSize || loadedSize < 0) {
+////                    return false;
+////                }
+////                value = buffer[index++];
+////            } while (isBlank());
+////            return true;
+////        }
+        return false;
     }
 
     private void captureUntil(byte expected) throws IOException {
-        while (read()) {
-            if (value == expected) {
-                return;
-            }
-            capture.capture(value);
-        }
-        throw new ParsingException("Expected :" + (char) expected);
+        captureUntil(i -> i != expected);
     }
 
-    private void expect(char... expectedChars) throws IOException {
-        for (char expected : expectedChars) {
-            if (!read() || value != expected)
-                throw new ParsingException("Expected:" + expected);
-        }
+    private void captureUntil(Predicate<Character> expected) throws IOException {
+//        while (read()) {
+//            if (!expected.test(value)) {
+//                return;
+//            }
+//            captureStream.captureStream(value);
+//        }
     }
 
-    private void captureUntil(Predicate<Byte> expected) throws IOException {
-        while (read()) {
-            if (!expected.test(value))
-                return;
-            capture.capture(value);
-        }
+    private boolean read(char expected) throws IOException {
+//        read();
+//        return value == expected;
+        return false;
     }
+
+    private void expect(char expected, char... rest) throws IOException {
+
+    }
+
 
     @Override
     public void close() throws IOException {
-        if (inputStream != null)
-            inputStream.close();
+        if (input != null)
+            input.close();
     }
 }
