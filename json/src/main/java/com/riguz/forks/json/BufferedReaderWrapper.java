@@ -16,18 +16,19 @@ public class BufferedReaderWrapper implements Closeable {
     protected int value;
 
     public BufferedReaderWrapper() {
-        this(DEFAULT_BUFFER_SIZE);
+        this(DEFAULT_BUFFER_SIZE, null);
     }
 
-    public BufferedReaderWrapper(int bufferSize) {
+    public BufferedReaderWrapper(Reader reader) {
+        this(DEFAULT_BUFFER_SIZE, reader);
+    }
+
+    public BufferedReaderWrapper(int bufferSize, Reader reader) {
         this.buffer = new char[bufferSize];
-    }
-
-    public void attach(Reader reader) throws IOException {
         this.reader = reader;
-        index = 0;
-        size = 0;
-        value = -1;
+        this.index = 0;
+        this.size = 0;
+        this.value = -1;
         loadBuffer();
     }
 
@@ -35,7 +36,7 @@ public class BufferedReaderWrapper implements Closeable {
         return (char) value;
     }
 
-    public void skipWhiteSpace() throws IOException {
+    public void skipWhiteSpace() {
         while (this.isBlank())
             read();
     }
@@ -44,7 +45,7 @@ public class BufferedReaderWrapper implements Closeable {
         return value == ' ' || value == '\n' || value == '\t' || value == '\r';
     }
 
-    public int read() throws IOException {
+    public int read() {
         if (size > 0 && index < size)
             value = buffer[index];
         else if (index == size && loadBuffer())
@@ -62,11 +63,15 @@ public class BufferedReaderWrapper implements Closeable {
         }
     }
 
-    private boolean loadBuffer() throws IOException {
-        size = reader.read(buffer, 0, buffer.length);
-        if (size == -1) {
-            return false;
+    private boolean loadBuffer() {
+        try {
+            size = reader.read(buffer, 0, buffer.length);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        if (size == -1)
+            return false;
+
         index = 0;
         return true;
     }

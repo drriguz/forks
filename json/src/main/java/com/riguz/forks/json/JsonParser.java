@@ -21,7 +21,7 @@ public class JsonParser implements Closeable {
     }
 
     public JsonParser(int bufferSize) {
-        this.input = new BufferedReaderWrapper(bufferSize);
+        this.input = new BufferedReaderWrapper(bufferSize, null);
         this.captureStream = new CaptureStream();
     }
 
@@ -30,7 +30,7 @@ public class JsonParser implements Closeable {
     }
 
     public Object parse(Reader reader) throws IOException {
-        this.input.attach(reader);
+        //this.input.attach(reader);
         if (this.input.read() == -1)
             throw new ParsingException("Unexpected EOL found");
         return readValue();
@@ -67,7 +67,7 @@ public class JsonParser implements Closeable {
             case '[':
                 return readArray();
             default:
-                throw new ParsingException("Unexpected char:" + input.getValue());
+                throw new ParsingException("Expected value but got unexpected char:" + input.getValue());
         }
     }
 
@@ -108,75 +108,33 @@ public class JsonParser implements Closeable {
         return captureStream.toString();
     }
 
+    private void readNext() throws IOException {
+        input.read();
+        input.skipWhiteSpace();
+    }
+
     private Object readObject() throws IOException {
         Map<String, Object> result = new LinkedHashMap<>();
         do {
-            if (!readNextToken())
-                throw new ParsingException("Unclosed object");
-            expect('"');
-            String name = readString();
-            if (!readNextToken())
-                throw new ParsingException("Unclosed object");
-            expect(':');
-            Object value = readValue();
-            result.put(name, value);
-        } while (read(','));
-        expect('}');
+            readNext();
+            if (input.getValue() == '"') {
+                String name = readString();
+                readNext();
+                if (input.getValue() != ':')
+                    throw new ParsingException("Expected : after property name");
+                readNext();
+                Object value = readValue();
+                result.put(name, value);
+            }
+        } while (input.getValue() == ',');
+        readNext();
+
         return result;
     }
 
     private Object readArray() throws IOException {
         return null;
     }
-
-    private boolean isBlank() {
-        return false;
-//        return value == ' ' || value == '\n' || value == '\t' || value == '\r';
-    }
-
-    private boolean readNextToken() throws IOException {
-//        if (index == loadedSize) {
-////            // 0, 0   reach end
-////            if (loadedSize == buffer.length && loadBuffer()) {
-////                value = buffer[index++];
-////                return true;
-////            }
-////            return false;
-////        } else {
-////            do {
-////                if (index > loadedSize || loadedSize < 0) {
-////                    return false;
-////                }
-////                value = buffer[index++];
-////            } while (isBlank());
-////            return true;
-////        }
-        return false;
-    }
-
-    private void captureUntil(byte expected) throws IOException {
-        captureUntil(i -> i != expected);
-    }
-
-    private void captureUntil(Predicate<Character> expected) throws IOException {
-//        while (read()) {
-//            if (!expected.test(value)) {
-//                return;
-//            }
-//            captureStream.captureStream(value);
-//        }
-    }
-
-    private boolean read(char expected) throws IOException {
-//        read();
-//        return value == expected;
-        return false;
-    }
-
-    private void expect(char expected, char... rest) throws IOException {
-
-    }
-
 
     @Override
     public void close() throws IOException {
