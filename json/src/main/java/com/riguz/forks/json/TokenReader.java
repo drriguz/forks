@@ -1,6 +1,5 @@
 package com.riguz.forks.json;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Iterator;
@@ -19,7 +18,6 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
     public boolean hasNext() {
         if (size < 0 || index > size)
             return false;
-        skipWhiteSpace();
         return value != -1;
     }
 
@@ -27,8 +25,48 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
         for (char e : expected) {
             read();
             if (value != e)
-                throw new SyntaxException("Expected:" + e + " but got:" + getValue());
+                throw new SyntaxException("Expected:" + e + " but got:" + getValue(), getLocation());
         }
+    }
+
+    private boolean isDigit() {
+        return value >= '0' && value <= '9';
+    }
+
+    protected void readNumbers() {
+        boolean decimal = false;
+        do {
+            read();
+            if (isDigit()) {
+
+            } else if (value == '.') {
+                if (decimal)
+                    throw new SyntaxException("Multi dot found", getLocation());
+                decimal = true;
+            } else
+                break;
+        } while (true);
+    }
+
+    protected void readString() {
+        boolean closed = false;
+        do {
+            read();
+            if (value == -1) {
+                break;
+            } else if (value == '"') {
+                closed = true;
+                break;
+            } else if (value == '\\') {
+                // todo: read escaped string
+            }
+        } while (true);
+        if (!closed)
+            throw new SyntaxException("String not closed:", getLocation());
+    }
+
+    protected Location getLocation() {
+        return new Location(line, offset, (char) value);
     }
 
     private static final char[] TRUE_TOKENS = "rue".toCharArray();
@@ -43,7 +81,7 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
         switch (token) {
             case OBJECT_START:
             case OBJECT_END:
-            case ARRAY_STSRT:
+            case ARRAY_START:
             case ARRAY_END:
             case COLON:
             case COMMA:
@@ -62,7 +100,15 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
                 read();
                 break;
             case NUMBER:
+                readNumbers();
+                break;
             case STRING:
+                readString();
+                read();
+                break;
+            case SPACE:
+                skipWhiteSpace();
+                break;
             default:
                 break;
         }

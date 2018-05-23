@@ -3,42 +3,42 @@ package com.riguz.forks.json;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 import static com.riguz.forks.json.Token.*;
 import static junit.framework.TestCase.*;
 
 public class TokenReaderTest {
-    @Test
-    public void sameTokens() {
-        String[] strs = {
-                "truetruetrue true    true true  ",
-                " falsefalse false    false false",
-                "nullnullnull nullnull null null   null  ",
-                "12345 12345 12.3 123.45 12344.09 ",
-                "\"abc\" \"\" \"abc\""
-        };
-        Token[] expected = {
-                TRUE,
-                FALSE,
-                NULL,
-                NUMBER,
-                STRING
-        };
-        for (int i = 0; i < 3; i++) {
-            TokenReader reader = new TokenReader(strs[i]);
-            while (reader.hasNext())
-                assertEquals(expected[i], reader.next());
+    private void verify(String content, Token[] expected) {
+        TokenReader reader = new TokenReader(content);
+        for (int i = 0; i < expected.length; i++) {
+            assertTrue(reader.hasNext());
+            assertEquals(expected[i], reader.next());
         }
+        assertFalse(reader.hasNext());
+        assertNull(reader.next());
+    }
+
+    @Test
+    public void trueLiteral() {
+        String str = "true true truetrue     true";
+        Token[] expected = {TRUE, SPACE, TRUE, SPACE, TRUE, TRUE, SPACE, TRUE};
+        verify(str, expected);
+    }
+
+    @Test
+    public void falseLiteral() {
+        String str = "false false falsetruefalse     ";
+        Token[] expected = {FALSE, SPACE, FALSE, SPACE, FALSE, TRUE, FALSE, SPACE};
+        verify(str, expected);
     }
 
     @Test
     public void readTokens() throws IOException {
         TokenReader reader = new TokenReader("{}");
-
         assertTrue(reader.hasNext());
         assertEquals(OBJECT_START, reader.next());
         assertEquals(OBJECT_END, reader.next());
+        assertEquals(null, reader.next());
         assertEquals(null, reader.next());
         assertFalse(reader.hasNext());
     }
@@ -47,7 +47,7 @@ public class TokenReaderTest {
     public void tokenWithSpaces() {
         TokenReader reader = new TokenReader("{[123.45    \"abcde fg \", ,,] } ");
         assertTrue(reader.hasNext());
-        Token[] expecteds = {OBJECT_START, ARRAY_STSRT, NUMBER, STRING, COMMA, COMMA, COMMA, ARRAY_END, OBJECT_END};
+        Token[] expecteds = {OBJECT_START, ARRAY_START, NUMBER, SPACE, STRING, COMMA, SPACE, COMMA, COMMA, ARRAY_END, SPACE, OBJECT_END, SPACE};
         for (Token expected : expecteds) {
             assertEquals(expected, reader.next());
         }

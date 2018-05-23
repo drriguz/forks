@@ -3,7 +3,7 @@ package com.riguz.forks.json;
 public enum Token {
     OBJECT_START, // {
     OBJECT_END,   // }
-    ARRAY_STSRT,  // [
+    ARRAY_START,  // [
     ARRAY_END,    // ]
     NUMBER,       // 123.4
     STRING,       // "Hello world!"
@@ -11,7 +11,11 @@ public enum Token {
     FALSE,        // false
     NULL,         // null
     COLON,        // :
-    COMMA;        // ,
+    COMMA,        // ,
+    SPACE,        // \t \n \s ...
+    EOF;          // terminate
+
+    public static final char INVALID = (char) -1;
 
     public static Token of(char value) {
         switch (value) {
@@ -20,7 +24,7 @@ public enum Token {
             case '}':
                 return OBJECT_END;
             case '[':
-                return ARRAY_STSRT;
+                return ARRAY_START;
             case ']':
                 return ARRAY_END;
             case 't':
@@ -47,6 +51,12 @@ public enum Token {
             case '8':
             case '9':
                 return NUMBER;
+            case ' ':
+            case '\t':
+            case '\n':
+                return SPACE;
+            case INVALID:
+                return EOF;
             default:
                 throw new IllegalArgumentException("Invalid token found:" + value);
         }

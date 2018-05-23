@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import static com.riguz.forks.json.BufferedReaderWrapper.INVALID;
 import static junit.framework.TestCase.assertEquals;
 
 public class BufferedReaderTest {
@@ -54,5 +55,23 @@ public class BufferedReaderTest {
         reader.skipWhiteSpace();
         reader.skipWhiteSpace();
         assertEquals('d', (char) reader.getValue());
+    }
+
+    @Test
+    public void reportLocation() {
+        final String str = " \n \n";
+        BufferedReaderWrapper reader = new BufferedReaderWrapper(str);
+        assertEquals(new Location(1, 0, INVALID), reader.location());
+        reader.read();
+        assertEquals(new Location(1, 1, ' '), reader.location());
+        reader.read();
+        assertEquals(new Location(2, 2, '\n'), reader.location());
+        reader.read();
+        reader.read();
+        assertEquals(new Location(3, 4, '\n'), reader.location());
+        reader.read();
+        assertEquals(new Location(3, 5, INVALID), reader.location());
+        reader.read();
+        assertEquals(new Location(3, 6, INVALID), reader.location());
     }
 }

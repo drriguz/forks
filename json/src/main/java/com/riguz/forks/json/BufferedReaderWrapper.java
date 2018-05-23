@@ -5,9 +5,11 @@ import sun.security.pkcs.ParsingException;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 
 public class BufferedReaderWrapper implements Closeable {
     protected static final int DEFAULT_BUFFER_SIZE = 1024;
+    public static final char INVALID = (char) -1;
 
     protected Reader reader;
     protected final char[] buffer;
@@ -15,8 +17,15 @@ public class BufferedReaderWrapper implements Closeable {
     protected int size;
     protected int value;
 
+    protected int offset;
+    protected int line;
+
     public BufferedReaderWrapper() {
         this(DEFAULT_BUFFER_SIZE, null);
+    }
+
+    public BufferedReaderWrapper(String content) {
+        this(new StringReader(content));
     }
 
     public BufferedReaderWrapper(Reader reader) {
@@ -26,8 +35,8 @@ public class BufferedReaderWrapper implements Closeable {
     public BufferedReaderWrapper(int bufferSize, Reader reader) {
         this.buffer = new char[bufferSize];
         this.reader = reader;
-        this.index = 0;
-        this.size = 0;
+        this.index = this.size = this.offset = 0;
+        this.line = 1;
         this.value = -1;
         loadBuffer();
     }
@@ -39,6 +48,10 @@ public class BufferedReaderWrapper implements Closeable {
     public void skipWhiteSpace() {
         while (this.isBlank())
             read();
+    }
+
+    public Location location() {
+        return new Location(line, offset, (char) value);
     }
 
     private boolean isBlank() {
@@ -53,6 +66,9 @@ public class BufferedReaderWrapper implements Closeable {
         else
             value = -1;
         index += 1;
+        offset += 1;
+        if (value == '\n')
+            line += 1;
         return value;
     }
 
