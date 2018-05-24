@@ -72,13 +72,6 @@ public class BufferedReaderWrapper implements Closeable {
         return value;
     }
 
-    public void readExpected(char... expected) throws IOException {
-        for (int i = 1; i < expected.length; i++) {
-            if (read() == -1 || value != expected[i])
-                throw new ParsingException("Expected:" + expected[i] + " but got:" + (char) value);
-        }
-    }
-
     private boolean loadBuffer() {
         try {
             size = reader.read(buffer, 0, buffer.length);

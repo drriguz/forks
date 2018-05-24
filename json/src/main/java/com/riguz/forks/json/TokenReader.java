@@ -40,6 +40,12 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
         return value >= '0' && value <= '9';
     }
 
+    private boolean isHexDigit() {
+        return value >= '0' && value <= '9'
+                || value >= 'a' && value <= 'f'
+                || value >= 'A' && value <= 'F';
+    }
+
     protected void readNumbers() {
         boolean decimal = false;
         captureStream.startCapture((char) value);
@@ -67,14 +73,46 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
             } else if (value == '"') {
                 closed = true;
                 break;
-            } else if (value == '\\') {
-                // todo: read escaped string
-            }
-            captureStream.capture((char) value);
+            } else if (value == '\\')
+                captureStream.capture(readEscaped());
+            else
+                captureStream.capture((char) value);
         } while (true);
         if (!closed)
             throw new SyntaxException("String not closed:", getLocation());
     }
+
+    protected char readEscaped() {
+        read();
+        switch (value) {
+            case 'b':
+                return '\b';
+            case 't':
+                return '\t';
+            case 'n':
+                return '\n';
+            case 'r':
+                return '\r';
+            case 'f':
+                return '\f';
+            case '"':
+            case '\\':
+                return (char) value;
+            case 'u':
+                char[] unicode = new char[4];
+                for (int i = 0; i < 4; i++) {
+                    read();
+                    if (value == -1 || !isHexDigit())
+                        throw new SyntaxException("Expected unicode escaped string", getLocation());
+                    unicode[i] = (char) value;
+                }
+                char v = (char) Integer.parseInt(new String(unicode), 16);
+                return v;
+            default:
+                throw new SyntaxException("Invalid escape string found", getLocation());
+        }
+    }
+
 
     protected Location getLocation() {
         return new Location(line, offset, (char) value);

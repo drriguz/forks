@@ -1,22 +1,14 @@
 package com.riguz.forks.json;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import sun.security.pkcs.ParsingException;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 
 //@RunWith(Parameterized.class)
-public class DirectRead {
+public class JsonParserTest {
     JsonParser parser;
 
     /*
@@ -29,11 +21,11 @@ public class DirectRead {
                 new JsonParser(1024));
     }
 
-    public DirectRead(JsonParser parser) {
+    public JsonParserTest(JsonParser parser) {
         this.parser = parser;
     }
     */
-    public DirectRead() {
+    public JsonParserTest() {
         this.parser = new JsonParser();
     }
 
@@ -93,7 +85,9 @@ public class DirectRead {
 
     @Test
     public void readEscapedString() {
-        assertEquals("Hello \"World", parser.parse("\"Hello \"World\""));
+        assertEquals("hello \" world ", parser.parse("\"hello \\\" world \""));
+        assertEquals("红尘の人", parser.parse("\"\\u7ea2\\u5c18\\u306e\\u4eba\""));
+        assertEquals("\f\b\n\t\r   \r\r\r \"\"\"\"\\", parser.parse("\"\\f\\b\\n\\t\\r   \\r\\r\\r \\\"\\\"\\\"\\\"\\\\\""));
     }
 
     @Test

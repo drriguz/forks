@@ -61,4 +61,10 @@ public class TokenReaderTest {
         assertFalse(reader.hasNext());
         assertNull(reader.next());
     }
+
+    @Test
+    public void tokenWithEscapes() {
+        verify("\"\\\"\"", new Token[]{STRING});
+        verify("\"hello \\\" world \"", new Token[]{STRING});
+    }
 }
