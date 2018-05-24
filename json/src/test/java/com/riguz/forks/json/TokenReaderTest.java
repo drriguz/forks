@@ -33,6 +33,13 @@ public class TokenReaderTest {
     }
 
     @Test
+    public void simpleObject() {
+        String str = "{\"name\":\"riguz\"}";
+        Token[] expected = {OBJECT_START, STRING, COLON, STRING, OBJECT_END};
+        verify(str, expected);
+    }
+
+    @Test
     public void readTokens() throws IOException {
         TokenReader reader = new TokenReader("{}");
         assertTrue(reader.hasNext());

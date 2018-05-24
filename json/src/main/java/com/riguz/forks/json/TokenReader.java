@@ -5,13 +5,20 @@ import java.io.StringReader;
 import java.util.Iterator;
 
 public class TokenReader extends BufferedReaderWrapper implements Iterator<Token> {
+    protected final CaptureStream captureStream;
+
     public TokenReader(String content) {
         this(new StringReader(content));
     }
 
     public TokenReader(Reader reader) {
         super(reader);
+        this.captureStream = new CaptureStream();
         read();
+    }
+
+    public String getCaptured() {
+        return captureStream.toString();
     }
 
     @Override
@@ -35,14 +42,16 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
 
     protected void readNumbers() {
         boolean decimal = false;
+        captureStream.startCapture((char) value);
         do {
             read();
             if (isDigit()) {
-
+                captureStream.capture((char) value);
             } else if (value == '.') {
                 if (decimal)
                     throw new SyntaxException("Multi dot found", getLocation());
                 decimal = true;
+                captureStream.capture((char) value);
             } else
                 break;
         } while (true);
@@ -50,6 +59,7 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
 
     protected void readString() {
         boolean closed = false;
+        captureStream.startCapture();
         do {
             read();
             if (value == -1) {
@@ -60,6 +70,7 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
             } else if (value == '\\') {
                 // todo: read escaped string
             }
+            captureStream.capture((char) value);
         } while (true);
         if (!closed)
             throw new SyntaxException("String not closed:", getLocation());
@@ -72,6 +83,13 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
     private static final char[] TRUE_TOKENS = "rue".toCharArray();
     private static final char[] FALSE_TOKENS = "alse".toCharArray();
     private static final char[] NULL_TOKENS = "ull".toCharArray();
+
+    public Token nextSkipSpace() {
+        Token token = this.next();
+        if (token == Token.SPACE)
+            return this.next();
+        return token;
+    }
 
     @Override
     public Token next() {

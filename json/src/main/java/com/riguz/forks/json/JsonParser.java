@@ -1,144 +1,80 @@
 package com.riguz.forks.json;
 
-import sun.security.pkcs.ParsingException;
-
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Predicate;
 
-public class JsonParser implements Closeable {
+public class JsonParser {
     protected static final int DEFAULT_BUFFER_SIZE = 1024;
-    private static final char[] TRUE_TOKENS = "true".toCharArray();
-    private static final char[] FALSE_TOKENS = "false".toCharArray();
-    private static final char[] NULL_TOKENS = "null".toCharArray();
 
-    protected final BufferedReaderWrapper input;
-    protected final CaptureStream captureStream;
 
     public JsonParser() {
         this(DEFAULT_BUFFER_SIZE);
     }
 
     public JsonParser(int bufferSize) {
-        this.input = new BufferedReaderWrapper(bufferSize, null);
-        this.captureStream = new CaptureStream();
     }
 
-    public Object parse(String json) throws IOException {
+    public Object parse(String json) {
         return this.parse(new StringReader(json));
     }
 
-    public Object parse(Reader reader) throws IOException {
-        //this.input.attach(reader);
-        if (this.input.read() == -1)
-            throw new ParsingException("Unexpected EOL found");
-        return readValue();
-    }
-
-    private Object readValue() throws IOException {
-        input.skipWhiteSpace();
-        switch (input.getValue()) {
-            case 't':
-                input.readExpected(TRUE_TOKENS);
-                return true;
-            case 'f':
-                input.readExpected(FALSE_TOKENS);
-                return false;
-            case 'n':
-                input.readExpected(NULL_TOKENS);
-                return null;
-            case '-':
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                return readNumber();
-            case '"':
-                return readString();
-            case '{':
-                return readObject();
-            case '[':
-                return readArray();
-            default:
-                throw new ParsingException("Expected value but got unexpected char:" + input.getValue());
+    public Object parse(Reader input) {
+        try (TokenReader reader = new TokenReader(input)) {
+            Object value = readValue(reader);
+            Token lastToken = reader.nextSkipSpace();
+            if (lastToken != null)
+                throw new SyntaxException("Invalid token found, expected EOF but got:" + lastToken.name(), lastToken, reader.getLocation());
+            return value;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private boolean isDigit() {
-        return input.getValue() >= '0' && input.getValue() <= '9';
+    protected Object readValue(TokenReader reader) {
+        Token token = reader.next();
+        if (token == null)
+            throw new SyntaxException("Expected value", token, reader.getLocation());
+        switch (token) {
+            case SPACE:
+                return readValue(reader);
+            case TRUE:
+                return true;
+            case FALSE:
+                return false;
+            case NULL:
+                return null;
+            case NUMBER:
+                return Double.parseDouble(reader.getCaptured());
+            case STRING:
+                return reader.getCaptured();
+            case OBJECT_START:
+                return readObject(reader);
+            default:
+                return null;
+        }
     }
 
-    private double readNumber() throws IOException {
-        captureStream.startCapture(input.getValue());
-        boolean foundDot = false;
+    protected Object readObject(TokenReader reader) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        Token token;
         do {
-            if (input.read() == -1 || (!isDigit() && input.getValue() != '.'))
+            token = reader.nextSkipSpace();
+            if (token != Token.STRING)
                 break;
-            if (input.getValue() == '.') {
-                if (foundDot)
-                    throw new ParsingException("Invalid number format found: multi-dot");
-                foundDot = true;
-            }
-            captureStream.capture(input.getValue());
-        } while (true);
-        return Double.parseDouble(captureStream.toString());
-    }
+            String name = reader.getCaptured();
+            token = reader.nextSkipSpace();
+            if (token != Token.COLON)
+                throw new SyntaxException("Expected ':'", token, reader.getLocation());
+            Object value = readValue(reader);
+            token = reader.nextSkipSpace();
+            map.put(name, value);
+        } while (token == Token.COMMA);
 
-    private String readString() throws IOException {
-        captureStream.startCapture();
-        boolean closed = false;
-        do {
-            if (input.read() == -1)
-                break;
-            if (input.getValue() == '"') {
-                closed = true;
-                break;
-            }
-            captureStream.capture(input.getValue());
-        } while (true);
-        if (!closed)
-            throw new ParsingException("Unclosed string found");
-        return captureStream.toString();
-    }
-
-    private void readNext() throws IOException {
-        input.read();
-        input.skipWhiteSpace();
-    }
-
-    private Object readObject() throws IOException {
-        Map<String, Object> result = new LinkedHashMap<>();
-        do {
-            readNext();
-            if (input.getValue() == '"') {
-                String name = readString();
-                readNext();
-                if (input.getValue() != ':')
-                    throw new ParsingException("Expected : after property name");
-                readNext();
-                Object value = readValue();
-                result.put(name, value);
-            }
-        } while (input.getValue() == ',');
-        readNext();
-
-        return result;
-    }
-
-    private Object readArray() throws IOException {
-        return null;
-    }
-
-    @Override
-    public void close() throws IOException {
-        if (input != null)
-            input.close();
+        if (token != Token.OBJECT_END)
+            throw new SyntaxException("Expected object close", token, reader.getLocation());
+        return map;
     }
 }

@@ -38,23 +38,23 @@ public class DirectRead {
     }
 
     @Test
-    public void readEmpty() throws IOException {
+    public void readEmpty() {
         try {
             parser.parse("");
             fail();
-        } catch (ParsingException ex) {
+        } catch (SyntaxException e) {
 
         }
     }
 
     @Test
-    public void readBool() throws IOException {
+    public void readBool() {
         assertEquals(true, parser.parse("true"));
         assertEquals(false, parser.parse("false"));
     }
 
     @Test
-    public void readUncompletedBool() throws IOException {
+    public void readUncompletedBool() {
         try {
             parser.parse("trust");
             parser.parse("tru");
@@ -62,18 +62,18 @@ public class DirectRead {
             parser.parse("ts");
             parser.parse("t rue");
             fail();
-        } catch (ParsingException e) {
+        } catch (SyntaxException e) {
 
         }
     }
 
     @Test
-    public void readNull() throws IOException {
+    public void readNull() {
         assertEquals(null, parser.parse("null"));
     }
 
     @Test
-    public void readString() throws IOException {
+    public void readString() {
         assertEquals("", parser.parse("\"\""));
         assertEquals("Hello world!", parser.parse("\"Hello world!\""));
         assertEquals("Hello 中国!", parser.parse("\"Hello 中国!\""));
@@ -81,28 +81,29 @@ public class DirectRead {
     }
 
     @Test
-    public void readUnclosedString() throws IOException {
+    public void readUnclosedString() {
+
         try {
             parser.parse("\"Hello");
             fail();
-        } catch (ParsingException e) {
+        } catch (SyntaxException e) {
 
         }
     }
 
     @Test
-    public void readEscapedString() throws IOException {
+    public void readEscapedString() {
         assertEquals("Hello \"World", parser.parse("\"Hello \"World\""));
     }
 
     @Test
-    public void readBoolWithBlank() throws IOException {
+    public void readBoolWithBlank() {
         assertEquals(true, parser.parse("  true"));
         assertEquals(false, parser.parse("false\n"));
     }
 
     @Test
-    public void readNumber() throws IOException {
+    public void readNumber() {
         assertEquals(0.0, parser.parse("0"));
         assertEquals(1.0, parser.parse("1"));
         assertEquals(123.0, parser.parse("123"));
@@ -112,23 +113,34 @@ public class DirectRead {
     }
 
     @Test
-    public void readLargeNumber() throws IOException {
+    public void readLargeNumber() {
         assertEquals(9007199254740992d, parser.parse("9007199254740992.0"));
     }
 
     @Test
-    public void readObject() throws IOException {
+    public void readEmptyObject() {
+        Map<String, Object> result = (Map<String, Object>) parser.parse("{}");
+        assertEquals(0, result.size());
+    }
+
+
+    @Test
+    public void readMinObject() {
         Map<String, Object> result = (Map<String, Object>) parser.parse("{\"name\":\"riguz\"}");
         assertEquals(1, result.size());
         assertEquals("riguz", (String) result.get("name"));
-        result = (Map<String, Object>) parser.parse("{\"name\":\"riguz\", \"age\": 18}");
-        assertEquals(2, result.size());
-        assertEquals("riguz", (String) result.get("name"));
-        assertEquals(18, result.get("age"));
     }
 
     @Test
-    public void readNested() throws IOException {
+    public void readObject() {
+        Map<String, Object> result = (Map<String, Object>) parser.parse("{\"name\":\"riguz\", \"age\": 18}");
+        assertEquals(2, result.size());
+        assertEquals("riguz", (String) result.get("name"));
+        assertEquals(18.0, result.get("age"));
+    }
+
+    @Test
+    public void readNested() {
         Map<String, Object> result = (Map<String, Object>)
                 parser.parse("{  \n" +
                         "   \"name\":{  \n" +
@@ -142,7 +154,16 @@ public class DirectRead {
                         "      \"city\":\"wuhan\"\n" +
                         "   }\n" +
                         "}");
-        assertEquals(3, result.size());
-        assertEquals(18, result.get("age"));
+        assertEquals(4, result.size());
+        assertEquals(18.0, result.get("age"));
+        assertEquals("Male", result.get("sex"));
+        Map<String, Object> name = (Map<String, Object>) result.get("name");
+        assertEquals(2, name.size());
+        assertEquals("riguz", name.get("first"));
+        assertEquals("lee", name.get("last"));
+        Map<String, Object> address = (Map<String, Object>) result.get("address");
+        assertEquals(2, name.size());
+        assertEquals("hubei", address.get("province"));
+        assertEquals("wuhan", address.get("city"));
     }
 }
