@@ -26,9 +26,17 @@ public class JsonParser {
             Token lastToken = reader.nextSkipSpace();
             if (lastToken != null)
                 throw new SyntaxException("Invalid token found, expected EOF but got:" + lastToken.name(), lastToken, reader.getLocation());
+            checkJsonValue(value);
             return value;
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    protected void checkJsonValue(Object value) {
+        if (value != null) {
+            if (!Map.class.isAssignableFrom(value.getClass()) && !List.class.isAssignableFrom(value.getClass()))
+                throw new SyntaxException("Expected object or array", null);
         }
     }
 
@@ -68,6 +76,7 @@ public class JsonParser {
         // [123]
         // [123, 234]
         Token token;
+        boolean hasElements = false;
         do {
             token = reader.nextSkipSpace();
             switch (token) {
@@ -81,9 +90,14 @@ public class JsonParser {
                     Object value = readValue(reader, token);
                     array.add(value);
                     token = reader.nextSkipSpace();
+                    hasElements = true;
+                    break;
+                case ARRAY_END:
+                    if (hasElements)
+                        throw new SyntaxException("Expected array value after comma", reader.getLocation());
                     break;
                 default:
-                    break;
+                    throw new SyntaxException("Expected array value after comma", reader.getLocation());
             }
         } while (token == Token.COMMA);
         if (token != Token.ARRAY_END)
@@ -94,10 +108,14 @@ public class JsonParser {
     protected Object readObject(TokenReader reader) {
         Map<String, Object> map = new LinkedHashMap<>();
         Token token;
+        boolean hasContent = false;
         do {
             token = reader.nextSkipSpace();
-            if (token != Token.STRING)
+            if (token != Token.STRING) {
+                if (hasContent)
+                    throw new SyntaxException("Expected object property", reader.getLocation());
                 break;
+            }
             String name = reader.getCaptured();
             token = reader.nextSkipSpace();
             if (token != Token.COLON)
@@ -105,6 +123,7 @@ public class JsonParser {
             Object value = readValue(reader);
             token = reader.nextSkipSpace();
             map.put(name, value);
+            hasContent = true;
         } while (token == Token.COMMA);
 
         if (token != Token.OBJECT_END)

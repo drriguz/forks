@@ -48,15 +48,20 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
 
     protected void readNumbers() {
         boolean decimal = false;
+        boolean leadingZero = value == '0';
         captureStream.startCapture((char) value);
         do {
             read();
             if (isDigit()) {
+                if (leadingZero)
+                    throw new SyntaxException("Number should not has leading zero", getLocation());
+                leadingZero = false;
                 captureStream.capture((char) value);
             } else if (value == '.') {
                 if (decimal)
                     throw new SyntaxException("Multi dot found", getLocation());
                 decimal = true;
+                leadingZero = false;
                 captureStream.capture((char) value);
             } else
                 break;
@@ -75,8 +80,11 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
                 break;
             } else if (value == '\\')
                 captureStream.capture(readEscaped());
-            else
+            else {
+                if (value == '\t' || value == '\n' || value == '\r' || value == '\0')
+                    throw new SyntaxException("Tab and break are not allowed in string", getLocation());
                 captureStream.capture((char) value);
+            }
         } while (true);
         if (!closed)
             throw new SyntaxException("String not closed:", getLocation());

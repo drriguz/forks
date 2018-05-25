@@ -58,7 +58,7 @@ public enum Token {
             case INVALID:
                 return EOF;
             default:
-                throw new IllegalArgumentException("Invalid token found:" + value);
+                throw new SyntaxException("Invalid token found:" + value);
         }
     }
 }
