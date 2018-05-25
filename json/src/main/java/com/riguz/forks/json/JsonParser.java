@@ -3,8 +3,7 @@ package com.riguz.forks.json;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class JsonParser {
     protected static final int DEFAULT_BUFFER_SIZE = 1024;
@@ -34,7 +33,11 @@ public class JsonParser {
     }
 
     protected Object readValue(TokenReader reader) {
-        Token token = reader.next();
+        return readValue(reader, null);
+    }
+
+    protected Object readValue(TokenReader reader, Token readed) {
+        Token token = readed != null ? readed : reader.next();
         if (token == null)
             throw new SyntaxException("Expected value", token, reader.getLocation());
         switch (token) {
@@ -52,9 +55,40 @@ public class JsonParser {
                 return reader.getCaptured();
             case OBJECT_START:
                 return readObject(reader);
+            case ARRAY_START:
+                return readArray(reader);
             default:
                 return null;
         }
+    }
+
+    protected List<Object> readArray(TokenReader reader) {
+        List<Object> array = new LinkedList<>();
+        // []
+        // [123]
+        // [123, 234]
+        Token token;
+        do {
+            token = reader.nextSkipSpace();
+            switch (token) {
+                case NUMBER:
+                case STRING:
+                case ARRAY_START:
+                case OBJECT_START:
+                case TRUE:
+                case FALSE:
+                case NULL:
+                    Object value = readValue(reader, token);
+                    array.add(value);
+                    token = reader.nextSkipSpace();
+                    break;
+                default:
+                    break;
+            }
+        } while (token == Token.COMMA);
+        if (token != Token.ARRAY_END)
+            throw new SyntaxException("Expected array value", reader.getLocation());
+        return array;
     }
 
     protected Object readObject(TokenReader reader) {

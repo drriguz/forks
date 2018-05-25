@@ -2,6 +2,7 @@ package com.riguz.forks.json;
 
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static junit.framework.TestCase.assertEquals;
@@ -159,5 +160,36 @@ public class JsonParserTest {
         assertEquals(2, name.size());
         assertEquals("hubei", address.get("province"));
         assertEquals("wuhan", address.get("city"));
+    }
+
+    @Test
+    public void readEmptyArray() {
+        List<Object> result = (List<Object>) parser.parse("[]");
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void readSimpleArray() {
+        List<Object> result = (List<Object>) parser.parse("[1, 2, 3]");
+        assertEquals(3, result.size());
+        assertEquals(1.0, result.get(0));
+        assertEquals(2.0, result.get(1));
+        assertEquals(3.0, result.get(2));
+    }
+
+    @Test
+    public void readNestedArray() {
+        List<Object> result = (List<Object>) parser.parse("[[[[[[[[1], [2, 3], [4, 5, 6]]]]]]]]");
+        assertEquals(1, result.size());
+        result = (List<Object>) result.get(0);
+        result = (List<Object>) result.get(0);
+        result = (List<Object>) result.get(0);
+        result = (List<Object>) result.get(0);
+        result = (List<Object>) result.get(0);
+        result = (List<Object>) result.get(0);
+        assertEquals(3, result.size());
+        assertEquals(1, ((List<Object>) result.get(0)).size());
+        assertEquals(2, ((List<Object>) result.get(1)).size());
+        assertEquals(3, ((List<Object>) result.get(2)).size());
     }
 }
