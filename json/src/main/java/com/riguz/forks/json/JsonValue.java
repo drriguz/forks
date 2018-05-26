@@ -3,21 +3,55 @@ package com.riguz.forks.json;
 import java.io.Serializable;
 
 public abstract class JsonValue implements Serializable {
-    public abstract boolean isTrue();
+    public boolean isTrue() {
+        return false;
+    }
 
-    public abstract boolean isFalse();
+    public boolean isFalse() {
+        return false;
+    }
 
-    public abstract boolean isNull();
+    public boolean isNull() {
+        return false;
+    }
 
-    public abstract boolean isObject();
+    public boolean isObject() {
+        return false;
+    }
 
-    public abstract boolean isArray();
+    public boolean isArray() {
+        return false;
+    }
 
-    public abstract boolean isNumber();
+    public boolean isNumber() {
+        return false;
+    }
 
-    public abstract boolean isString();
+    public boolean isString() {
+        return false;
+    }
 
-    public abstract String asString();
+    public String asString() {
+        throw new UnsupportedOperationException("Not supported");
+    }
 
-    public abstract double asNumber();
+    public double asNumber() {
+        throw new UnsupportedOperationException("Not supported");
+    }
+
+    public JsonObject asObject() {
+        throw new UnsupportedOperationException("Not supported");
+    }
+
+    public JsonArray asArray() {
+        throw new UnsupportedOperationException("Not supported");
+    }
+
+    public double asLong() {
+        throw new UnsupportedOperationException("Not supported");
+    }
+
+    public int asInt() {
+        throw new UnsupportedOperationException("Not supported");
+    }
 }

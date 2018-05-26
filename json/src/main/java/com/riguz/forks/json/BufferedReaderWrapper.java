@@ -1,7 +1,5 @@
 package com.riguz.forks.json;
 
-import sun.security.pkcs.ParsingException;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;

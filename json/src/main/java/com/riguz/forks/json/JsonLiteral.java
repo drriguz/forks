@@ -1,54 +1,11 @@
 package com.riguz.forks.json;
 
+import java.util.Objects;
+
 public class JsonLiteral extends JsonValue {
     public static final JsonLiteral TRUE = new JsonLiteral(LiteralType.TRUE);
     public static final JsonLiteral FALSE = new JsonLiteral(LiteralType.FALSE);
     public static final JsonLiteral NULL = new JsonLiteral(LiteralType.NULL);
-
-    @Override
-    public boolean isTrue() {
-        return false;
-    }
-
-    @Override
-    public boolean isFalse() {
-        return false;
-    }
-
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-
-    @Override
-    public boolean isObject() {
-        return false;
-    }
-
-    @Override
-    public boolean isArray() {
-        return false;
-    }
-
-    @Override
-    public boolean isNumber() {
-        return false;
-    }
-
-    @Override
-    public boolean isString() {
-        return false;
-    }
-
-    @Override
-    public String asString() {
-        return null;
-    }
-
-    @Override
-    public double asNumber() {
-        return 0;
-    }
 
     enum LiteralType {
         TRUE,
@@ -60,5 +17,45 @@ public class JsonLiteral extends JsonValue {
 
     private JsonLiteral(LiteralType type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean isTrue() {
+        return this.type == LiteralType.TRUE;
+    }
+
+    @Override
+    public boolean isFalse() {
+        return this.type == LiteralType.FALSE;
+    }
+
+    @Override
+    public boolean isNull() {
+        return this.type == LiteralType.NULL;
+    }
+
+    @Override
+    public String asString() {
+        return this.type.name().toLowerCase();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JsonLiteral that = (JsonLiteral) o;
+        return type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type);
+    }
+
+    @Override
+    public String toString() {
+        return "JsonLiteral{" +
+                "type=" + type +
+                '}';
     }
 }

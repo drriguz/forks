@@ -1,5 +1,7 @@
 package com.riguz.forks.json;
 
+import java.util.Objects;
+
 public class JsonNumber extends JsonValue {
     protected final double value;
 
@@ -8,47 +10,47 @@ public class JsonNumber extends JsonValue {
     }
 
     @Override
-    public boolean isTrue() {
-        return false;
-    }
-
-    @Override
-    public boolean isFalse() {
-        return false;
-    }
-
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-
-    @Override
-    public boolean isObject() {
-        return false;
-    }
-
-    @Override
-    public boolean isArray() {
-        return false;
-    }
-
-    @Override
     public boolean isNumber() {
-        return false;
-    }
-
-    @Override
-    public boolean isString() {
-        return false;
+        return true;
     }
 
     @Override
     public String asString() {
-        return null;
+        return String.valueOf(value);
     }
 
     @Override
     public double asNumber() {
-        return 0;
+        return value;
+    }
+
+    @Override
+    public double asLong() {
+        return new Double(value).longValue();
+    }
+
+    @Override
+    public int asInt() {
+        return new Double(value).intValue();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JsonNumber that = (JsonNumber) o;
+        return Double.compare(that.value, value) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return "JsonNumber{" +
+                "value=" + value +
+                '}';
     }
 }

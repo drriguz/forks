@@ -3,7 +3,6 @@ package com.riguz.forks.json;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.*;
 
 public class JsonParser {
     protected static final int DEFAULT_BUFFER_SIZE = 1024;
@@ -16,13 +15,29 @@ public class JsonParser {
     public JsonParser(int bufferSize) {
     }
 
-    public Object parse(String json) {
+    public JsonValue parse(String json) {
         return this.parse(new StringReader(json));
     }
 
-    public Object parse(Reader input) {
+    public JsonObject parseObject(String json) {
+        return this.parseObject(new StringReader(json));
+    }
+
+    public JsonArray parseArray(String json) {
+        return this.parseArray(new StringReader(json));
+    }
+
+    public JsonObject parseObject(Reader input) {
+        return parse(input).asObject();
+    }
+
+    public JsonArray parseArray(Reader input) {
+        return parse(input).asArray();
+    }
+
+    public JsonValue parse(Reader input) {
         try (TokenReader reader = new TokenReader(input)) {
-            Object value = readValue(reader);
+            JsonValue value = readValue(reader);
             Token lastToken = reader.nextSkipSpace();
             if (lastToken != null)
                 throw new SyntaxException("Invalid token found, expected EOF but got:" + lastToken.name(), lastToken, reader.getLocation());
@@ -33,34 +48,34 @@ public class JsonParser {
         }
     }
 
-    protected void checkJsonValue(Object value) {
-        if (value != null) {
-            if (!Map.class.isAssignableFrom(value.getClass()) && !List.class.isAssignableFrom(value.getClass()))
-                throw new SyntaxException("Expected object or array", null);
-        }
+    protected void checkJsonValue(JsonValue value) {
+        if (value == null)
+            throw new RuntimeException("Expected parsed value not null");
+        if (!(value instanceof JsonObject)
+                && !(value instanceof JsonArray)
+                && !value.isNull())
+            throw new SyntaxException("Expected object or array but got：" + value);
     }
 
-    protected Object readValue(TokenReader reader) {
+    protected JsonValue readValue(TokenReader reader) {
         return readValue(reader, null);
     }
 
-    protected Object readValue(TokenReader reader, Token readed) {
-        Token token = readed != null ? readed : reader.next();
+    protected JsonValue readValue(TokenReader reader, Token readed) {
+        Token token = readed != null ? readed : reader.nextSkipSpace();
         if (token == null)
             throw new SyntaxException("Expected value", token, reader.getLocation());
         switch (token) {
-            case SPACE:
-                return readValue(reader);
             case TRUE:
-                return true;
+                return JsonLiteral.TRUE;
             case FALSE:
-                return false;
+                return JsonLiteral.FALSE;
             case NULL:
-                return null;
+                return JsonLiteral.NULL;
             case NUMBER:
-                return Double.parseDouble(reader.getCaptured());
+                return new JsonNumber(Double.parseDouble(reader.getCaptured()));
             case STRING:
-                return reader.getCaptured();
+                return new JsonString(reader.getCaptured());
             case OBJECT_START:
                 return readObject(reader);
             case ARRAY_START:
@@ -70,8 +85,8 @@ public class JsonParser {
         }
     }
 
-    protected List<Object> readArray(TokenReader reader) {
-        List<Object> array = new LinkedList<>();
+    protected JsonArray readArray(TokenReader reader) {
+        JsonArray array = new JsonArray();
         // []
         // [123]
         // [123, 234]
@@ -87,7 +102,7 @@ public class JsonParser {
                 case TRUE:
                 case FALSE:
                 case NULL:
-                    Object value = readValue(reader, token);
+                    JsonValue value = readValue(reader, token);
                     array.add(value);
                     token = reader.nextSkipSpace();
                     hasElements = true;
@@ -105,8 +120,8 @@ public class JsonParser {
         return array;
     }
 
-    protected Object readObject(TokenReader reader) {
-        Map<String, Object> map = new LinkedHashMap<>();
+    protected JsonObject readObject(TokenReader reader) {
+        JsonObject obj = new JsonObject();
         Token token;
         boolean hasContent = false;
         do {
@@ -120,14 +135,14 @@ public class JsonParser {
             token = reader.nextSkipSpace();
             if (token != Token.COLON)
                 throw new SyntaxException("Expected ':'", token, reader.getLocation());
-            Object value = readValue(reader);
+            JsonValue value = readValue(reader);
             token = reader.nextSkipSpace();
-            map.put(name, value);
+            obj.set(name, value);
             hasContent = true;
         } while (token == Token.COMMA);
 
         if (token != Token.OBJECT_END)
             throw new SyntaxException("Expected object close", token, reader.getLocation());
-        return map;
+        return obj;
     }
 }
