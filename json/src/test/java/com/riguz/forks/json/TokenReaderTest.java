@@ -67,4 +67,17 @@ public class TokenReaderTest {
         verify("\"\\\"\"", new Token[]{STRING});
         verify("\"hello \\\" world \"", new Token[]{STRING});
     }
+
+    @Test
+    public void tokenOfNumbers() {
+        final Token[] tokens = {NUMBER, SPACE, NUMBER, SPACE, NUMBER};
+        verify("0 1 12345", tokens);
+        verify("0.0 0.1 0.123", tokens);
+        verify("12.0 12.123 98912378.199912311312312123123", tokens);
+        verify("1e1 1e0 0e0", tokens);
+        verify("0e1 112e02 123e034", tokens);
+        verify("0.0e1 112.1e02 123.123e034", tokens);
+        verify("0.0e+1 112.1e-02 123.123e-034", tokens);
+        verify("0e+1 112e+02 123e-034", tokens);
+    }
 }

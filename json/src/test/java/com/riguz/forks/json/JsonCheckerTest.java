@@ -17,8 +17,12 @@ public class JsonCheckerTest {
     @Parameterized.Parameters
     public static List<String> getFiles() {
         List<String> files = new ArrayList<>(64);
-        for (int i = 1; i < 33; i++) {
+        for (int i = 1; i <= 33; i++) {
             String file = "json_checker/fail" + i + ".json";
+            files.add(file);
+        }
+        for (int i = 1; i <= 3; i++) {
+            String file = "json_checker/pass" + i + ".json";
             files.add(file);
         }
         return files;
@@ -31,14 +35,17 @@ public class JsonCheckerTest {
     private final JsonParser parser = new JsonParser();
 
     @Test
-    public void parseBadJson() {
+    public void parse() {
         try {
-            parser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(this.file)));
-            if (file.contains("fail"))
-                fail("Should fail:" + file);
+            JsonValue result = parser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(this.file)));
+            if (file.contains("fail")) {
+                System.out.println("Result:" + result);
+                throw new RuntimeException("Should fail:" + file);
+            }
         } catch (SyntaxException e) {
-            if (file.contains("pass"))
-                fail("Should pass:" + file);
+            if (file.contains("pass")) {
+                throw new RuntimeException("Should pass:" + file, e);
+            }
         }
     }
 }

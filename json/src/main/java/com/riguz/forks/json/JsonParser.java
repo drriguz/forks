@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+/*
+    see: http://www.json.org/
+ */
 public class JsonParser {
     protected static final int DEFAULT_BUFFER_SIZE = 1024;
 

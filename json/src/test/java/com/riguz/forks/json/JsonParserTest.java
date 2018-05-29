@@ -56,7 +56,6 @@ public class JsonParserTest {
 
     @Test
     public void readUnclosedString() {
-
         try {
             parser.parse("\"Hello");
             fail();
@@ -86,6 +85,36 @@ public class JsonParserTest {
         assertEquals(JsonArray.of(-123.0), parser.parse("[-123]"));
         assertEquals(JsonArray.of(123.98), parser.parse("[123.98]"));
         assertEquals(JsonArray.of(-123.98), parser.parse("[-123.98]"));
+    }
+
+    @Test
+    public void readComplexNumber() {
+        assertEquals(JsonArray.of(0.0), parser.parse("[0.0]"));
+        assertEquals(JsonArray.of(new Double("1e1")), parser.parse("[1e1]"));
+        assertEquals(JsonArray.of(new Double("123e123")), parser.parse("[123e123]"));
+        assertEquals(JsonArray.of(new Double("1.23e+123")), parser.parse("[1.23e+123]"));
+        assertEquals(JsonArray.of(new Double("1.23e-123")), parser.parse("[1.23e-123]"));
+        assertEquals(JsonArray.of(new Double("0.0e-123")), parser.parse("[0.0e-123]"));
+    }
+
+    @Test
+    public void readInvlidNumber() {
+        expectException("[0e]");
+        expectException("[0000e]");
+        expectException("[0.]");
+        expectException("[0.e]");
+        expectException("[0.1e.]");
+        expectException("[0.1e1.]");
+        expectException("[0.1e1.1]");
+    }
+
+    void expectException(String number) {
+        try {
+            JsonValue v = parser.parse(number);
+            fail("Expected parse fail but got:" + v);
+        } catch (SyntaxException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Test

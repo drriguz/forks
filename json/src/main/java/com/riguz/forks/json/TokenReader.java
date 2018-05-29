@@ -47,25 +47,48 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
     }
 
     protected void readNumbers() {
-        boolean decimal = false;
-        boolean leadingZero = value == '0';
-        captureStream.startCapture((char) value);
-        do {
+        captureStream.startCapture(); // digit or '-'
+        if (value == '-') {
+            captureStream.capture('-');
             read();
-            if (isDigit()) {
-                if (leadingZero)
-                    throw new SyntaxException("Number should not has leading zero", getLocation());
-                leadingZero = false;
+        }
+        if (value == '0') {
+            captureStream.capture('0');
+            read();
+        } else if (isDigit()) {
+            readDigits();
+        }
+        if (value == '.') {
+            captureStream.capture((char) value);
+            read();
+            if (isDigit())
+                readDigits();
+            else
+                throw new SyntaxException("Expected digit after dot", getLocation());
+        }
+        if (value == 'e' || value == 'E') {
+            captureStream.capture('e');
+            read();
+            if (value == '+' || value == '-') {
                 captureStream.capture((char) value);
-            } else if (value == '.') {
-                if (decimal)
-                    throw new SyntaxException("Multi dot found", getLocation());
-                decimal = true;
-                leadingZero = false;
-                captureStream.capture((char) value);
+                read();
+                if (isDigit())
+                    readDigits();
+                else
+                    throw new SyntaxException("Expected exponent in number", getLocation());
+            } else if (isDigit()) {
+                readDigits();
             } else
-                break;
-        } while (true);
+                throw new SyntaxException("Expected exponent in number", getLocation());
+
+        }
+    }
+
+    protected void readDigits() {
+        do {
+            captureStream.capture((char) value);
+            read();
+        } while (isDigit());
     }
 
     protected void readString() {
@@ -104,6 +127,7 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
             case 'f':
                 return '\f';
             case '"':
+            case '/':
             case '\\':
                 return (char) value;
             case 'u':
