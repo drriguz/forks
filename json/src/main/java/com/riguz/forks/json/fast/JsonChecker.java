@@ -1,5 +1,7 @@
 package com.riguz.forks.json.fast;
 
+import com.riguz.forks.json.simple.BufferedReaderWrapper;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -29,9 +31,10 @@ public class JsonChecker {
 
     public static boolean check(Reader reader, int maxDepth) throws IOException {
         JsonChecker checker = new JsonChecker(maxDepth);
+        BufferedReaderWrapper wrapper = new BufferedReaderWrapper(1024, reader);
         int next;
         int i = 0;
-        while ((next = reader.read()) != -1) {
+        while ((next = wrapper.read()) != -1) {
             i++;
             if (!checker.check_char(next)) {
                 System.out.println("Failed:" + (char) next + " at:" + i);

@@ -1,7 +1,6 @@
 package com.riguz.forks.json.simple;
 
 import com.eclipsesource.json.Json;
-import com.riguz.forks.json.JsonParser;
 import com.riguz.forks.json.JsonValue;
 import org.junit.Ignore;
 

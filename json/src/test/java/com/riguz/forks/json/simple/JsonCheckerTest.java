@@ -1,6 +1,5 @@
 package com.riguz.forks.json.simple;
 
-import com.riguz.forks.json.JsonParser;
 import com.riguz.forks.json.JsonValue;
 import com.riguz.forks.json.SyntaxException;
 import org.junit.Test;

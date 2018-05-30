@@ -1,8 +1,6 @@
 package com.riguz.forks.json.fast;
 
-import com.riguz.forks.json.JsonParser;
-import com.riguz.forks.json.JsonValue;
-import com.riguz.forks.json.SyntaxException;
+import com.riguz.forks.json.simple.JsonParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

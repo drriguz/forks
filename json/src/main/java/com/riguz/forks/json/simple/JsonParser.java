@@ -1,5 +1,6 @@
-package com.riguz.forks.json;
+package com.riguz.forks.json.simple;
 
+import com.riguz.forks.json.*;
 import com.riguz.forks.json.simple.Token;
 import com.riguz.forks.json.simple.TokenReader;
 
@@ -10,7 +11,7 @@ import java.io.StringReader;
 /*
     see: http://www.json.org/
  */
-public class JsonParser implements Json{
+public class JsonParser implements Json {
     protected static final int DEFAULT_BUFFER_SIZE = 1024;
 
 
