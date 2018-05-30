@@ -1,5 +1,7 @@
 package com.riguz.forks.json;
 
+import com.riguz.forks.json.simple.Token;
+
 public class SyntaxException extends RuntimeException {
 
     public SyntaxException(String message) {

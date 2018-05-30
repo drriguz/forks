@@ -1,4 +1,6 @@
-package com.riguz.forks.json;
+package com.riguz.forks.json.simple;
+
+import com.riguz.forks.json.SyntaxException;
 
 public enum Token {
     OBJECT_START, // {
@@ -16,6 +18,7 @@ public enum Token {
     EOF;          // terminate
 
     public static final char INVALID = (char) -1;
+
 
     public static Token of(char value) {
         switch (value) {

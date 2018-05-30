@@ -1,5 +1,7 @@
-package com.riguz.forks.json;
+package com.riguz.forks.json.simple;
 
+import com.riguz.forks.json.*;
+import junit.framework.TestCase;
 import org.junit.Test;
 
 import static junit.framework.TestCase.*;
@@ -23,7 +25,7 @@ public class JsonParserTest {
 
     @Test
     public void readBool() {
-        assertEquals(JsonArray.of(JsonLiteral.TRUE), parser.parse("[true]"));
+        TestCase.assertEquals(JsonArray.of(JsonLiteral.TRUE), parser.parse("[true]"));
         assertEquals(JsonArray.of(JsonLiteral.FALSE), parser.parse("[false]"));
     }
 

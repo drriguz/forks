@@ -1,4 +1,7 @@
-package com.riguz.forks.json;
+package com.riguz.forks.json.simple;
+
+import com.riguz.forks.json.Location;
+import com.riguz.forks.json.SyntaxException;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -7,12 +10,12 @@ import java.util.Iterator;
 public class TokenReader extends BufferedReaderWrapper implements Iterator<Token> {
     protected final CaptureStream captureStream;
 
-    public TokenReader(String content) {
-        this(new StringReader(content));
+    public TokenReader(int bufferSize, String content) {
+        this(bufferSize, new StringReader(content));
     }
 
-    public TokenReader(Reader reader) {
-        super(reader);
+    public TokenReader(int bufferSize, Reader reader) {
+        super(bufferSize, reader);
         this.captureStream = new CaptureStream();
         read();
     }
@@ -91,7 +94,7 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
         } while (isDigit());
     }
 
-    protected void readString() {
+    protected void eatString() {
         boolean closed = false;
         captureStream.startCapture();
         do {
@@ -146,7 +149,7 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
     }
 
 
-    protected Location getLocation() {
+    public Location getLocation() {
         return new Location(line, offset, (char) value);
     }
 
@@ -191,7 +194,7 @@ public class TokenReader extends BufferedReaderWrapper implements Iterator<Token
                 readNumbers();
                 break;
             case STRING:
-                readString();
+                eatString();
                 read();
                 break;
             case SPACE:

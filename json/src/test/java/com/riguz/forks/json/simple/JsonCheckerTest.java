@@ -1,5 +1,8 @@
-package com.riguz.forks.json;
+package com.riguz.forks.json.simple;
 
+import com.riguz.forks.json.JsonParser;
+import com.riguz.forks.json.JsonValue;
+import com.riguz.forks.json.SyntaxException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -7,8 +10,6 @@ import org.junit.runners.Parameterized;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 public class JsonCheckerTest {

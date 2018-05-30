@@ -1,12 +1,15 @@
-package com.riguz.forks.json;
+package com.riguz.forks.json.simple;
 
+import com.riguz.forks.json.Location;
+import com.riguz.forks.json.simple.BufferedReaderWrapper;
+import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import static com.riguz.forks.json.BufferedReaderWrapper.INVALID;
+import static com.riguz.forks.json.simple.BufferedReaderWrapper.INVALID;
 import static junit.framework.TestCase.assertEquals;
 
 public class BufferedReaderTest {
@@ -60,8 +63,8 @@ public class BufferedReaderTest {
     @Test
     public void reportLocation() {
         final String str = " \n \n";
-        BufferedReaderWrapper reader = new BufferedReaderWrapper(str);
-        assertEquals(new Location(1, 0, INVALID), reader.location());
+        BufferedReaderWrapper reader = new BufferedReaderWrapper(128, str);
+        TestCase.assertEquals(new Location(1, 0, INVALID), reader.location());
         reader.read();
         assertEquals(new Location(1, 1, ' '), reader.location());
         reader.read();

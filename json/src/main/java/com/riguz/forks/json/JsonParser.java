@@ -1,5 +1,8 @@
 package com.riguz.forks.json;
 
+import com.riguz.forks.json.simple.Token;
+import com.riguz.forks.json.simple.TokenReader;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -7,15 +10,18 @@ import java.io.StringReader;
 /*
     see: http://www.json.org/
  */
-public class JsonParser {
+public class JsonParser implements Json{
     protected static final int DEFAULT_BUFFER_SIZE = 1024;
 
+
+    protected final int bufferSize;
 
     public JsonParser() {
         this(DEFAULT_BUFFER_SIZE);
     }
 
     public JsonParser(int bufferSize) {
+        this.bufferSize = bufferSize;
     }
 
     public JsonValue parse(String json) {
@@ -39,7 +45,7 @@ public class JsonParser {
     }
 
     public JsonValue parse(Reader input) {
-        try (TokenReader reader = new TokenReader(input)) {
+        try (TokenReader reader = new TokenReader(this.bufferSize, input)) {
             JsonValue value = readValue(reader);
             Token lastToken = reader.nextSkipSpace();
             if (lastToken != null)

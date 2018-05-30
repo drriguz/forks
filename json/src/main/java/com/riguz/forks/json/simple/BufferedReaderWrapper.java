@@ -1,4 +1,6 @@
-package com.riguz.forks.json;
+package com.riguz.forks.json.simple;
+
+import com.riguz.forks.json.Location;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -6,7 +8,6 @@ import java.io.Reader;
 import java.io.StringReader;
 
 public class BufferedReaderWrapper implements Closeable {
-    protected static final int DEFAULT_BUFFER_SIZE = 1024;
     public static final char INVALID = (char) -1;
 
     protected Reader reader;
@@ -18,16 +19,8 @@ public class BufferedReaderWrapper implements Closeable {
     protected int offset;
     protected int line;
 
-    public BufferedReaderWrapper() {
-        this(DEFAULT_BUFFER_SIZE, null);
-    }
-
-    public BufferedReaderWrapper(String content) {
-        this(new StringReader(content));
-    }
-
-    public BufferedReaderWrapper(Reader reader) {
-        this(DEFAULT_BUFFER_SIZE, reader);
+    public BufferedReaderWrapper(int bufferSize, String content) {
+        this(bufferSize, new StringReader(content));
     }
 
     public BufferedReaderWrapper(int bufferSize, Reader reader) {

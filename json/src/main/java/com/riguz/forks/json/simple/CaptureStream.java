@@ -1,4 +1,4 @@
-package com.riguz.forks.json;
+package com.riguz.forks.json.simple;
 
 public class CaptureStream {
     protected char[] buffer;
