@@ -53,7 +53,7 @@ public class RouteScriptVisitor extends RouteBaseVisitor<RouteConfig> {
             List<ClassIdentifier> classes = new LinkedList<>();
             String packageName = ctx.packageName().accept(packageNameVisitor);
             ClassIdentifierVisitor classIdentifierVisitor = new ClassIdentifierVisitor(packageName);
-            ctx.className().forEach(classNameContext -> {
+            ctx.classIdentifier().forEach(classNameContext -> {
                 logger.debug("Accept class name:{}", classNameContext);
                 classes.add(classNameContext.accept(classIdentifierVisitor));
             });
@@ -87,7 +87,7 @@ public class RouteScriptVisitor extends RouteBaseVisitor<RouteConfig> {
         }
 
         @Override
-        public ClassIdentifier visitClassName(RouteParser.ClassNameContext ctx) {
+        public ClassIdentifier visitClassIdentifier(RouteParser.ClassIdentifierContext ctx) {
             String alias = null;
             if (ctx.IDENTIFIER().size() > 1)
                 alias = ctx.IDENTIFIER(1).getText();
