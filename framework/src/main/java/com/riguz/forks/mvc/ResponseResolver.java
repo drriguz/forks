@@ -4,15 +4,12 @@ import com.riguz.forks.http.HttpRequest;
 import com.riguz.forks.http.HttpResponse;
 import com.riguz.forks.mvc.view.JsonResult;
 
-public class ViewResolver implements Resolver<Result> {
+public class ResponseResolver implements Resolver<Object> {
 
     @Override
-    public void resolve(HttpRequest request, HttpResponse response, Result result) {
+    public void resolve(HttpRequest request, HttpResponse response, Object result) {
         if (result == null) {
         } else {
-            if (result instanceof JsonResult) {
-                JsonResult<?> jsonResult = (JsonResult<?>) result;
-            }
             response.writeContent(result.toString());
         }
     }

@@ -14,12 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ActionExecutor {
-    public Result execute(RequestHandler handler, RequestContext context) throws ActionException {
+    public Object execute(RequestHandler handler, RequestContext context) throws ActionException {
         Object controller = handler.getController();
         try {
-            Result result = (Result) handler.getAction().invoke(controller,
+            return handler.getAction().invoke(controller,
                     this.bindActionParams(handler.getFunctionCall(), context));
-            return result;
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new ActionException(e);
         } catch (NumberFormatException ex) {
@@ -30,12 +29,14 @@ public class ActionExecutor {
     private Object[] bindActionParams(FunctionCall functionCall, RequestContext context) {
         List<Object> arguments = new ArrayList<>();
         String[] pathParamNames = functionCall.getParamNames();
-        Class<?>[] pathParamTypes = functionCall.getParamTypes();
-        for (int i = 0; i < pathParamNames.length; i++) {
-            System.out.println(pathParamNames[i]);
-            String param = context.getPathVariable(pathParamNames[i]);
-            Class<?> paramType = pathParamTypes[i];
-            arguments.add(convert(param, paramType));
+        if(pathParamNames != null) {
+            Class<?>[] pathParamTypes = functionCall.getParamTypes();
+            for (int i = 0; i < pathParamNames.length; i++) {
+                System.out.println(pathParamNames[i]);
+                String param = context.getPathVariable(pathParamNames[i]);
+                Class<?> paramType = pathParamTypes[i];
+                arguments.add(convert(param, paramType));
+            }
         }
         return arguments.toArray();
     }

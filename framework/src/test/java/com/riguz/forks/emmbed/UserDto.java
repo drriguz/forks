@@ -1,4 +1,4 @@
-package com.riguz.demo;
+package com.riguz.forks.emmbed;
 
 import java.io.Serializable;
 import java.util.Date;

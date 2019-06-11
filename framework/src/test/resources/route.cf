@@ -1,9 +1,10 @@
 controllers{
-package com.riguz.demo
+package com.riguz.forks.emmbed
 UserController
 }
 
 routes default {
 get  /users/:id             UserController.getUser(id: Integer)
+get  /foo                   UserController.foo()
 }
 

@@ -3,6 +3,7 @@ package com.riguz.forks;
 import com.riguz.forks.http.NetworkServer;
 import com.riguz.forks.ioc.Injector;
 import com.riguz.forks.router.Router;
+
 import javax.inject.Inject;
 
 public final class Forks {
@@ -26,7 +27,7 @@ public final class Forks {
 
     private boolean started = false;
 
-    public void start() {
+    public synchronized void start() {
         if (this.started) {
             return;
         }
@@ -35,7 +36,7 @@ public final class Forks {
         this.started = true;
     }
 
-    public static void stop() {
-
+    public void stop() {
+        this.networkServer.stop();
     }
 }

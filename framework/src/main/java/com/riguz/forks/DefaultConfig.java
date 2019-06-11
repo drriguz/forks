@@ -18,8 +18,8 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.IOException;
 
-public abstract class AbstractConfig {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractConfig.class);
+public class DefaultConfig {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultConfig.class);
     public static final String ROUTER_FILE = "route.cf";
 
 
@@ -30,8 +30,8 @@ public abstract class AbstractConfig {
     }
 
     @Bind
-    @Named("viewResolver")
-    public Resolver<Result> viewResolver(ViewResolver viewResolver) {
+    @Named("responseResolver")
+    public Resolver<Object> viewResolver(ResponseResolver viewResolver) {
         return viewResolver;
     }
 
