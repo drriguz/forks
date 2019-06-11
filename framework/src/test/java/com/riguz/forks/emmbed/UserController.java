@@ -9,6 +9,10 @@ public class UserController {
         return "bar";
     }
 
+    public int number() {
+        return 1024;
+    }
+
     public UserDto getUser(int id) {
         UserDto user = new UserDto(1, "Riguz", new Date(), "Hello World!");
         return user;

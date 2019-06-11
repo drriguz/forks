@@ -6,6 +6,8 @@ import com.riguz.forks.http.RequestDelegate;
 import com.riguz.forks.http.undertow.UndertowServer;
 import com.riguz.forks.ioc.Bind;
 import com.riguz.forks.ioc.Injector;
+import com.riguz.forks.json.DslJsonSerializer;
+import com.riguz.forks.json.JsonSerializer;
 import com.riguz.forks.mvc.*;
 import com.riguz.forks.router.FileBasedPatternRouteLoader;
 import com.riguz.forks.router.RouteLoader;
@@ -33,6 +35,11 @@ public class DefaultConfig {
     @Named("responseResolver")
     public Resolver<Object> viewResolver(ResponseResolver viewResolver) {
         return viewResolver;
+    }
+
+    @Bind
+    public JsonSerializer jsonSerializer() {
+        return new DslJsonSerializer();
     }
 
     @Bind

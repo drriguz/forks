@@ -29,4 +29,13 @@ public class ForksTest {
                 statusCode(200).
                 body(equalTo("bar"));
     }
+
+    @Test
+    public void getInt() {
+        when().
+                get("/number").
+                then().
+                statusCode(200).
+                body(equalTo("1024"));
+    }
 }

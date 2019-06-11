@@ -2,13 +2,7 @@ package com.riguz.forks.mvc;
 
 import com.riguz.forks.config.route.FunctionCall;
 import com.riguz.forks.exceptions.ActionException;
-import com.riguz.forks.ioc.Injector;
-import com.riguz.forks.mvc.RequestContext;
-import com.riguz.forks.mvc.RequestHandler;
-import com.riguz.forks.mvc.Result;
-import com.riguz.forks.mvc.view.JsonResult;
 
-import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;

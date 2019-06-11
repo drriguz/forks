@@ -6,5 +6,6 @@ UserController
 routes default {
 get  /users/:id             UserController.getUser(id: Integer)
 get  /foo                   UserController.foo()
+get  /number                UserController.number()
 }
 

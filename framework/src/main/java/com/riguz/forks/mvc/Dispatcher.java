@@ -5,6 +5,7 @@ import com.riguz.forks.exceptions.ActionException;
 import com.riguz.forks.http.HttpRequest;
 import com.riguz.forks.http.HttpResponse;
 import com.riguz.forks.http.RequestDelegate;
+import com.riguz.forks.json.JsonSerializer;
 import com.riguz.forks.router.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class Dispatcher implements RequestDelegate {
         try {
             final Object result = this.actionExecutor.execute(handler, new RequestContext(request, response, pathVariables));
             this.responseResolver.resolve(request, response, result);
-        } catch (ActionException e) {
+        } catch (Exception e) {
             this.exceptionResolver.resolve(request, response, e);
         }
     }
