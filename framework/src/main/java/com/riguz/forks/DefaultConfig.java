@@ -12,7 +12,7 @@ import com.riguz.forks.mvc.*;
 import com.riguz.forks.router.FileBasedPatternRouteLoader;
 import com.riguz.forks.router.RouteLoader;
 import com.riguz.forks.router.Router;
-import com.riguz.forks.router.TrieRouter;
+import com.riguz.forks.router.impl.TrieRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

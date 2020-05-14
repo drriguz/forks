@@ -1,4 +1,4 @@
-package com.riguz.forks.router;
+package com.riguz.forks.router.impl;
 
 import com.riguz.forks.http.HttpMethod;
 

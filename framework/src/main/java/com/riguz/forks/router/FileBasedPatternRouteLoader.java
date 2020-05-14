@@ -9,6 +9,7 @@ import com.riguz.forks.exceptions.InitializeException;
 import com.riguz.forks.http.HttpMethod;
 import com.riguz.forks.ioc.Injector;
 import com.riguz.forks.mvc.RequestHandler;
+import com.riguz.forks.router.impl.PatternTrieRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,7 +1,7 @@
-package forks.router;
+package com.riguz.forks.router.trie;
 
-import com.riguz.forks.router.Trie;
-import com.riguz.forks.router.TrieNode;
+import com.riguz.forks.router.trie.Trie;
+import com.riguz.forks.router.trie.TrieNode;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

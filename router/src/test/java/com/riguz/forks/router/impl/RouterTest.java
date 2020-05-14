@@ -1,8 +1,8 @@
-package forks.router;
+package com.riguz.forks.router.impl;
 
 import com.riguz.forks.http.HttpMethod;
 import com.riguz.forks.router.Router;
-import com.riguz.forks.router.TrieRouter;
+import com.riguz.forks.router.impl.TrieRouter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

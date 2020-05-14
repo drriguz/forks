@@ -1,8 +1,11 @@
-package com.riguz.forks.router;
+package com.riguz.forks.router.impl;
 
 import com.riguz.commons.base.Strings;
 import com.riguz.commons.tuple.Pair;
 import com.riguz.forks.http.HttpMethod;
+import com.riguz.forks.router.Router;
+import com.riguz.forks.router.trie.AbstractTrieNode;
+import com.riguz.forks.router.trie.Trie;
 
 import java.util.HashMap;
 import java.util.Map;

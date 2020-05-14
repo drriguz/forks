@@ -1,4 +1,4 @@
-package com.riguz.forks.router;
+package com.riguz.forks.router.trie;
 
 import com.riguz.commons.base.Strings;
 import com.riguz.commons.tuple.Pair;
