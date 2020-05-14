@@ -2,11 +2,9 @@ package com.riguz.forks.config.route;
 
 import com.riguz.forks.antlr.RouteBaseVisitor;
 import com.riguz.forks.antlr.RouteParser;
-import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
