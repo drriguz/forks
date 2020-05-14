@@ -13,7 +13,6 @@ classes
 *.DS_Store
 *.log
 
-*.jar
 *.war
 *.ear
 *.zip
