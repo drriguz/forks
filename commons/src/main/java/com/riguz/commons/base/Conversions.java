@@ -1,7 +1,5 @@
 package com.riguz.commons.base;
 
-import javax.activation.UnsupportedDataTypeException;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -59,7 +57,7 @@ public class Conversions {
         return dateFormat.parse(str);
     }
 
-    public static Object parse(Class<?> cls, String str) throws UnsupportedDataTypeException, ParseException {
+    public static Object parse(Class<?> cls, String str) throws ParseException {
         if (cls == String.class) {
             return str;
         }
@@ -81,6 +79,6 @@ public class Conversions {
         if (cls == Date.class) {
             return toDate(str, "yyyy-MM-dd");
         }
-        throw new UnsupportedDataTypeException("Unsupported type:" + cls);
+        throw new IllegalArgumentException("Unsupported type:" + cls);
     }
 }
