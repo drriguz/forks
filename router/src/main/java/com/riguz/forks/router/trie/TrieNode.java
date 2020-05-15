@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TrieNode<T> extends AbstractTrieNode<T, TrieNode<T>, TrieNode<T>> {
-    protected final Map<Character, TrieNode<T>> children = new HashMap<>();
-
     public static <T> TrieNode<T> empty() {
         return new TrieNode<>();
     }
