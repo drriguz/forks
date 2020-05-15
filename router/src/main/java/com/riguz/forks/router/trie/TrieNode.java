@@ -4,30 +4,58 @@ import com.riguz.commons.base.Strings;
 import com.riguz.commons.tuple.Pair;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
-public class TrieNode<T> extends AbstractTrieNode<T, TrieNode<T>> {
-
-    private TrieNode() {
-        super();
-    }
+public class TrieNode<T> extends AbstractTrieNode<T, TrieNode<T>, TrieNode<T>> {
+    protected final Map<Character, TrieNode<T>> children = new HashMap<>();
 
     public static <T> TrieNode<T> empty() {
         return new TrieNode<>();
     }
 
-    public TrieNode(char path) {
-        super(path);
+    private TrieNode() {
+        super(null, null);
+    }
+
+    public TrieNode(Character path) {
+        super(path, null);
+        if (path == null) {
+            throw new IllegalArgumentException("None root node should has a valid path");
+        }
     }
 
     @Override
-    public int insert(String path, T payload) {
-        return this.insert(path, 0, payload);
+    public TrieNode<T> find(String path) {
+        return this.find(path, 0);
     }
 
-    public int insert(String path, int offset, T payload) {
+    @Override
+    public T getValue(String path) {
+        TrieNode<T> node = find(path);
+        return node == null ? null : node.getPayload();
+    }
+
+    private TrieNode<T> find(String path, int offset) {
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
-            return 0;
+            return null;
+        }
+        TrieNode<T> node = this.children.get(path.charAt(offset));
+
+        if (node == null || offset == path.length() - 1) {
+            return node;
+        } else {
+            return node.find(path, offset + 1);
+        }
+    }
+
+    public void insert(String path, T payload) {
+        this.insert(path, 0, payload);
+    }
+
+    private void insert(String path, int offset, T payload) {
+        if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
+            return;
         }
         char key = path.charAt(offset);
         TrieNode<T> node = children.get(key);
@@ -40,16 +68,8 @@ public class TrieNode<T> extends AbstractTrieNode<T, TrieNode<T>> {
                 throw new IllegalArgumentException("Conflict path detected:" + path);
             }
             node.payload = payload;
-            return 1;
         } else {
-            return node.insert(path, offset + 1, payload);
+            node.insert(path, offset + 1, payload);
         }
     }
-
-    @Override
-    public Pair<TrieNode<T>, Map<String, String>> resolve(String path) {
-        TrieNode<T> node = this.find(path);
-        return node == null ? null : Pair.of(node, Collections.emptyMap());
-    }
-
 }

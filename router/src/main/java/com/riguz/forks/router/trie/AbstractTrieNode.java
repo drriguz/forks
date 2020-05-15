@@ -1,29 +1,17 @@
 package com.riguz.forks.router.trie;
 
-import com.riguz.commons.base.Strings;
-import com.riguz.commons.tuple.Pair;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
-public abstract class AbstractTrieNode<T, E extends AbstractTrieNode<T, E>> {
-
+public abstract class AbstractTrieNode<T, R, C extends AbstractTrieNode<T, R, C>> {
     protected final Character path;
-    protected final Map<Character, E> children = new HashMap<>();
-
+    protected final Map<Character, C> children = new HashMap<>();
     protected T payload;
 
-    protected AbstractTrieNode() {
-        this.path = null;
-        this.payload = null;
-    }
-
-    public AbstractTrieNode(Character path) {
-        if (path == null) {
-            throw new IllegalArgumentException("None root node should has a valid path");
-        }
+    protected AbstractTrieNode(Character path, T payload) {
         this.path = path;
-        this.payload = null;
+        this.payload = payload;
     }
 
     public boolean isEmpty() {
@@ -38,12 +26,8 @@ public abstract class AbstractTrieNode<T, E extends AbstractTrieNode<T, E>> {
         return path;
     }
 
-    public String getPathAsString() {
-        return this.path == null ? "" : String.valueOf(this.path);
-    }
-
-    protected boolean shouldBreakTree() {
-        return hasPayload();
+    public String getDisplayPath() {
+        return path == null ? "" : String.valueOf(path);
     }
 
     public boolean hasPayload() {
@@ -54,32 +38,16 @@ public abstract class AbstractTrieNode<T, E extends AbstractTrieNode<T, E>> {
         return this.children.size() == 1;
     }
 
-    public E getNext() {
+    public C getNext() {
         if (!this.isContinuous()) {
             throw new UnsupportedOperationException("Child path is ambiguous");
         }
         return this.children.values().stream().findFirst().get();
     }
 
-    public abstract int insert(String path, T payload);
+    public abstract void insert(String path, T payload);
 
-    protected E find(String path) {
-        return this.find(path, 0);
-    }
+    public abstract R find(String path);
 
-    protected E find(String path, int offset) {
-        if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
-            return null;
-        }
-        E node = this.children.get(path.charAt(offset));
-
-        if (node == null || offset == path.length() - 1) {
-            return node;
-        } else {
-            return node.find(path, offset + 1);
-        }
-    }
-
-    public abstract Pair<E, Map<String, String>> resolve(String path);
-
+    public abstract T getValue(String path);
 }

@@ -2,6 +2,7 @@ package com.riguz.forks.router.impl;
 
 import com.riguz.commons.tuple.Pair;
 import com.riguz.forks.http.HttpMethod;
+import com.riguz.forks.router.Resolved;
 import com.riguz.forks.router.impl.PatternTrieRouter;
 import com.riguz.forks.router.Router;
 import org.junit.Test;
@@ -35,9 +36,9 @@ public class PatternRouterTest {
         router.addGet("/about", "about");
         router.complete();
 
-        assertEquals("index", router.resolve(HttpMethod.GET, "/").getLeft());
-        assertEquals("home", router.resolve(HttpMethod.GET, "/home").getLeft());
-        assertEquals("about", router.resolve(HttpMethod.GET, "/about").getLeft());
+        assertEquals("index", router.resolve(HttpMethod.GET, "/").getPayload());
+        assertEquals("home", router.resolve(HttpMethod.GET, "/home").getPayload());
+        assertEquals("about", router.resolve(HttpMethod.GET, "/about").getPayload());
         assertEquals(null, router.resolve(HttpMethod.GET, "/foo"));
     }
 
@@ -50,14 +51,14 @@ public class PatternRouterTest {
         validate(router.resolve(HttpMethod.GET, "/files/1.jpg"), "file", "1.jpg");
     }
 
-    private void validate(Pair<String, Map<String, String>> result, String handler, String... args) {
+    private void validate(Resolved<String> result, String handler, String... args) {
         if (handler == null) {
             assertNull(result);
         } else {
-            assertEquals(handler, result.getLeft());
-            assertEquals(args.length, result.getRight().size());
+            assertEquals(handler, result.getPayload());
+            assertEquals(args.length, result.getParams().size());
             for (String arg : args) {
-                assertEquals(true, result.getRight().containsValue(arg));
+                assertEquals(true, result.getParams().containsValue(arg));
             }
         }
     }
@@ -79,7 +80,7 @@ public class PatternRouterTest {
         router.addGet("/", "index");
         router.addGet("/users/:user/profile/:id", "user");
         router.complete();
-        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile/2").getLeft());
+        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile/2").getPayload());
     }
 
     @Test
@@ -88,7 +89,7 @@ public class PatternRouterTest {
         router.addGet("/", "index");
         router.addGet("/users/:user/profile/:id/*file", "user");
         router.complete();
-        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile/2/1.jpg").getLeft());
+        assertEquals("user", router.resolve(HttpMethod.GET, "/users/1/profile/2/1.jpg").getPayload());
     }
 
     @Test
@@ -102,11 +103,11 @@ public class PatternRouterTest {
 
         router.complete();
 
-        assertEquals("index", router.resolve(HttpMethod.GET, "/").getLeft());
-        assertEquals("user", router.resolve(HttpMethod.GET, "/user").getLeft());
-        assertEquals("userDetail", router.resolve(HttpMethod.GET, "/user/1").getLeft());
-        assertEquals("userProfile", router.resolve(HttpMethod.GET, "/user/1/profile").getLeft());
-        assertEquals("file", router.resolve(HttpMethod.GET, "/files/1.jpg").getLeft());
+        assertEquals("index", router.resolve(HttpMethod.GET, "/").getPayload());
+        assertEquals("user", router.resolve(HttpMethod.GET, "/user").getPayload());
+        assertEquals("userDetail", router.resolve(HttpMethod.GET, "/user/1").getPayload());
+        assertEquals("userProfile", router.resolve(HttpMethod.GET, "/user/1/profile").getPayload());
+        assertEquals("file", router.resolve(HttpMethod.GET, "/files/1.jpg").getPayload());
     }
 
     @Test
@@ -116,9 +117,9 @@ public class PatternRouterTest {
         router.addGet("/user", "user");
         router.addGet("/user/index", "userIndex");
         router.addGet("/user/profile", "userProfile");
-        assertEquals("index", router.resolve(HttpMethod.GET, "/").getLeft());
-        assertEquals("user", router.resolve(HttpMethod.GET, "/user").getLeft());
-        assertEquals("userIndex", router.resolve(HttpMethod.GET, "/user/index").getLeft());
-        assertEquals("userProfile", router.resolve(HttpMethod.GET, "/user/profile").getLeft());
+        assertEquals("index", router.resolve(HttpMethod.GET, "/").getPayload());
+        assertEquals("user", router.resolve(HttpMethod.GET, "/user").getPayload());
+        assertEquals("userIndex", router.resolve(HttpMethod.GET, "/user/index").getPayload());
+        assertEquals("userProfile", router.resolve(HttpMethod.GET, "/user/profile").getPayload());
     }
 }

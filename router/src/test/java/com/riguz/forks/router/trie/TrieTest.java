@@ -1,7 +1,5 @@
 package com.riguz.forks.router.trie;
 
-import com.riguz.forks.router.trie.Trie;
-import com.riguz.forks.router.trie.TrieNode;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -11,23 +9,23 @@ public class TrieTest {
 
     @Test
     public void basicStructure() {
-        Trie<String, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
+        Trie<String, TrieNode<String>, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
         tree.insert("/home", "Hello");
-        assertEquals("Hello", tree.find("/home"));
-        assertEquals(null, tree.find("/home/"));
-        assertEquals(null, tree.find("/homework"));
-        assertEquals(null, tree.find("/hom"));
-        assertEquals(null, tree.find("/homee"));
-        assertEquals(null, tree.find("/hoxe"));
+        assertEquals("Hello", tree.getValue("/home"));
+        assertEquals(null, tree.getValue("/home/"));
+        assertEquals(null, tree.getValue("/homework"));
+        assertEquals(null, tree.getValue("/hom"));
+        assertEquals(null, tree.getValue("/homee"));
+        assertEquals(null, tree.getValue("/hoxe"));
         tree.insert("/house", "world");
-        assertEquals("world", tree.find("/house"));
-        assertEquals(null, tree.find("/ho"));
-        assertEquals("Hello", tree.find("/home"));
+        assertEquals("world", tree.getValue("/house"));
+        assertEquals(null, tree.getValue("/ho"));
+        assertEquals("Hello", tree.getValue("/home"));
     }
 
     @Test
     public void duplicateInsert() {
-        Trie<String, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
+        Trie<String, TrieNode<String>, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
         tree.insert("/home", "Hello");
         try {
             tree.insert("/home", "Hello");
@@ -35,12 +33,12 @@ public class TrieTest {
         } catch (IllegalArgumentException ex) {
 
         }
-        assertEquals("Hello", tree.find("/home"));
+        assertEquals("Hello", tree.getValue("/home"));
     }
 
     @Test
     public void print() {
-        Trie<String, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
+        Trie<String, TrieNode<String>, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
         tree.insert("/home", "Hello");
         tree.insert("/user", "User");
         tree.insert("/user/profile", "profile");
@@ -59,7 +57,7 @@ public class TrieTest {
 
     @Test
     public void print1() {
-        Trie<String, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
+        Trie<String, TrieNode<String>, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
         tree.insert("/abc/de", "profile");
         tree.insert("/abc/fg", "settings");
         String str = tree.dump();
@@ -68,7 +66,7 @@ public class TrieTest {
 
     @Test
     public void print2() {
-        Trie<String, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
+        Trie<String, TrieNode<String>, TrieNode<String>> tree = new Trie<>(TrieNode.empty());
         tree.insert("/abc/", "0");
         tree.insert("/abc/def", "1");
         tree.insert("/abc/bcd", "2");

@@ -2,13 +2,14 @@ package com.riguz.forks.router.impl;
 
 import com.riguz.commons.base.Strings;
 import com.riguz.commons.tuple.Pair;
+import com.riguz.forks.router.Resolved;
 import com.riguz.forks.router.trie.AbstractTrieNode;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> {
-
+public class PatternTrieNode<T>
+        extends AbstractTrieNode<T, Resolved<T>, PatternTrieNode<T>> {
     protected static final Character WILDCARD_PARAM_PATTERN = '*';
     protected static final Character NAMED_PARAM_PATTERN = ':';
     protected static final Character PATH_SPLITTER = '/';
@@ -20,7 +21,7 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
     }
 
     private PatternTrieNode() {
-        super();
+        super(null, null);
         this.paramName = null;
     }
 
@@ -29,12 +30,11 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
     }
 
     public PatternTrieNode(Character pattern, String paramName, T payload) {
-        super(pattern);
+        super(pattern, payload);
         if (isPattern(pattern) && Strings.isNullOrEmpty(paramName)) {
             throw new IllegalArgumentException("No argument name with pattern:" + pattern);
         }
         this.paramName = paramName;
-        this.payload = payload;
     }
 
     public String getParamName() {
@@ -46,12 +46,12 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
     }
 
     public boolean hasPattern() {
-        return this.path == NAMED_PARAM_PATTERN || this.path == WILDCARD_PARAM_PATTERN;
+        return isPattern(this.path);
     }
 
     @Override
-    protected boolean shouldBreakTree() {
-        return super.shouldBreakTree() || this.hasPattern();
+    public boolean isContinuous() {
+        return super.isContinuous() || hasPattern();
     }
 
     private static boolean isReserved(Character path) {
@@ -64,7 +64,7 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         return NAMED_PARAM_PATTERN == path || WILDCARD_PARAM_PATTERN == path;
     }
 
-    private Pair<Character, String> extractNameParam(String path, int offset) {
+    private static Pair<Character, String> extractNameParam(String path, int offset) {
         // valid:   /foo/:name
         //          /foo/:name/path
         //          /foo/:name/*file
@@ -91,7 +91,7 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         return new Pair<>(NAMED_PARAM_PATTERN, paramNameBuilder.toString());
     }
 
-    private Pair<Character, String> extractWildcardParam(String path, int offset) {
+    private static Pair<Character, String> extractWildcardParam(String path, int offset) {
         // valid:   /foo/*file
         // invalid: /foo/*
         //          /foo/**
@@ -112,12 +112,12 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         return new Pair<>(WILDCARD_PARAM_PATTERN, paramNameBuilder.toString());
     }
 
-    private Pair<Character, String> extractParam(String path, int offset) {
+    private static Pair<Character, String> extractParam(String path, int offset) {
         Character paramType = path.charAt(offset);
         if (NAMED_PARAM_PATTERN == paramType) {
-            return this.extractNameParam(path, offset);
+            return extractNameParam(path, offset);
         } else if (WILDCARD_PARAM_PATTERN == paramType) {
-            return this.extractWildcardParam(path, offset);
+            return extractWildcardParam(path, offset);
         }
         return null;
     }
@@ -127,7 +127,7 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
     }
 
     private PatternTrieNode<T> getOrCreate(Character key, String paramName) {
-        PatternTrieNode<T> node = this.children.get(key);
+        PatternTrieNode<T> node = (PatternTrieNode<T>) this.children.get(key);
         if (node == null) {
             node = new PatternTrieNode<>(key, paramName);
             this.children.put(key, node);
@@ -146,16 +146,16 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
     }
 
     @Override
-    public int insert(String path, T payload) {
-        return this.insert(path, 0, payload);
+    public void insert(String path, T payload) {
+        this.insert(path, 0, payload);
     }
 
-    protected int insert(String path, int offset, T payload) {
+    private int insert(String path, int offset, T payload) {
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
             return 0;
         }
         char key = path.charAt(offset);
-        Pair<Character, String> param = this.extractParam(path, offset);
+        Pair<Character, String> param = extractParam(path, offset);
         PatternTrieNode<T> node;
         if (param != null) {
             key = param.getLeft();
@@ -177,13 +177,20 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
     }
 
     @Override
-    public Pair<PatternTrieNode<T>, Map<String, String>> resolve(String path) {
+    public Resolved<T> find(String path) {
         final Map<String, String> pathVariables = new LinkedHashMap<>();
-        PatternTrieNode<T> node = this.resolve(path, 0, pathVariables);
-        return node == null ? null : Pair.of(node, pathVariables);
+        PatternTrieNode<T> node = this.findNode(path, 0, pathVariables);
+        return node == null ? Resolved.notMatched() : Resolved.of(node.getPayload(), pathVariables);
     }
 
-    private PatternTrieNode<T> resolve(String path, int offset, Map<String, String> pathVariables) {
+    @Override
+    public T getValue(String path) {
+        final Map<String, String> pathVariables = new LinkedHashMap<>();
+        PatternTrieNode<T> node = this.findNode(path, 0, pathVariables);
+        return node == null ? null : node.getPayload();
+    }
+
+    private PatternTrieNode<T> findNode(String path, int offset, Map<String, String> pathVariables) {
         if (Strings.isNullOrEmpty(path) || offset >= path.length()) {
             return null;
         }
@@ -212,7 +219,7 @@ public class PatternTrieNode<T> extends AbstractTrieNode<T, PatternTrieNode<T>> 
         if (offset == path.length() - 1 || next == null) {
             return next;
         } else {
-            return next.resolve(path, offset + 1, pathVariables);
+            return next.findNode(path, offset + 1, pathVariables);
         }
     }
 }

@@ -1,71 +1,54 @@
 package com.riguz.forks.router.trie;
 
 import com.riguz.commons.base.Strings;
-import com.riguz.commons.tuple.Pair;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-public class Trie<T, E extends AbstractTrieNode<T, E>> {
+public class Trie<T, R, C extends AbstractTrieNode<T, R, C>> {
+    protected final C root;
 
-    protected E root;
-
-    public Trie(E root) {
+    public Trie(C root) {
         if (root == null || !root.isEmpty()) {
-            throw new IllegalArgumentException("Illegal root node");
+            throw new IllegalArgumentException("Root node should be empty node");
         }
         this.root = root;
     }
 
-    public int insert(String path, T payload) {
+    public void insert(String path, T payload) {
         if (Strings.isNullOrEmpty(path)) {
             throw new IllegalArgumentException("Path cannot be empty");
         }
-        return this.root.insert(path, payload);
+        this.root.insert(path, payload);
     }
 
-    public T find(String path) {
-        E node = this.root.find(path);
-        return node == null ? null : node.payload;
+    public R find(String path) {
+        return root.find(path);
     }
 
-    public Pair<T, Map<String, String>> resolve(String path) {
-        Pair<E, Map<String, String>> node = this.root.resolve(path);
-
-        if (node == null)
-            return null;
-        else {
-            T payload = node.getLeft().getPayload();
-            if (payload == null) {
-                // TODO: support 405 method not supported
-                return null;
-            } else {
-                return Pair.of(node.getLeft().getPayload(), node.getRight());
-            }
-        }
+    public T getValue(String path) {
+        return root.getValue(path);
     }
 
-    protected String descPath(E node) {
-        String payload = node.payload == null ? " × " : " (" + node.payload.toString() + ")";
-        return payload;
+    protected String descPath(AbstractTrieNode<T, R, C> node) {
+        return node.getPayload() == null ? " × " : " (" + node.getPayload().toString() + ")";
     }
 
-    protected List<String> dump(E node, String path) {
-        if (node.isContinuous() && !node.shouldBreakTree()) {
-            return dump(node.getNext(), path + node.getPathAsString());
+    protected List<String> dump(AbstractTrieNode<T, R, C> node, String path) {
+        if (node.isContinuous()) {
+            return dump(node.getNext(), path + node.getPath());
         }
         List<String> tree = new LinkedList<>();
-        tree.add(path + node.getPathAsString() + this.descPath(node));
+        tree.add(path + node.getDisplayPath() + this.descPath(node));
 
         String childPrefix = path.replaceAll("├", "│")
                 .replaceAll("╰", " ")
                 .replaceAll("/", " ")
                 .replaceAll("\\w", " ");
-        Iterator<E> iterator = node.children.values().iterator();
+        Iterator<C> iterator = node.children.values().iterator();
         while (iterator.hasNext()) {
-            E childNode = iterator.next();
+            C childNode = iterator.next();
             String subPath = childPrefix + (iterator.hasNext() ? "├" : "╰");
             tree.addAll(this.dump(childNode, subPath));
         }
@@ -76,7 +59,7 @@ public class Trie<T, E extends AbstractTrieNode<T, E>> {
         List<String> tree = this.dump(this.root, "");
         StringBuilder builder = new StringBuilder();
         for (String line : tree) {
-            builder.append("\n" + line);
+            builder.append("\n").append(line);
         }
         return builder.toString();
     }

@@ -1,9 +1,6 @@
 package com.riguz.forks.router;
 
-import com.riguz.commons.tuple.Pair;
 import com.riguz.forks.http.HttpMethod;
-
-import java.util.Map;
 
 public interface Router<T> {
 
@@ -28,5 +25,5 @@ public interface Router<T> {
     default void complete() {
     }
 
-    Pair<T, Map<String, String>> resolve(HttpMethod method, String requestPath);
+    Resolved<T> resolve(HttpMethod method, String requestUrl);
 }
