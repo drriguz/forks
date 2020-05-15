@@ -51,7 +51,7 @@ public class PatternTrieNode<T>
 
     @Override
     public boolean isContinuous() {
-        return super.isContinuous() || hasPattern();
+        return super.isContinuous() && !hasPattern();
     }
 
     private static boolean isReserved(Character path) {

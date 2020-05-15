@@ -9,9 +9,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class PatternRouterTest {
 
@@ -21,11 +19,11 @@ public class PatternRouterTest {
         router.addGet("/user/:id", "user");
         router.complete();
 
-        assertEquals(null, router.resolve(HttpMethod.POST, "/"));
-        assertEquals(null, router.resolve(HttpMethod.POST, "//"));
-        assertEquals(null, router.resolve(HttpMethod.POST, "/user/1"));
-        assertEquals(null, router.resolve(HttpMethod.POST, "/system"));
-        assertNotNull(router.resolve(HttpMethod.GET, "/user/1"));
+        assertFalse(router.resolve(HttpMethod.POST, "/").matched());
+        assertFalse(router.resolve(HttpMethod.POST, "//").matched());
+        assertFalse(router.resolve(HttpMethod.POST, "/user/1").hasValue());
+        assertFalse(router.resolve(HttpMethod.POST, "/system").matched());
+        assertTrue(router.resolve(HttpMethod.GET, "/user/1").matched());
     }
 
     @Test
@@ -39,7 +37,7 @@ public class PatternRouterTest {
         assertEquals("index", router.resolve(HttpMethod.GET, "/").getPayload());
         assertEquals("home", router.resolve(HttpMethod.GET, "/home").getPayload());
         assertEquals("about", router.resolve(HttpMethod.GET, "/about").getPayload());
-        assertEquals(null, router.resolve(HttpMethod.GET, "/foo"));
+        assertEquals(false, router.resolve(HttpMethod.GET, "/foo").matched());
     }
 
     @Test

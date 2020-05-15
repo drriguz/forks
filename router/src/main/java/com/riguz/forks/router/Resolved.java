@@ -19,7 +19,7 @@ public class Resolved<T> {
     }
 
     public static <T> Resolved<T> of(T payload, Map<String, String> params) {
-        return new Resolved<>(false, payload, params);
+        return new Resolved<>(true, payload, params);
     }
 
     public boolean matched() {

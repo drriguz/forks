@@ -30,7 +30,7 @@ public class PatternTrieRouter<T>
             throw new IllegalArgumentException("Invalid route path:" + method + " " + pattern);
         }
         final Resolved<Map<HttpMethod, T>> resolved = this.root.find(pattern);
-        if (!resolved.matched()) {
+        if (!resolved.matched() || !resolved.hasValue()) {
             final Map<HttpMethod, T> handlers = new HashMap<>();
             handlers.put(method, handler);
             this.insert(pattern, handlers);

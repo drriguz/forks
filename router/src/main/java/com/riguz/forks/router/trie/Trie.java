@@ -37,7 +37,7 @@ public class Trie<T, R, C extends AbstractTrieNode<T, R, C>> {
 
     protected List<String> dump(AbstractTrieNode<T, R, C> node, String path) {
         if (node.isContinuous()) {
-            return dump(node.getNext(), path + node.getPath());
+            return dump(node.getNext(), path + node.getDisplayPath());
         }
         List<String> tree = new LinkedList<>();
         tree.add(path + node.getDisplayPath() + this.descPath(node));
