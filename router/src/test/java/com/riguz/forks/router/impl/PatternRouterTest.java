@@ -1,13 +1,9 @@
 package com.riguz.forks.router.impl;
 
-import com.riguz.commons.tuple.Pair;
 import com.riguz.forks.http.HttpMethod;
-import com.riguz.forks.router.Resolved;
-import com.riguz.forks.router.impl.PatternTrieRouter;
-import com.riguz.forks.router.Router;
+import com.riguz.forks.router.old.Resolved;
+import com.riguz.forks.router.old.Router;
 import org.junit.Test;
-
-import java.util.Map;
 
 import static org.junit.Assert.*;
 

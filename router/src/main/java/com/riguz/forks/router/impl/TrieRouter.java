@@ -2,8 +2,8 @@ package com.riguz.forks.router.impl;
 
 import com.riguz.commons.base.Strings;
 import com.riguz.forks.http.HttpMethod;
-import com.riguz.forks.router.Resolved;
-import com.riguz.forks.router.Router;
+import com.riguz.forks.router.old.Resolved;
+import com.riguz.forks.router.old.Router;
 import com.riguz.forks.router.trie.Trie;
 import com.riguz.forks.router.trie.TrieNode;
 
@@ -11,12 +11,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TrieRouter<T>
-        extends Trie<Map<HttpMethod, T>, TrieNode<Map<HttpMethod, T>>, TrieNode<Map<HttpMethod, T>>>
-        implements Router<T> {
-
+public class TrieRouter<T> implements Router<T> {
+    
     public TrieRouter() {
-        super(TrieNode.empty());
+        super();
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.riguz.forks;
 
 import com.riguz.forks.http.NetworkServer;
 import com.riguz.forks.ioc.Injector;
-import com.riguz.forks.router.Router;
+import com.riguz.forks.router.old.Router;
 
 import javax.inject.Inject;
 

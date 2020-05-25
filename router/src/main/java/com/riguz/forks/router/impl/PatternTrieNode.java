@@ -2,7 +2,7 @@ package com.riguz.forks.router.impl;
 
 import com.riguz.commons.base.Strings;
 import com.riguz.commons.tuple.Pair;
-import com.riguz.forks.router.Resolved;
+import com.riguz.forks.router.old.Resolved;
 import com.riguz.forks.router.trie.AbstractTrieNode;
 
 import java.util.LinkedHashMap;
