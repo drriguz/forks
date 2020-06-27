@@ -1,10 +1,7 @@
 package com.riguz.forks.mvc;
 
 import com.riguz.commons.tuple.Pair;
-import com.riguz.forks.http.HttpRequest;
-import com.riguz.forks.http.HttpResponse;
-import com.riguz.forks.http.RequestDelegate;
-import com.riguz.forks.router.old.Router;
+import com.riguz.forks.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,14 +32,13 @@ public class Dispatcher implements RequestDelegate {
     @Override
     public void delegate(HttpRequest request, HttpResponse response) {
         logger.info("=>Resolving :{}", request.getRequestURI());
-        Pair<RequestHandler, Map<String, String>> resolved = this.router
-                .resolve(request.getRequestMethod(), request.getRequestPath());
-        if (resolved == null) {
+        Endpoint<RequestHandler> endpoint = this.router.route(request);
+        if (endpoint == null) {
             this.resolve404(request, response);
             return;
         }
-        RequestHandler handler = resolved.getLeft();
-        Map<String, String> pathVariables = resolved.getRight();
+        RequestHandler handler = endpoint.getHandler();
+        Map<String, String> pathVariables = endpoint.getPathVariables();
         logger.debug("Resolved path variables:{}", pathVariables);
         try {
             final Object result = this.actionExecutor.execute(handler, new RequestContext(request, response, pathVariables));

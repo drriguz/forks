@@ -7,10 +7,10 @@ import com.riguz.forks.config.route.RouteParser;
 import com.riguz.forks.exceptions.ActionNotFoundException;
 import com.riguz.forks.exceptions.InitializeException;
 import com.riguz.forks.http.HttpMethod;
+import com.riguz.forks.http.Router;
+import com.riguz.forks.http.trie.PatternTrieRouter;
 import com.riguz.forks.ioc.Injector;
 import com.riguz.forks.mvc.RequestHandler;
-import com.riguz.forks.router.impl.PatternTrieRouter;
-import com.riguz.forks.router.old.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,12 +43,12 @@ public class FileBasedPatternRouteLoader implements RouteLoader<RequestHandler> 
             try {
                 RequestHandler handler = this.getHandler(controllers, routeRule.getFunctionCall());
                 logger.info("Adding route:{} {} -> {}", method, routeRule.getPattern(), routeRule.getFunctionCall());
-                router.add(method, routeRule.getPattern(), handler);
+                router.addRoute(method, routeRule.getPattern(), handler);
             } catch (ActionNotFoundException e) {
                 throw new InitializeException("Action not found:" + e.getMessage());
             }
         });
-        router.complete();
+        // router.complete();
         return router;
     }
 

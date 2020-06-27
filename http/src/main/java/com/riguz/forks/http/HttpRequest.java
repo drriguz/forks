@@ -2,7 +2,7 @@ package com.riguz.forks.http;
 
 import java.io.InputStream;
 
-public interface HttpRequest extends RouteFeature {
+public interface HttpRequest extends Routable {
 
     boolean isSecure();
 

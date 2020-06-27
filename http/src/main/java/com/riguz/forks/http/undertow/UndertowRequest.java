@@ -20,7 +20,7 @@ public class UndertowRequest implements HttpRequest {
     }
 
     @Override
-    public HttpMethod getRequestMethod() {
+    public HttpMethod getHttpMethod() {
         return HttpMethod.valueOf(this.exchange.getRequestMethod().toString());
     }
 
@@ -30,7 +30,7 @@ public class UndertowRequest implements HttpRequest {
     }
 
     @Override
-    public String getRequestPath() {
+    public String getPath() {
         return this.exchange.getRequestPath();
     }
 

@@ -3,6 +3,7 @@ package com.riguz.forks;
 import com.riguz.forks.exceptions.InitializeException;
 import com.riguz.forks.http.NetworkServer;
 import com.riguz.forks.http.RequestDelegate;
+import com.riguz.forks.http.Router;
 import com.riguz.forks.http.undertow.UndertowServer;
 import com.riguz.forks.ioc.Bind;
 import com.riguz.forks.ioc.Injector;
@@ -11,7 +12,6 @@ import com.riguz.forks.json.JsonSerializer;
 import com.riguz.forks.mvc.*;
 import com.riguz.forks.router.FileBasedPatternRouteLoader;
 import com.riguz.forks.router.RouteLoader;
-import com.riguz.forks.router.old.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class DefaultConfig {
 
     @Bind
     @Singleton
-    public Router<RequestHandler> router(TrieRouter<RequestHandler> router, Injector injector) {
+    public Router<RequestHandler> router(Injector injector) {
         RouteLoader<RequestHandler> loader = null;
         try {
             loader = new FileBasedPatternRouteLoader(ROUTER_FILE, injector);

@@ -1,6 +1,7 @@
 package com.riguz.forks.router;
 
-import com.riguz.forks.router.old.Router;
+
+import com.riguz.forks.http.Router;
 
 public interface RouteLoader<T> {
 
