@@ -1,10 +1,8 @@
-
 dependencies {
-    compile project(':commons')
-    compile project(':framework')
+    compile project(':forks-commons')
 
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
+    compile group: 'io.undertow', name: 'undertow-core', version: '1.4.21.Final'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
