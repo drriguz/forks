@@ -1,0 +1,26 @@
+ext {
+    nettyVersion = "4.1.65.Final"
+}
+
+dependencies {
+    compile project(':forks-commons')
+    compile project(':forks-http')
+
+    implementation "org.slf4j:slf4j-api:1.7.30"
+    implementation "ch.qos.logback:logback-core:1.2.3"
+    implementation "ch.qos.logback:logback-classic:1.2.3"
+
+    implementation "io.netty:netty-common:${nettyVersion}"
+    implementation "io.netty:netty-buffer:${nettyVersion}"
+    implementation "io.netty:netty-transport:${nettyVersion}"
+    implementation "io.netty:netty-handler:${nettyVersion}"
+    implementation "io.netty:netty-handler-proxy:${nettyVersion}"
+    implementation "io.netty:netty-codec-http:${nettyVersion}"
+    implementation "io.netty:netty-codec-http2:${nettyVersion}"
+    implementation "io.netty:netty-transport-native-epoll:${nettyVersion}"
+    implementation "io.netty:netty-transport-native-kqueue:${nettyVersion}"
+
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "com.athaydes.rawhttp:rawhttp-core:2.4.1"
+    testImplementation 'commons-io:commons-io:2.11.0'
+}

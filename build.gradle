@@ -2,6 +2,8 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
 
+    sourceCompatibility = 11
+
     repositories {
         jcenter()
     }
