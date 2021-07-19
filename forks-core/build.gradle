@@ -3,6 +3,7 @@ dependencies {
     compile project(':forks-commons')
     compile project(':forks-ioc')
     compile project(':forks-http')
+    compile project(':forks-http-undertow')
     compile project(':forks-config')
 
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
